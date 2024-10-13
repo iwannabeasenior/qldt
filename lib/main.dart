@@ -1,17 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:qldt/data/remote/api_service.dart';
 import 'package:qldt/data/repo/class_repository.dart';
 import 'package:qldt/helper/routes.dart';
+import 'package:qldt/presentation/pref/get_shared_preferences.dart';
+import 'package:qldt/presentation/pref/user_preferences.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await GetSharedPreferences.instance.init();
+
+  String initialRoute;
+
+  if (await UserPreferences.getToken() == null) {
+    if (await UserPreferences.checkFirstTime()) {
+      initialRoute = 'SplashPage';
+    } else {
+      initialRoute = 'SignInPage';
+    }
+  } else {
+    initialRoute = 'HomePage';
+  }
+  Logger().d('intitialpage is: $initialRoute');
+  runApp(MyApp(intialRoute: initialRoute));
 }
 
+// This widget is the root of your application.
+
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+
+  MyApp({super.key, required this.intialRoute});
+
+  String intialRoute;
+
   final classRepo = ClassRepositoryImpl(ApiServiceImpl());
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return  MultiProvider(
@@ -28,7 +53,7 @@ class MyApp extends StatelessWidget {
         routes: Routes.route(),
         onGenerateRoute: (settings) => Routes.onGenerateRoute(settings),
         onUnknownRoute: (settings) => Routes.onUnknownRoute(settings),
-        initialRoute: "SplashPage",
+        initialRoute: intialRoute,
       ));
   }
 }

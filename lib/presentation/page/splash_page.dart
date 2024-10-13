@@ -14,6 +14,6 @@ class _SplashPageState extends State<SplashPage> {
         onTap: () {
           Navigator.pushNamed(context, '/HomePage');
         },
-        child: Center(child: const Text("Splash Page")));
+        child: const Center(child: Text("Splash Page")));
   }
 }

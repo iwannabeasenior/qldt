@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qldt/presentation/page/auth/signin_page.dart';
 import 'package:qldt/presentation/page/auth/signup_page.dart';
+import 'package:qldt/presentation/page/chat/chat_detail.dart';
 import 'package:qldt/presentation/page/home_page.dart';
 import 'package:qldt/presentation/page/splash_page.dart';
 
@@ -9,6 +9,8 @@ class Routes {
   static dynamic route() {
     return {
       'SplashPage': (BuildContext context) => const SplashPage(),
+      'SignInPage': (context) => const SignInPage(),
+      'HomePage': (context) => const HomePage(),
     };
   }
   static Route? onGenerateRoute(RouteSettings settings) {
@@ -23,11 +25,15 @@ class Routes {
         });
       case 'SignInPage':
         return MaterialPageRoute(builder: (context) {
-          return SignInPage();
+          return const SignInPage();
         });
       case 'SignUpPage':
         return MaterialPageRoute(builder: (context) {
-          return SignUpPage();
+          return const SignUpPage();
+        });
+      case 'ChatDetail':
+        return MaterialPageRoute(builder: (context) {
+          return const ChatDetail();
         });
       default:
         return onUnknownRoute(const RouteSettings(name: '/Feature'));
@@ -37,7 +43,7 @@ class Routes {
     return MaterialPageRoute(
         builder: (context) => Scaffold(
             appBar: AppBar(),
-            body: Center(
+            body: const Center(
                 child: Text("Unknown Page")
             )
         )
