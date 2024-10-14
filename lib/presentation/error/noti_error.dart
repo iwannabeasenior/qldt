@@ -42,7 +42,7 @@ void showDialogError({required context, required int code}) {
     case 1010:
       message = 'Hành động đã được người dùng thực hiện trước đây';
     default:
-      message = 'Unknown';
+      message = 'Lỗi không xác định';
   }
   if (code != 1000) {
     showDialog(
