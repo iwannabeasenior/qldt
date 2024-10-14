@@ -74,6 +74,8 @@ flutter:
     - assets/notification.svg
     - assets/title.png
     - assets/images/
+    - assets/main-image.png
+
 
   fonts:
     - family: Chat

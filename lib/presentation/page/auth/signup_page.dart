@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:qldt/presentation/theme/color_style.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -14,7 +15,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _passwordController2 = TextEditingController();
   final TextEditingController _classController = TextEditingController();
-  final TextEditingController _idController = TextEditingController(); // Controller cho mã số
+  final TextEditingController _idController = TextEditingController();
 
   String? _selectedRole;
   bool _obscurePassword = true;
@@ -30,7 +31,7 @@ class _SignUpPageState extends State<SignUpPage> {
       appBar: AppBar(
         title: const Text("Sign In"),
       ),
-      backgroundColor: const Color(0xFFAE2C2C), // Màu nền nhẹ nhàng
+      backgroundColor: QLDTColor.red,
 
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -52,7 +53,7 @@ class _SignUpPageState extends State<SignUpPage> {
               decoration: InputDecoration(
                 labelText: 'Họ và Tên',
                 labelStyle: const TextStyle(color: Colors.white),
-                prefixIcon: const Icon(Icons.person, color: Colors.white), // Icon người
+                prefixIcon: const Icon(Icons.person, color: Colors.white),
                 enabledBorder: OutlineInputBorder(
                   borderSide: const BorderSide(color: Colors.white),
                   borderRadius: BorderRadius.circular(24),
@@ -106,7 +107,7 @@ class _SignUpPageState extends State<SignUpPage> {
               decoration: InputDecoration(
                 labelText: 'Lớp/Cơ quan',
                 labelStyle: const TextStyle(color: Colors.white),
-                prefixIcon: const Icon(Icons.public, color: Colors.white), // Biểu tượng global
+                prefixIcon: const Icon(Icons.public, color: Colors.white),
                 enabledBorder: OutlineInputBorder(
                   borderSide: const BorderSide(color: Colors.white),
                   borderRadius: BorderRadius.circular(24),
@@ -137,7 +138,7 @@ class _SignUpPageState extends State<SignUpPage> {
               ],
               onChanged: (value) {
                 setState(() {
-                  _selectedRole = value; // Cập nhật vai trò được chọn
+                  _selectedRole = value;
                 });
               },
               decoration: InputDecoration(
@@ -149,7 +150,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   borderSide: const BorderSide(color: Colors.white),
                   borderRadius: BorderRadius.circular(24),
                 ),
-                prefixIcon: const Icon(Icons.person, color: Colors.white), // Biểu tượng người
+                prefixIcon: const Icon(Icons.person, color: Colors.white),
               ),
             ),
             const SizedBox(height: 16),
@@ -180,7 +181,7 @@ class _SignUpPageState extends State<SignUpPage> {
               decoration: InputDecoration(
                 labelText: 'MSSV/MSCB',
                 labelStyle: const TextStyle(color: Colors.white),
-                prefixIcon: const Icon(Icons.confirmation_number, color: Colors.white), // Dấu #
+                prefixIcon: const Icon(Icons.confirmation_number, color: Colors.white),
                 enabledBorder: OutlineInputBorder(
                   borderSide: const BorderSide(color: Colors.white),
                   borderRadius: BorderRadius.circular(24),
@@ -273,20 +274,20 @@ class _SignUpPageState extends State<SignUpPage> {
               },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 80, vertical: 16), // Kích thước nút
+                    horizontal: 80, vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8), // Bo góc nút
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
               child: const Text(
                 'Đăng ký',
                 style: TextStyle(
                   fontSize: 18,
-                  color: Color(0xFFAE2C2C), // Màu chữ nút
+                  color: Color(0xFFAE2C2C),
                 ),
               ),
             ),
-            const SizedBox(height: 24), // Khoảng cách trước nút đăng nhập
+            const SizedBox(height: 24),
             Align(
               alignment: Alignment.center,
               child: InkWell(
@@ -297,10 +298,10 @@ class _SignUpPageState extends State<SignUpPage> {
                   'Đã có tải khoản: Đăng nhập',
                   style: TextStyle(
                     fontSize: 18,
-                    color: Colors.white, // Màu chữ trắng cho liên kết
+                    color: Colors.white,
                     decoration:
-                    TextDecoration.underline, // Thêm gạch chân cho liên kết
-                    decorationColor: Colors.white, // Màu gạch chân trắng
+                    TextDecoration.underline,
+                    decorationColor: Colors.white,
                   ),
                 ),
               ),
