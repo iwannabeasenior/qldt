@@ -3,6 +3,7 @@ import 'package:qldt/presentation/page/auth/signin_page.dart';
 import 'package:qldt/presentation/page/auth/signup_page.dart';
 import 'package:qldt/presentation/page/chat/chat_detail.dart';
 import 'package:qldt/presentation/page/home_page.dart';
+import 'package:qldt/presentation/page/splash2.dart';
 import 'package:qldt/presentation/page/splash_page.dart';
 
 class Routes {
@@ -30,6 +31,10 @@ class Routes {
       case 'SignUpPage':
         return MaterialPageRoute(builder: (context) {
           return const SignUpPage();
+        });
+      case 'Splash2':
+        return MaterialPageRoute(builder: (context) {
+          return const Splash2();
         });
       case 'ChatDetail':
         return MaterialPageRoute(builder: (context) {

@@ -20,15 +20,9 @@ class _SplashPageState extends State<SplashPage> {
             const Text("Splash Page", style: TextStyle(fontSize: 24)),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/SignUpPage');
+                Navigator.pushNamed(context, '/Splash2');
               },
-              child: const Text("Go to SignUpPage"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/SignInPage');
-              },
-              child: const Text("Go to SignInPage"),
+              child: const Text("Go to Splash2"),
             ),
           ],
         ),
