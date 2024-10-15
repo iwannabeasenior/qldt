@@ -2,6 +2,9 @@ import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.da
 import 'package:flutter/material.dart';
 import 'package:qldt/presentation/page/chat/chat_page.dart';
 import 'package:qldt/presentation/page/icons/bottom_icons.dart';
+import 'package:qldt/presentation/page/manage_class/class_page.dart';
+import 'package:qldt/presentation/page/notification/notification_page.dart';
+import 'package:qldt/presentation/page/settings/settings_page.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,7 +16,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   var pages = <Widget>[
+    const NotificationPage(),
+    const ClassPage(),
     const ChatPage(),
+    const SettingsPage(),
   ];
   var icons = <IconData>[
     BottomIcon.bell_1,

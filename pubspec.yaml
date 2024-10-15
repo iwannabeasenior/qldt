@@ -47,6 +47,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  flutter_svg: ^2.0.10+1
+
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -64,12 +66,22 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/test.png
+    - assets/btn_plus.svg
+    - assets/group.svg
+    - assets/chat-round-dots.svg
+    - assets/setting.svg
+    - assets/notification.svg
+    - assets/title.png
+    - assets/images/
+    - assets/main-image.png
+
+
   fonts:
     - family: Chat
       fonts:
         - asset: assets/fonts/BottomIcon.ttf
-  assets:
-    - assets/images/
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

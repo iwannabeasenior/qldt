@@ -3,6 +3,7 @@ import 'package:qldt/presentation/page/auth/signin_page.dart';
 import 'package:qldt/presentation/page/auth/signup_page.dart';
 import 'package:qldt/presentation/page/chat/chat_detail.dart';
 import 'package:qldt/presentation/page/home_page.dart';
+import 'package:qldt/presentation/page/settings/settings_page.dart';
 import 'package:qldt/presentation/page/splash_page.dart';
 
 class Routes {
@@ -31,9 +32,25 @@ class Routes {
         return MaterialPageRoute(builder: (context) {
           return const SignUpPage();
         });
+      case 'Splash2':
+        return MaterialPageRoute(builder: (context) {
+          return const SplashPage();
+        });
       case 'ChatDetail':
         return MaterialPageRoute(builder: (context) {
           return const ChatDetail();
+        });
+      case 'SettingsPage':
+        return MaterialPageRoute(builder: (context) {
+          return const SettingsPage();
+        });
+      case 'ClassPage':
+        return MaterialPageRoute(builder: (context) {
+          return const SettingsPage();
+        });
+      case 'NotificationPage':
+        return MaterialPageRoute(builder: (context) {
+          return const SettingsPage();
         });
       default:
         return onUnknownRoute(const RouteSettings(name: '/Feature'));
