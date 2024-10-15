@@ -12,7 +12,7 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
-          Navigator.pushNamed(context, '/HomePage');
+          Navigator.pushNamed(context, '/SettingPage');
         },
         child: Center(child: const Text("Splash Page")));
   }

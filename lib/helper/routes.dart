@@ -5,6 +5,8 @@ import 'package:qldt/presentation/page/auth/signup_page.dart';
 import 'package:qldt/presentation/page/home_page.dart';
 import 'package:qldt/presentation/page/splash_page.dart';
 
+import '../presentation/page/setting/setting_page.dart';
+
 class Routes {
   static dynamic route() {
     return {
@@ -29,7 +31,11 @@ class Routes {
         return MaterialPageRoute(builder: (context) {
           return SignUpPage();
         });
-      default:
+      case 'SettingPage':
+        return MaterialPageRoute(builder: (context) {
+          return SettingPage();
+        });
+        default:
         return onUnknownRoute(const RouteSettings(name: '/Feature'));
     }
   }
