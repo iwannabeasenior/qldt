@@ -91,7 +91,7 @@ class _SignInPageState extends State<SignInPage> {
                 // Xử lý sự kiện khi nhấn nút đăng nhập
                 String email = _emailController.text;
                 String password = _passwordController.text;
-
+                Navigator.pushNamed(context, '/HomePage');
                 // In ra thông tin đăng nhập (có thể thay bằng logic đăng nhập thực tế)
                 print('Email: $email');
                 print('Password: $password');

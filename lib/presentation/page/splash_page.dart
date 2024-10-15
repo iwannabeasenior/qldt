@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:qldt/presentation/theme/color_style.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -13,85 +13,46 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: QLDTColor.red,
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Text("Splash Page", style: TextStyle(fontSize: 24)),
+            const SizedBox(height: 100),
+            Image.asset(
+              "assets/main-image.png",
+              width: 234,
+              height: 234,
+              fit: BoxFit.fill,
+            ),
+            const SizedBox(height: 50),
+            Text("Hust Support",
+              style: TextStyle(
+                fontSize: 50,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 50),
+            Text("Ứng dụng mới phát hành với nhiều tính năng \n tích hợp 3 in 1 giúp sinh viên bách khoa \n trong việc quản lý ",
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 50),
+
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/Splash2');
+                Navigator.pushNamed(context, '/SignInPage');
               },
-              child: const Text("Go to Splash2"),
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(300, 50), // Dài ra toàn màn hình, chiều cao 50
+              ),
+              child: const Text("Get Started"),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: const Color(0xFFAE2C2C),
-          // Thay đổi màu nền của BottomNavigationBar
-          items: [
-            BottomNavigationBarItem(
-                icon: SvgPicture.asset(
-                  "assets/notification.svg",
-                  width: 30,
-                  height: 30,
-                  fit: BoxFit.fill,
-                ),
-                label: '',
-                backgroundColor: Color(0xFFAE2C2C)),
-            BottomNavigationBarItem(
-                icon: SvgPicture.asset(
-                  "assets/group.svg",
-                  width: 30,
-                  height: 30,
-                  fit: BoxFit.fill,
-                ),
-                label: '',
-                backgroundColor: Color(0xFFAE2C2C)),
-            BottomNavigationBarItem(
-              icon: SvgPicture.asset(
-                "",
-                width: 30,
-                height: 30,
-                fit: BoxFit.fill,
-              ),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-                icon: SvgPicture.asset(
-                  "assets/chat-round-dots.svg",
-                  width: 30,
-                  height: 30,
-                  fit: BoxFit.fill,
-                ),
-                label: '',
-                backgroundColor: Colors.transparent),
-            BottomNavigationBarItem(
-                icon: SvgPicture.asset(
-                  "assets/setting.svg",
-                  width: 30,
-                  height: 30,
-                  fit: BoxFit.fill,
-                ),
-                label: '',
-                backgroundColor: Colors.transparent),
-          ]),
-      floatingActionButton: Container(
-        width: 64,
-        height: 64,
-        decoration: BoxDecoration(
-            color: const Color(0xFF2DB787),
-            borderRadius: BorderRadius.circular(32)),
-        child: IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.add,
-              size: 30,
-              color: Colors.white,
-            )),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
