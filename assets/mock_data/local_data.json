@@ -1,0 +1,40 @@
+{
+  "students": [
+    {
+      "id":"20211012",
+      "username": "hoangpro11512",
+      "img": "123.jpg",
+      "code": "20211012",
+      "description": "Nguyen Huy Hoang lop IT1-03K66",
+      "address": "Hanoi",
+      "link": "fb.com",
+      "city": "Vinh",
+      "country": "Vietnam",
+      "friend": 25,
+      "coins": 1000
+    },
+    {
+      "id":"20211013",
+      "username": "hoang123",
+      "img": "123.jpg",
+      "code": "20211013",
+      "description": "Nguyen Huy Hoang Pro",
+      "address": "Hanoi",
+      "link": "fb.com",
+      "city": "Vinh",
+      "country": "Vietnam",
+      "friend": 26,
+      "coins": 10000
+    }
+  ],
+  "lectures": [
+    {
+      "id": "1",
+      "name": "Hoang"
+    },
+    {
+      "id": "2",
+      "name": "Thanh"
+    }
+  ]
+}

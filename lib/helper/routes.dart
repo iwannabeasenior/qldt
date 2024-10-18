@@ -1,8 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qldt/presentation/page/auth/signin_page.dart';
 import 'package:qldt/presentation/page/auth/signup_page.dart';
+import 'package:qldt/presentation/page/chat/chat_detail.dart';
 import 'package:qldt/presentation/page/home_page.dart';
+import 'package:qldt/presentation/page/setting/detail_info_page.dart';
+import 'package:qldt/presentation/page/setting/edit_information.dart';
+import 'package:qldt/presentation/page/settings/settings_page.dart';
 import 'package:qldt/presentation/page/splash_page.dart';
 
 import '../presentation/page/setting/setting_page.dart';
@@ -11,6 +14,8 @@ class Routes {
   static dynamic route() {
     return {
       'SplashPage': (BuildContext context) => const SplashPage(),
+      'SignInPage': (context) => const SignInPage(),
+      'HomePage': (context) => const HomePage(),
     };
   }
   static Route? onGenerateRoute(RouteSettings settings) {
@@ -25,15 +30,43 @@ class Routes {
         });
       case 'SignInPage':
         return MaterialPageRoute(builder: (context) {
-          return SignInPage();
+          return const SignInPage();
         });
       case 'SignUpPage':
         return MaterialPageRoute(builder: (context) {
-          return SignUpPage();
+          return const SignUpPage();
+        });
+      case 'Splash2':
+        return MaterialPageRoute(builder: (context) {
+          return const SplashPage();
+        });
+      case 'ChatDetail':
+        return MaterialPageRoute(builder: (context) {
+          return const ChatDetail();
+        });
+      case 'SettingsPage':
+        return MaterialPageRoute(builder: (context) {
+          return const SettingsPage();
+        });
+      case 'ClassPage':
+        return MaterialPageRoute(builder: (context) {
+          return const SettingsPage();
+        });
+      case 'NotificationPage':
+        return MaterialPageRoute(builder: (context) {
+          return const SettingsPage();
         });
       case 'SettingPage':
         return MaterialPageRoute(builder: (context) {
-          return SettingPage();
+          return const SettingPage();
+        });
+      // case 'EditInfo':
+      //   return MaterialPageRoute(builder: (context) {
+      //     return const EditInformation();
+      //   });
+      case 'DetailInfo':
+        return MaterialPageRoute(builder: (context) {
+          return const DetailInfo();
         });
         default:
         return onUnknownRoute(const RouteSettings(name: '/Feature'));
@@ -43,7 +76,7 @@ class Routes {
     return MaterialPageRoute(
         builder: (context) => Scaffold(
             appBar: AppBar(),
-            body: Center(
+            body: const Center(
                 child: Text("Unknown Page")
             )
         )

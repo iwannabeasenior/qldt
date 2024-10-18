@@ -70,12 +70,9 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return DetailInfo();
-                              }));
+                              Navigator.pushNamed(context, "/DetailInfo");
                             },
-                            child: SizedBox(
+                            child: const SizedBox(
                               width: 280,
                               child: Center(
                                 child: Text(
@@ -281,93 +278,4 @@ class _SettingPageState extends State<SettingPage> {
   }
 }
 
-class DetailInfo extends StatefulWidget {
-  const DetailInfo({super.key});
 
-  @override
-  State<DetailInfo> createState() => _DetailInfoState();
-}
-
-class _DetailInfoState extends State<DetailInfo> {
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-              onPressed: (){
-                Navigator.pop(context);
-              },
-              icon: Icon(Icons.arrow_back, color: Colors.white,)),
-            title: const Column(
-              children: [
-                Text(
-                  'HUST',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 35,
-                  ),
-                ),
-                Text(
-                  'Thông tin cá nhân',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 25,
-                  ),
-                )
-              ],
-            ),
-            backgroundColor: const Color(0xffAE2C2C),
-            centerTitle: true,
-            toolbarHeight: 115,
-            automaticallyImplyLeading: false,
-          ),
-          body: Container(
-            margin: EdgeInsets.only(top: 15),
-            color: Colors.blue,
-            width: double.infinity,
-            child: Column(
-              children: [
-                Container(
-                  height: 130,
-                  width: 130,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white, width: 1),
-                    borderRadius: BorderRadius.circular(90),
-                  ),
-                  clipBehavior: Clip.hardEdge,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(90),
-                    child: Image.network(
-                      'https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcS-_ycPMliqwjkLSNXt6aMeqPUvYxmz2NJ_PwgLJXxNuuEkQN8H5VApnN0r_vX3KMwMpebw3_EA5sNJHAo',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10,),
-                ElevatedButton(
-                    onPressed: (){},
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: const Color(0xff2DB786),
-                    ),
-                    child: Text(
-                      'Chỉnh sửa',
-                      style: TextStyle(
-                        fontSize: 16
-                      ),
-                    ),
-                ),
-                const SizedBox(height: 10,),
-                Container(
-                  color: Colors.orangeAccent,
-                  height: 320,
-                  width: 325,
-                )
-              ],
-            ),
-      ),
-    ));
-  }
-}
