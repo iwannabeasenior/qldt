@@ -38,6 +38,7 @@ class _DetailInformationState extends State<DetailInformation> {
   final fakeData = FakeData();
 
   // Gán dữ liệu
+  @override
   void initState() {
     super.initState();
     usernameController.text = fakeData.username;
