@@ -7,6 +7,7 @@ import 'package:qldt/presentation/page/settings/settings_page.dart';
 import 'package:qldt/presentation/page/splash_page.dart';
 
 import '../presentation/page/settings/detail_information.dart';
+import '../presentation/page/settings/edit_information.dart';
 
 class Routes {
   static dynamic route() {
@@ -49,6 +50,10 @@ class Routes {
       case 'DetailInformation':
         return MaterialPageRoute(builder: (context) {
           return const DetailInformation();
+        });
+      case 'EditInformation':
+        return MaterialPageRoute(builder: (context) {
+          return const EditInformation();
         });
       case 'ClassPage':
         return MaterialPageRoute(builder: (context) {
