@@ -5,14 +5,47 @@ import 'package:qldt/presentation/theme/color_style.dart';
 
 // fake data
 class ChatUser {
-  String avatar;
-  String name;
-  String message;
-  String time;
-  ChatUser({required this.avatar, required this.name, required this.message, required this.time});
+  String id;
+  Partner partner;
+  LastMessage lastMessage;
+  ChatUser({required this.id, required this.partner, required this.lastMessage});
 }
 
-var chatUsers = [
+class LastMessage {
+  String message;
+  String created;
+  bool unread;
+  LastMessage({required this.message, required this.created, required this.unread});
+}
+
+class Partner {
+  String id;
+  String username;
+  String avatar;
+  Partner({required this.id, required this.username, required this.avatar});
+}
+
+var users = [
+  ChatUser(
+    id: '123',
+    partner: Partner(id: '1231', username: 'Thanh', avatar: 'assets/images/kaka.jpg'),
+    lastMessage: LastMessage(message: 'Say hello!', created: '10/10', unread: true)
+  ),
+  ChatUser(
+    id: '1',
+    partner: Partner(id: '123', username: 'Nam', avatar: 'assets/images/kaka.jpg'),
+    lastMessage: LastMessage(message: 'Say hello!', created: '10/10', unread: true)
+  ),
+  ChatUser(
+    id: '12',
+    partner: Partner(id: '123', username: 'Dat', avatar: 'assets/images/kaka.jpg'),
+    lastMessage: LastMessage(message: 'Say hello!', created: '10/10', unread: true)
+  ),
+  ChatUser(
+    id: '1234',
+    partner: Partner(id: '1231', username: 'Lan Anh', avatar: 'assets/images/kaka.jpg'),
+    lastMessage: LastMessage(message: 'Say hello!', created: '10/10', unread: true)
+  ),
 ];
 
 //
@@ -54,8 +87,8 @@ class _ChatPageState extends State<ChatPage> {
                     child: ListView(
                         scrollDirection: Axis.vertical,
                         children:
-                        List.generate(10, (index) {
-                          return const ChatUnit();
+                        List.generate(users.length, (index) {
+                          return ChatUnit(user: users[index]);
                         })
 
                     ),
@@ -71,13 +104,21 @@ class _ChatPageState extends State<ChatPage> {
 }
 
 class ChatUnit extends StatelessWidget {
-  const ChatUnit({super.key});
+  ChatUser user;
+  ChatUnit({super.key, required this.user});
 
-  @override
+  @override 
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, "/ChatDetail");
+        Navigator.pushNamed(context,
+            "/ChatDetail",
+            arguments: Partner (
+              username: user.partner.username,
+              id: user.partner.id,
+              avatar: user.partner.avatar
+            )
+        );
       },
       child: Container(
         height: 80,
@@ -90,27 +131,30 @@ class ChatUnit extends StatelessWidget {
         child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const CircleAvatar(
-                backgroundImage: AssetImage("assets/images/kaka.jpg", ),
+              CircleAvatar(
+                backgroundImage: AssetImage(user.partner.avatar),
                 radius: 26,
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 13),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    const Text("Quỳnh Anh", style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    )),
-                    Text("Sáng chủ nhật đi hồ gươm với tớ nha", overflow: TextOverflow.ellipsis, style: TextStyle(color: QLDTColor.lightBlack, fontSize: 12))
-                  ]
+              Expanded(
+                flex: 1,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 13),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text(user.partner.username, style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      )),
+                      Text(user.lastMessage.message, overflow: TextOverflow.ellipsis, style: TextStyle(color: QLDTColor.lightBlack, fontSize: 12))
+                    ]
+                  ),
                 ),
               ),
               Row(
                 children: [
-                  Text("12:04 AM", style: TextStyle(color: QLDTColor.lightBlack, fontSize: 12)),
+                  Text(user.lastMessage.created, style: TextStyle(color: QLDTColor.lightBlack, fontSize: 12)),
                 ],
               )
             ]),
