@@ -55,7 +55,9 @@ class _HomePageState extends State<HomePage> {
           shape: const CircleBorder(),
           backgroundColor: QLDTColor.green,
           child: const Text("+", style: TextStyle(fontSize: 20),),
-          onPressed: () {}
+          onPressed: () {
+            Navigator.pushNamed(context, '/CreateClass');
+          }
       ),
     );
   }

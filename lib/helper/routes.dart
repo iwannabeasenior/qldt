@@ -19,7 +19,7 @@ class Routes {
       'HomePage': (context) => const HomePage(),
       'RegisterForClassPage' : (context) => const RegisterForClass(),
       'OpenClassList': (context) => const OpenClassList(),
-      // 'CreateClass': (context) => const CreateClass(),
+      'CreateClass': (context) => const CreateClass(),
 
     };
   }
@@ -70,10 +70,10 @@ class Routes {
         return MaterialPageRoute(builder: (context) {
           return const OpenClassList();
         });
-      // case 'CreateClass':
-      //   return MaterialPageRoute(builder: (context) {
-      //     return const CreateClass();
-      //   });
+      case 'CreateClass':
+        return MaterialPageRoute(builder: (context) {
+          return const CreateClass();
+        });
       default:
         return onUnknownRoute(const RouteSettings(name: '/Feature'));
     }
