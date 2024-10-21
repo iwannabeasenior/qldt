@@ -14,11 +14,14 @@ class _EditInformationState extends State<EditInformation> {
 
   // Controllers cho các trường nhập liệu
   final TextEditingController usernameController = TextEditingController();
+  final TextEditingController codeController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
   final TextEditingController linkController = TextEditingController();
   final TextEditingController cityController = TextEditingController();
   final TextEditingController countryController = TextEditingController();
+  final TextEditingController coinsController = TextEditingController();
+  final TextEditingController friendController = TextEditingController();
 
   bool _isButtonEnabled = false;
   Student _temporaryData = Student.defaultData;  // Biến tạm để lưu dữ liệu trên giao diện
@@ -38,11 +41,14 @@ class _EditInformationState extends State<EditInformation> {
       // Cập nhật dữ liệu tạm để dùng trên giao diện
       _temporaryData = Student(
         username: usernameController.text,
+        code: _temporaryData.code,
         description: descriptionController.text,
         address: addressController.text,
         link: linkController.text,
         city: cityController.text,
         country: countryController.text,
+        coins: _temporaryData.coins,
+        friend: _temporaryData.friend,
       );
 
       // Cập nhật trạng thái nút Hoàn thành sau khi nạp dữ liệu
@@ -112,11 +118,14 @@ class _EditInformationState extends State<EditInformation> {
       setState(() {
         _temporaryData = Student(
           username: usernameController.text,
+          code: _temporaryData.code,
           description: descriptionController.text,
           address: addressController.text,
           link: linkController.text,
           city: cityController.text,
           country: countryController.text,
+          coins: _temporaryData.coins,
+          friend: _temporaryData.friend,
         );
       });
 
