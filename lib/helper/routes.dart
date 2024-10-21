@@ -5,6 +5,9 @@ import 'package:qldt/presentation/page/auth/signup_page.dart';
 import 'package:qldt/presentation/page/chat/chat_detail.dart';
 import 'package:qldt/presentation/page/chat/chat_page.dart';
 import 'package:qldt/presentation/page/home_page.dart';
+import 'package:qldt/presentation/page/manage_class/create_class.dart';
+import 'package:qldt/presentation/page/manage_class/open_class_list.dart';
+import 'package:qldt/presentation/page/manage_class/register_for_class.dart';
 import 'package:qldt/presentation/page/settings/settings_page.dart';
 import 'package:qldt/presentation/page/splash_page.dart';
 
@@ -14,6 +17,10 @@ class Routes {
       'SplashPage': (BuildContext context) => const SplashPage(),
       'SignInPage': (context) => const SignInPage(),
       'HomePage': (context) => const HomePage(),
+      'RegisterForClassPage' : (context) => const RegisterForClass(),
+      'OpenClassList': (context) => const OpenClassList(),
+      // 'CreateClass': (context) => const CreateClass(),
+
     };
   }
   static Route? onGenerateRoute(RouteSettings settings) {
@@ -55,6 +62,18 @@ class Routes {
         return MaterialPageRoute(builder: (context) {
           return const SettingsPage();
         });
+      case 'RegisterForClassPage':
+        return MaterialPageRoute(builder: (context) {
+          return const RegisterForClass();
+        });
+      case 'OpenClassList':
+        return MaterialPageRoute(builder: (context) {
+          return const OpenClassList();
+        });
+      // case 'CreateClass':
+      //   return MaterialPageRoute(builder: (context) {
+      //     return const CreateClass();
+      //   });
       default:
         return onUnknownRoute(const RouteSettings(name: '/Feature'));
     }
