@@ -44,6 +44,21 @@ class _EditInformationState extends State<EditInformation> {
         city: cityController.text,
         country: countryController.text,
       );
+
+      // Cập nhật trạng thái nút Hoàn thành sau khi nạp dữ liệu
+      _checkIfDataChanged();
+    });
+  }
+
+  // Kiểm tra xem dữ liệu có thay đổi so với dữ liệu mặc định không
+  void _checkIfDataChanged() {
+    setState(() {
+      _isButtonEnabled = usernameController.text != _temporaryData.username ||
+          descriptionController.text != _temporaryData.description ||
+          addressController.text != _temporaryData.address ||
+          linkController.text != _temporaryData.link ||
+          cityController.text != _temporaryData.city ||
+          countryController.text != _temporaryData.country;
     });
   }
 
@@ -61,6 +76,7 @@ class _EditInformationState extends State<EditInformation> {
   @override
   void initState() {
     super.initState();
+    // Nạp dữ liệu và thiết lập sự kiện cho các controller
     _loadData();
     usernameController.addListener(_onTextFieldChanged);
     descriptionController.addListener(_onTextFieldChanged);
@@ -70,21 +86,29 @@ class _EditInformationState extends State<EditInformation> {
     countryController.addListener(_onTextFieldChanged);
   }
 
+  @override
+  void dispose() {
+    // Giải phóng bộ nhớ cho các controller
+    usernameController.dispose();
+    descriptionController.dispose();
+    addressController.dispose();
+    linkController.dispose();
+    cityController.dispose();
+    countryController.dispose();
+    super.dispose();
+  }
+
   void _onTextFieldChanged() {
-    // So sánh giá trị hiện tại của TextField với dữ liệu trên giao diện (biến tạm)
-    setState(() {
-      _isButtonEnabled = usernameController.text != _temporaryData.username ||
-          descriptionController.text != _temporaryData.description ||
-          addressController.text != _temporaryData.address ||
-          linkController.text != _temporaryData.link ||
-          cityController.text != _temporaryData.city ||
-          countryController.text != _temporaryData.country;
-    });
+    // Cập nhật trạng thái của nút Hoàn thành khi có sự thay đổi trong các TextField
+    _checkIfDataChanged();
   }
 
   void _onSubmit() async {
     if (_formKey.currentState!.validate()) {
-      // Lưu dữ liệu vào biến tạm trước khi lưu vào shared_preferences
+      // Ẩn bàn phím khi bấm nút Hoàn thành
+      FocusScope.of(context).unfocus();
+
+      // Lưu dữ liệu tạm trước khi lưu vào shared_preferences
       setState(() {
         _temporaryData = Student(
           username: usernameController.text,
@@ -103,162 +127,185 @@ class _EditInformationState extends State<EditInformation> {
         const SnackBar(content: Text('Thông tin đã được lưu thành công!')),
       );
 
-      // Reload lại trang mà vẫn giữ dữ liệu đã thay đổi
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (BuildContext context) => const EditInformation()),
-      );
+      // Sau khi lưu xong, nút hoàn thành sẽ chuyển sang trạng thái màu xám
+      setState(() {
+        _isButtonEnabled = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Row(
-            children: [
-              GestureDetector(
-                child: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
+    return GestureDetector(
+      // Thêm GestureDetector để tap ngoài TextField sẽ ẩn bàn phím
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            title: Row(
+              children: [
+                GestureDetector(
+                  child: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
                 ),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              const Spacer(),
-              const Column(
-                children: [
-                  Text(
-                    'HUST',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 35,
+                const Spacer(),
+                const Column(
+                  children: [
+                    Text(
+                      'HUST',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 35,
+                      ),
                     ),
-                  ),
-                  Text(
-                    'Chỉnh sửa thông tin cá nhân',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
+                    Text(
+                      'Chỉnh sửa thông tin cá nhân',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 25,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const Spacer(),
-            ],
+                  ],
+                ),
+                const Spacer(),
+              ],
+            ),
+            backgroundColor: const Color(0xffAE2C2C),
+            centerTitle: true,
+            toolbarHeight: 115,
+            automaticallyImplyLeading: false,
           ),
-          backgroundColor: const Color(0xffAE2C2C),
-          centerTitle: true,
-          toolbarHeight: 115,
-          automaticallyImplyLeading: false,
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Center(
-                    child: Stack(
-                      alignment: Alignment.bottomCenter,
+          body: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Center(
+                      child: Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          CircleAvatar(
+                            radius: 80,
+                            backgroundImage: const NetworkImage(
+                              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTb7w9NmAGMYRiEzXYPexJmQ3z-xmQAg7cRRg&s',
+                            ),
+                            onBackgroundImageError: (_, __) => Icon(Icons.error),  // Xử lý khi lỗi tải ảnh
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '');
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                                vertical: 14,
+                              ),
+                              shape: const StadiumBorder(),
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                            ),
+                            child: const Text('Đổi avatar'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Các TextFormField với thêm validation
+                    TextFormField(
+                      controller: usernameController,
+                      decoration: const InputDecoration(labelText: 'Username'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Vui lòng nhập username';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 10),
+
+                    TextFormField(
+                      controller: descriptionController,
+                      decoration: const InputDecoration(labelText: 'Description'),
+                    ),
+                    const SizedBox(height: 10),
+
+                    TextFormField(
+                      controller: addressController,
+                      decoration: const InputDecoration(labelText: 'Address'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Vui lòng nhập địa chỉ';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 10),
+
+                    TextFormField(
+                      controller: linkController,
+                      decoration: const InputDecoration(labelText: 'Link'),
+                    ),
+                    const SizedBox(height: 10),
+
+                    Row(
                       children: [
-                        const CircleAvatar(
-                          radius: 80,
-                          backgroundImage: NetworkImage(
-                            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTb7w9NmAGMYRiEzXYPexJmQ3z-xmQAg7cRRg&s',
+                        Expanded(
+                          child: TextFormField(
+                            controller: cityController,
+                            decoration: const InputDecoration(labelText: 'City'),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Vui lòng nhập thành phố';
+                              }
+                              return null;
+                            },
                           ),
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '');
-                          },
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 14,
-                            ),
-                            shape: const StadiumBorder(),
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextFormField(
+                            controller: countryController,
+                            decoration: const InputDecoration(labelText: 'Country'),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Vui lòng nhập quốc gia';
+                              }
+                              return null;
+                            },
                           ),
-                          child: const Text('Đổi avatar'),
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 50),
 
-                  // Các TextFormField như cũ
-                  TextFormField(
-                    controller: usernameController,
-                    decoration: const InputDecoration(labelText: 'Username'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Vui lòng nhập username';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 10),
-
-                  TextFormField(
-                    controller: descriptionController,
-                    decoration: const InputDecoration(labelText: 'Description'),
-                  ),
-                  const SizedBox(height: 10),
-
-                  TextFormField(
-                    controller: addressController,
-                    decoration: const InputDecoration(labelText: 'Address'),
-                  ),
-                  const SizedBox(height: 10),
-
-                  TextFormField(
-                    controller: linkController,
-                    decoration: const InputDecoration(labelText: 'Link'),
-                  ),
-                  const SizedBox(height: 10),
-
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: cityController,
-                          decoration: const InputDecoration(labelText: 'City'),
+                    // Nút Hoàn thành
+                    ElevatedButton(
+                      onPressed: _isButtonEnabled ? _onSubmit : null, // Vô hiệu hóa nút nếu không có thay đổi
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 14,
                         ),
+                        shape: const StadiumBorder(),
+                        backgroundColor: _isButtonEnabled ? Colors.green : Colors.grey,  // Đổi màu khi vô hiệu hóa
+                        foregroundColor: Colors.white,
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: TextFormField(
-                          controller: countryController,
-                          decoration: const InputDecoration(labelText: 'Country'),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 50),
-
-                  ElevatedButton(
-                    onPressed: _isButtonEnabled ? _onSubmit : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _isButtonEnabled ? Colors.green : Colors.grey,
-                      foregroundColor: _isButtonEnabled ? Colors.white : Colors.blueGrey,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 50,
-                        vertical: 15,
-                      ),
+                      child: const Text('Hoàn thành'),
                     ),
-                    child: const Text(
-                      'Hoàn thành',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
