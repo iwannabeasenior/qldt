@@ -1,29 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
+import 'package:qldt/data/repo/auth_repository.dart';
+import 'package:qldt/presentation/page/auth/signup/signup_provider.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 
-class SignUpPage extends StatefulWidget {
+
+
+
+class SignUpPage extends StatelessWidget {
   const SignUpPage({super.key});
 
   @override
-  State<SignUpPage> createState() => _SignUpPageState();
+  Widget build(BuildContext context) {
+    var authRepo = Provider.of<AuthRepository>(context);
+    return ChangeNotifierProvider(
+        create: (context) => SignUpProvider(authRepo),
+        child: SignUpPageInner(),
+    );
+  }
 }
 
-class _SignUpPageState extends State<SignUpPage> {
-  final TextEditingController _nameController = TextEditingController();
+class SignUpPageInner extends StatefulWidget {
+  const SignUpPageInner({super.key});
+
+  @override
+  State<SignUpPageInner> createState() => _SignUpPageInnerState();
+}
+
+class _SignUpPageInnerState extends State<SignUpPageInner> {
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _passwordController2 = TextEditingController();
-  final TextEditingController _classController = TextEditingController();
-  final TextEditingController _idController = TextEditingController();
 
   String? _selectedRole;
   bool _obscurePassword = true;
   bool _obscurePassword2 = true;
-
-
-  DateTime? _selectedDate;
-  final DateFormat _dateFormatter = DateFormat('dd/MM/yyyy');
 
   @override
   Widget build(BuildContext context) {
@@ -48,79 +63,105 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              TextFormField(
-                controller: _nameController,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  labelText: 'Họ và Tên',
-                  labelStyle: const TextStyle(color: Colors.white),
-                  prefixIcon: const Icon(Icons.person, color: Colors.white),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.circular(24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _firstNameController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: 'Họ',
+                        labelStyle: const TextStyle(color: Colors.white),
+                        prefixIcon: const Icon(Icons.person, color: Colors.white),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                      ),
+                    ),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.circular(24),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _lastNameController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: 'Tên',
+                        labelStyle: const TextStyle(color: Colors.white),
+                        prefixIcon: const Icon(Icons.person, color: Colors.white),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
               const SizedBox(height: 16),
-        
-              TextFormField(
-                readOnly: true,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  labelText: 'Ngày/tháng/năm sinh',
-                  labelStyle: const TextStyle(color: Colors.white),
-                  prefixIcon: const Icon(Icons.calendar_today, color: Colors.white),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                ),
-                controller: TextEditingController(
-                  text: _selectedDate != null ? _dateFormatter.format(_selectedDate!) : '',
-                ),
-                onTap: () async {
-                  DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(1900),
-                    lastDate: DateTime.now(),
-                  );
-                  if (pickedDate != null) {
-                    setState(() {
-                      _selectedDate = pickedDate;
-                    });
-                  }
-                },
-              ),
-              const SizedBox(height: 16),
-        
-              TextFormField(
-                controller: _classController,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  labelText: 'Lớp/Cơ quan',
-                  labelStyle: const TextStyle(color: Colors.white),
-                  prefixIcon: const Icon(Icons.public, color: Colors.white),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-        
+
+              // TextFormField(
+              //   readOnly: true,
+              //   style: const TextStyle(color: Colors.white),
+              //   decoration: InputDecoration(
+              //     labelText: 'Ngày/tháng/năm sinh',
+              //     labelStyle: const TextStyle(color: Colors.white),
+              //     prefixIcon: const Icon(Icons.calendar_today, color: Colors.white),
+              //     enabledBorder: OutlineInputBorder(
+              //       borderSide: const BorderSide(color: Colors.white),
+              //       borderRadius: BorderRadius.circular(24),
+              //     ),
+              //     focusedBorder: OutlineInputBorder(
+              //       borderSide: const BorderSide(color: Colors.white),
+              //       borderRadius: BorderRadius.circular(24),
+              //     ),
+              //   ),
+              //   controller: TextEditingController(
+              //     text: _selectedDate != null ? _dateFormatter.format(_selectedDate!) : '',
+              //   ),
+              //   onTap: () async {
+              //     DateTime? pickedDate = await showDatePicker(
+              //       context: context,
+              //       initialDate: DateTime.now(),
+              //       firstDate: DateTime(1900),
+              //       lastDate: DateTime.now(),
+              //     );
+              //     if (pickedDate != null) {
+              //       setState(() {
+              //         _selectedDate = pickedDate;
+              //       });
+              //     }
+              //   },
+              // ),
+              // const SizedBox(height: 16),
+
+              // TextFormField(
+              //   controller: _classController,
+              //   style: const TextStyle(color: Colors.white),
+              //   decoration: InputDecoration(
+              //     labelText: 'Lớp/Cơ quan',
+              //     labelStyle: const TextStyle(color: Colors.white),
+              //     prefixIcon: const Icon(Icons.public, color: Colors.white),
+              //     enabledBorder: OutlineInputBorder(
+              //       borderSide: const BorderSide(color: Colors.white),
+              //       borderRadius: BorderRadius.circular(24),
+              //     ),
+              //     focusedBorder: OutlineInputBorder(
+              //       borderSide: const BorderSide(color: Colors.white),
+              //       borderRadius: BorderRadius.circular(24),
+              //     ),
+              //   ),
+              // ),
+              // const SizedBox(height: 16),
+
               DropdownButtonFormField<String>(
                 value: _selectedRole,
                 hint: const Text(
@@ -129,12 +170,12 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 items: const [
                   DropdownMenuItem(
-                    value: 'Giảng viên',
-                    child: Text('Giảng viên', style: TextStyle(color: Colors.black)),
+                    value: 'LECTURE',
+                    child: Text('LECTURE', style: TextStyle(color: Colors.black)),
                   ),
                   DropdownMenuItem(
-                    value: 'Sinh viên',
-                    child: Text('Sinh viên', style: TextStyle(color: Colors.black)),
+                    value: 'STUDENT',
+                    child: Text('STUDENT', style: TextStyle(color: Colors.black)),
                   ),
                 ],
                 onChanged: (value) {
@@ -155,7 +196,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               const SizedBox(height: 16),
-        
+
               TextFormField(
                 controller: _emailController,
                 style: const TextStyle(color: Colors.white),
@@ -174,27 +215,27 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 keyboardType: TextInputType.emailAddress,
               ),
+              // const SizedBox(height: 16),
+
+              // TextFormField(
+              //   controller: _idController,
+              //   style: const TextStyle(color: Colors.white),
+              //   decoration: InputDecoration(
+              //     labelText: 'MSSV/MSCB',
+              //     labelStyle: const TextStyle(color: Colors.white),
+              //     prefixIcon: const Icon(Icons.confirmation_number, color: Colors.white),
+              //     enabledBorder: OutlineInputBorder(
+              //       borderSide: const BorderSide(color: Colors.white),
+              //       borderRadius: BorderRadius.circular(24),
+              //     ),
+              //     focusedBorder: OutlineInputBorder(
+              //       borderSide: const BorderSide(color: Colors.white),
+              //       borderRadius: BorderRadius.circular(24),
+              //     ),
+              //   ),
+              // ),
               const SizedBox(height: 16),
-        
-              TextFormField(
-                controller: _idController,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  labelText: 'MSSV/MSCB',
-                  labelStyle: const TextStyle(color: Colors.white),
-                  prefixIcon: const Icon(Icons.confirmation_number, color: Colors.white),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-        
+
               TextFormField(
                 controller: _passwordController,
                 style: const TextStyle(color: Colors.white),
@@ -225,7 +266,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 obscureText: _obscurePassword, // Ẩn mật khẩu
               ),
               const SizedBox(height: 16),
-        
+
               TextFormField(
                 controller: _passwordController2,
                 style: const TextStyle(color: Colors.white),
@@ -255,23 +296,17 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 obscureText: _obscurePassword, // Ẩn mật khẩu
               ),
-        
+
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
+                  String lastName = _lastNameController.text;
+                  String firstName = _firstNameController.text;
                   String email = _emailController.text;
                   String password = _passwordController.text;
-                  String name = _nameController.text;
-                  String dob = _selectedDate != null ? _dateFormatter.format(_selectedDate!) : '';
-                  String className = _classController.text;
-                  String id = _idController.text;
-        
-                  print('Họ tên: $name');
-                  print('Email: $email');
-                  print('lớp/cơ quan: $className');
-                  print('ngày sinh $dob');
-                  print('Password: $password');
-                  print('id: $id');
+                  String uuid = "12345";
+                  String role = _selectedRole!;
+                  Provider.of<SignUpProvider>(context, listen: false).requestSignUp(firstName, lastName, email, password, uuid, role);
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(

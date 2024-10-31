@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:qldt/data/remote/api_service.dart';
+import 'package:qldt/data/repo/auth_repository.dart';
 import 'package:qldt/data/repo/class_repository.dart';
 import 'package:qldt/helper/routes.dart';
 import 'package:qldt/presentation/pref/get_shared_preferences.dart';
@@ -19,10 +20,6 @@ void main() async {
   if (await UserPreferences.getToken() == null) {
     if (await UserPreferences.checkFirstTime()) {
       initialRoute = 'SplashPage';
-      // initialRoute = 'RegisterForClassPage';
-      // initialRoute = 'CreateClass';
-
-
     } else {
       initialRoute = 'SignInPage';
     }
@@ -40,13 +37,15 @@ class MyApp extends StatelessWidget {
   MyApp({super.key, required this.intialRoute});
 
   String intialRoute;
+  final apiService = ApiServiceImpl();
 
-  final classRepo = ClassRepositoryImpl(ApiServiceImpl());
+  late final AuthRepository authRepo = AuthRepositoryImpl(apiService);
+
   @override
   Widget build(BuildContext context) {
     return  MultiProvider(
         providers: [
-          Provider.value(value: classRepo),
+          Provider.value(value: authRepo),
         ],
       child:  MaterialApp(
         title: 'Flutter Demo',

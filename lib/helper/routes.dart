@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:qldt/presentation/page/auth/signin_page.dart';
-import 'package:qldt/presentation/page/auth/signup_page.dart';
+import 'package:qldt/presentation/page/auth/signup/signup_page.dart';
 import 'package:qldt/presentation/page/chat/chat_detail.dart';
 import 'package:qldt/presentation/page/chat/chat_page.dart';
 import 'package:qldt/presentation/page/home_page.dart';
