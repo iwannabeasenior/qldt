@@ -18,9 +18,9 @@ void main() async {
 
   if (await UserPreferences.getToken() == null) {
     if (await UserPreferences.checkFirstTime()) {
-      initialRoute = 'SplashPage';
+      // initialRoute = 'SplashPage';
       // initialRoute = 'RegisterForClassPage';
-      // initialRoute = 'CreateClass';
+      initialRoute = 'CreateClass';
 
 
     } else {

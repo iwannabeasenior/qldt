@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Thêm thư viện để định dạng ngày tháng
+import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 
@@ -27,7 +27,7 @@ class _CreateClassPageState extends State<CreateClass> {
   DateTime? _startDate;
   DateTime? _endDate;
 
-  final DateFormat _dateFormatter = DateFormat('dd/MM/yyyy'); // Định dạng ngày
+  final DateFormat _dateFormatter = DateFormat('dd/MM/yyyy');
 
   List<String> _getSemesters() {
     final year = DateTime.now().year;
@@ -45,10 +45,10 @@ class _CreateClassPageState extends State<CreateClass> {
       setState(() {
         if (isStart) {
           _startDate = pickedDate;
-          _startDateController.text = _dateFormatter.format(pickedDate); // Cập nhật văn bản
+          _startDateController.text = _dateFormatter.format(pickedDate);
         } else {
           _endDate = pickedDate;
-          _endDateController.text = _dateFormatter.format(pickedDate); // Cập nhật văn bản
+          _endDateController.text = _dateFormatter.format(pickedDate);
         }
       });
     }
@@ -66,7 +66,6 @@ class _CreateClassPageState extends State<CreateClass> {
         maxStudents: int.parse(_maxStudentsController.text),
       );
 
-      // Now you can use classModel for further processing (e.g., sending it to the backend)
       Logger().d('Class created: ${classModel}');
 
     } else {
@@ -163,11 +162,11 @@ class _CreateClassPageState extends State<CreateClass> {
                         onTap: () => _selectDate(context, true),
                         child: AbsorbPointer(
                           child: TextFormField(
-                            controller: _startDateController, // Sử dụng controller
+                            controller: _startDateController,
                             decoration: const InputDecoration(
                               labelText: 'Ngày bắt đầu *',
                               border: OutlineInputBorder(),
-                              suffixIcon: Icon(Icons.arrow_drop_down), // Thêm tam giác ngược
+                              suffixIcon: Icon(Icons.arrow_drop_down),
                               hintText: 'Chọn ngày bắt đầu',
                             ),
                             validator: (value) {
@@ -232,8 +231,8 @@ class _CreateClassPageState extends State<CreateClass> {
                     minimumSize: const Size(double.infinity, 50),
                   ),
                   child: const Text('Tạo lớp học',style: TextStyle(
-                    color: Colors.white,  // Màu chữ trắng
-                    fontSize: 20,         // Kích thước font lớn hơn (tuỳ chỉnh theo nhu cầu)
+                    color: Colors.white,
+                    fontSize: 20,
                   ),),
                 ),
               ],
