@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart'; // Thêm thư viện để định dạng ngày tháng
 import 'package:logger/logger.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 
@@ -27,7 +27,7 @@ class _CreateClassPageState extends State<CreateClass> {
   DateTime? _startDate;
   DateTime? _endDate;
 
-  final DateFormat _dateFormatter = DateFormat('dd/MM/yyyy');
+  final DateFormat _dateFormatter = DateFormat('dd/MM/yyyy'); // Định dạng ngày
 
   List<String> _getSemesters() {
     final year = DateTime.now().year;
@@ -45,17 +45,23 @@ class _CreateClassPageState extends State<CreateClass> {
       setState(() {
         if (isStart) {
           _startDate = pickedDate;
-          _startDateController.text = _dateFormatter.format(pickedDate);
+          _startDateController.text = _dateFormatter.format(pickedDate); // Cập nhật văn bản
         } else {
           _endDate = pickedDate;
-          _endDateController.text = _dateFormatter.format(pickedDate);
+          _endDateController.text = _dateFormatter.format(pickedDate); // Cập nhật văn bản
         }
       });
     }
   }
 
   void _createClass() {
-    if (_formKey.currentState!.validate() && _startDate != null && _endDate != null) {
+    if (_formKey.currentState!.validate() && _startDate != null && _endDate != null ) {
+      if (_endDate!.isBefore(_startDate!)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Thời gian bắt đầu không thể sau thời gian kết thúc'))
+        );
+        return;
+      }
       final classModel = ClassModel(
         classCode: _classCodeController.text,
         semester: _selectedSemester!,
@@ -66,6 +72,7 @@ class _CreateClassPageState extends State<CreateClass> {
         maxStudents: int.parse(_maxStudentsController.text),
       );
 
+      // Now you can use classModel for further processing (e.g., sending it to the backend)
       Logger().d('Class created: ${classModel}');
 
     } else {
@@ -162,11 +169,11 @@ class _CreateClassPageState extends State<CreateClass> {
                         onTap: () => _selectDate(context, true),
                         child: AbsorbPointer(
                           child: TextFormField(
-                            controller: _startDateController,
+                            controller: _startDateController, // Sử dụng controller
                             decoration: const InputDecoration(
                               labelText: 'Ngày bắt đầu *',
                               border: OutlineInputBorder(),
-                              suffixIcon: Icon(Icons.arrow_drop_down),
+                              suffixIcon: Icon(Icons.arrow_drop_down), // Thêm tam giác ngược
                               hintText: 'Chọn ngày bắt đầu',
                             ),
                             validator: (value) {
@@ -231,8 +238,8 @@ class _CreateClassPageState extends State<CreateClass> {
                     minimumSize: const Size(double.infinity, 50),
                   ),
                   child: const Text('Tạo lớp học',style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
+                    color: Colors.white,  // Màu chữ trắng
+                    fontSize: 20,         // Kích thước font lớn hơn (tuỳ chỉnh theo nhu cầu)
                   ),),
                 ),
               ],

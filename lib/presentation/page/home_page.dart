@@ -1,8 +1,8 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:qldt/presentation/page/chat/chat_page.dart';
+import 'package:qldt/presentation/page/class/class_page.dart';
 import 'package:qldt/presentation/page/icons/bottom_icons.dart';
-import 'package:qldt/presentation/page/manage_class/class_page.dart';
 import 'package:qldt/presentation/page/notification/notification_page.dart';
 import 'package:qldt/presentation/page/settings/settings_page.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
@@ -55,7 +55,9 @@ class _HomePageState extends State<HomePage> {
           shape: const CircleBorder(),
           backgroundColor: QLDTColor.green,
           child: const Text("+", style: TextStyle(fontSize: 20),),
-          onPressed: () {}
+          onPressed: () {
+            Navigator.pushNamed(context, '/CreateClass');
+          }
       ),
     );
   }

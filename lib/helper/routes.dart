@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:qldt/presentation/page/auth/signin_page.dart';
-import 'package:qldt/presentation/page/auth/signup_page.dart';
+import 'package:qldt/presentation/page/auth/signup/signup_page.dart';
 import 'package:qldt/presentation/page/chat/chat_detail.dart';
 import 'package:qldt/presentation/page/chat/chat_page.dart';
 import 'package:qldt/presentation/page/home_page.dart';
@@ -10,6 +10,7 @@ import 'package:qldt/presentation/page/manage_class/open_class_list.dart';
 import 'package:qldt/presentation/page/manage_class/register_for_class.dart';
 import 'package:qldt/presentation/page/settings/settings_page.dart';
 import 'package:qldt/presentation/page/splash_page.dart';
+import 'package:qldt/presentation/page/survey_grading/survey_grading_page.dart';
 
 class Routes {
   static dynamic route() {
@@ -20,6 +21,7 @@ class Routes {
       'RegisterForClassPage' : (context) => const RegisterForClass(),
       'OpenClassList': (context) => const OpenClassList(),
       'CreateClass': (context) => const CreateClass(),
+      'SurveyGrading': (context) => const SurveyGradingPage(),
 
     };
   }
@@ -74,6 +76,11 @@ class Routes {
         return MaterialPageRoute(builder: (context) {
           return const CreateClass();
         });
+      case 'SurveyGrading':
+        return MaterialPageRoute(builder: (context) {
+          return const SurveyGradingPage();
+        });
+
       default:
         return onUnknownRoute(const RouteSettings(name: '/Feature'));
     }
