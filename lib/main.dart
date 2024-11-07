@@ -2,7 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
-import 'package:qldt/data/remote/api_service.dart';
+import 'package:qldt/data/remote/api_service_it4788.dart';
 import 'package:qldt/data/repo/auth_repository.dart';
 import 'package:qldt/data/repo/class_repository.dart';
 import 'package:qldt/helper/routes.dart';
@@ -21,12 +21,11 @@ void main() async {
     if (await UserPreferences.checkFirstTime()) {
       initialRoute = 'SplashPage';
     } else {
-      initialRoute = 'SignInPage';
+      initialRoute = 'LoginPage';
     }
   } else {
     initialRoute = 'HomePage';
   }
-  Logger().d('intitialpage is: $initialRoute');
   runApp(MyApp(intialRoute: initialRoute));
 }
 
@@ -37,7 +36,7 @@ class MyApp extends StatelessWidget {
   MyApp({super.key, required this.intialRoute});
 
   String intialRoute;
-  final apiService = ApiServiceImpl();
+  final apiService = ApiServiceIT4788Impl();
 
   late final AuthRepository authRepo = AuthRepositoryImpl(apiService);
 

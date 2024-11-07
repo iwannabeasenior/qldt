@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:logger/logger.dart';
 import 'package:qldt/data/repo/auth_repository.dart';
+import 'package:qldt/data/request/signup_request.dart';
+import 'package:qldt/presentation/error/noti_error.dart';
+
 
 class SignUpProvider extends ChangeNotifier {
   AuthRepository repo;
@@ -9,18 +12,44 @@ class SignUpProvider extends ChangeNotifier {
 
   String verifyCode = "";
 
+  bool _isSignupSuccess = false;
+
+  bool get isSignupSuccess => _isSignupSuccess; // function get
+
+  set setSignupState(bool state) {
+    _isSignupSuccess = state;
+    notifyListeners();
+  }
+
   void requestSignUp(String firstName, String lastName, String email, String password, String uuid, String role) async {
 
-    var response = await repo.signUp(firstName, lastName, email, password, uuid, role);
+    var response = await repo.signUp(SignUpRequest(firstName, lastName, email, password, uuid, role));
 
     response.fold(
       (left) {
-        Logger().d("error is: " + left.code.toString() + left.message);
+        Logger().d('error: ${left.code} ${left.message} ');
+        return;
       },
       (right) {
+
         verifyCode = right;
-        Logger().d("verify code is: $verifyCode");
+
+        repo.checkVerifyCode(email, verifyCode).then(
+            (value) {
+              value.fold(
+                  (left) {
+                    Logger().d('error: ${left.code} ${left.message} ');
+
+                    return;
+                  },
+                  (right) {
+                    setSignupState = true;
+                  }
+              );
+            }
+        );
       },
     );
   }
 }
+// sign up -> check verify code ->

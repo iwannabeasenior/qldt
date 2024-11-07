@@ -1,26 +1,16 @@
-
 class Class {
-  final id;
-  final name;
-  Class(this.id, this.name);
-}
 
-class ClassModel {
-  final String classCode;
-  final String semester;
-  final String className;
-  final String? description;
-  final DateTime startDate;
-  final DateTime endDate;
-  final int maxStudents;
+  Class(this.id, this.name, this.lecturerName, this.studentCount,
+      this.startDate, this.endDate, this.status);
 
-  ClassModel({
-    required this.classCode,
-    required this.semester,
-    required this.className,
-    this.description,
-    required this.startDate,
-    required this.endDate,
-    required this.maxStudents,
-  });
+  String id;
+  String name;
+  String lecturerName;
+  int studentCount;
+  DateTime startDate;
+  DateTime endDate;
+  String status;
+
+  factory Class.fromJson(Map<String, dynamic> response) =>
+      Class(response['id'], response['class_name'], response['lecturer_name'], response['student_count'], response['start_date'], response['end_date'], response['status']);
 }

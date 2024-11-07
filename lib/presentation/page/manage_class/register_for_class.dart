@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:qldt/presentation/page/manage_class/open_class_list.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 
 import '../../../data/model/class.dart';

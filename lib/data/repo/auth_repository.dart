@@ -1,57 +1,61 @@
 import 'package:dartz/dartz.dart';
 import 'package:qldt/data/model/class.dart';
-import 'package:qldt/data/remote/api_service.dart';
+import 'package:qldt/data/model/user.dart';
+import 'package:qldt/data/remote/api_service_it4788.dart';
+import 'package:qldt/data/request/login_request.dart';
+import 'package:qldt/data/request/signup_request.dart';
 import 'package:qldt/helper/failure.dart';
 
 abstract class AuthRepository {
-  Future<Either<Failure, String>>  signUp(String firstName, String lastName, String email, String password, String uuid, String role);
-  void singIn();
-  void getVerifyCode();
-  void checkVerifyCode();
-  void changePassword();
-  void changeInfoAfterSignUp();
-  void getUserInfo();
+  Future<Either<Failure, String>> signUp(SignUpRequest request);
+  Future<Either<Failure, ({User user , String token, List<Class> classes})>> login(LoginRequest request);
+  Future<Either<Failure, String>> getVerifyCode(String email, String password);
+  Future<Either<Failure, int>> checkVerifyCode(String email, String verifyCode);
+  Future<Either<Failure, void>> changePassword(String token, String oldPassword, String newPassword);
+  Future<Either<Failure, void>> changeInfoAfterSignUp();
+  Future<Either<Failure, User>> getUserInfo(String token, int userId);
 }
 
 class AuthRepositoryImpl extends AuthRepository {
 
-  final ApiService api;
+  final ApiServiceIT4788 api;
 
   AuthRepositoryImpl(this.api);
 
   @override
-  void changeInfoAfterSignUp() {
-    // TODO: implement changeInfoAfterSignUp
+  Future<Either<Failure, String>> signUp(SignUpRequest request) {
+    return api.signUp(request);
   }
 
   @override
-  void changePassword() {
-    // TODO: implement changePassword
+  Future<Either<Failure, ({User user , String token, List<Class> classes})>> login(LoginRequest request) {
+    return api.login(request);
   }
 
   @override
-  void checkVerifyCode() {
-    // TODO: implement checkVerifyCode
+  Future<Either<Failure, void>> changeInfoAfterSignUp() {
+    return api.changeInfoAfterSignUp();
   }
 
   @override
-  void getUserInfo() {
-    // TODO: implement getUserInfo
+  Future<Either<Failure, void>> changePassword(String token, String oldPassword, String newPassword) {
+    return api.changePassword(token, oldPassword, newPassword);
   }
 
   @override
-  void getVerifyCode() {
-    // TODO: implement getVerifyCode
+  Future<Either<Failure, int>> checkVerifyCode(String email, String verifyCode) {
+    return api.checkVerifyCode(email, verifyCode);
   }
 
   @override
-  Future<Either<Failure, String>> signUp(String firstName, String lastName, String email, String password, String uuid, String role) {
-    return api.signUp(firstName, lastName, email, password, uuid, role);
+  Future<Either<Failure, User>> getUserInfo(String token, int userId) {
+    return api.getUserInfo(token, userId);
   }
 
   @override
-  void singIn() {
-    // TODO: implement singIn
+  Future<Either<Failure, String>> getVerifyCode(String email, String password) {
+    return api.getVerifyCode(email, password);
   }
+
 
 }

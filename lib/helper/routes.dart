@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
-import 'package:qldt/presentation/page/auth/signin_page.dart';
+import 'package:qldt/presentation/page/auth/login/login_page.dart';
 import 'package:qldt/presentation/page/auth/signup/signup_page.dart';
 import 'package:qldt/presentation/page/chat/chat_detail.dart';
 import 'package:qldt/presentation/page/chat/chat_page.dart';
@@ -15,12 +14,11 @@ class Routes {
   static dynamic route() {
     return {
       'SplashPage': (BuildContext context) => const SplashPage(),
-      'SignInPage': (context) => const SignInPage(),
+      'LoginPage': (context) => const LoginPage(),
       'HomePage': (context) => const HomePage(),
       'RegisterForClassPage' : (context) => const RegisterForClass(),
       'OpenClassList': (context) => const OpenClassList(),
       'CreateClass': (context) => const CreateClass(),
-
     };
   }
   static Route? onGenerateRoute(RouteSettings settings) {
@@ -33,9 +31,9 @@ class Routes {
         return MaterialPageRoute(builder: (context) {
           return const HomePage();
         });
-      case 'SignInPage':
+      case 'LoginPage':
         return MaterialPageRoute(builder: (context) {
-          return const SignInPage();
+          return const LoginPage();
         });
       case 'SignUpPage':
         return MaterialPageRoute(builder: (context) {

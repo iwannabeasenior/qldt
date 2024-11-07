@@ -43,7 +43,7 @@ class _SplashPageState extends State<SplashPage> {
 
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/SignInPage');
+                Navigator.pushReplacementNamed(context, '/LoginPage');
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(300, 50), // Dài ra toàn màn hình, chiều cao 50

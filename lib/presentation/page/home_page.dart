@@ -1,7 +1,7 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:qldt/presentation/page/chat/chat_page.dart';
-import 'package:qldt/presentation/page/class/class_page.dart';
+import 'package:qldt/presentation/page/class/class_list.dart';
 import 'package:qldt/presentation/page/icons/bottom_icons.dart';
 import 'package:qldt/presentation/page/notification/notification_page.dart';
 import 'package:qldt/presentation/page/settings/settings_page.dart';
@@ -17,7 +17,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   var pages = <Widget>[
     const NotificationPage(),
-    const ClassPage(),
+    ClassList(),
     const ChatPage(),
     const SettingsPage(),
   ];
