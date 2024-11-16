@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:js_interop';
 import 'package:dartz/dartz.dart';
-import 'package:logger/logger.dart';
 import 'package:qldt/data/model/class.dart';
 import 'package:qldt/data/model/user.dart';
 import 'package:qldt/data/request/login_request.dart';
@@ -76,13 +75,12 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
       } catch(e) {
         return Left(Failure(code: 0, message: response.body));
       }
-
       if (response.statusCode == 200) {
         return Right(
             (
-              user: User.fromJson(body),
-              token: body['token'],
-              classes: (body['class_list'] as List<dynamic>).map((it) => Class.fromJson(it)).toList()
+              user: User.fromJson(body['data']),
+              token: body['data']['token'],
+              classes: (body['data']['class_list'] as List<dynamic>).map((it) => Class.fromJson(it)).toList()
             )
         );
 

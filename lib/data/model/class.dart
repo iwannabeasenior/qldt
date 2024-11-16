@@ -1,22 +1,40 @@
 class Class {
 
-  Class(this.id, this.name, this.lecturerName, this.studentCount,
-      this.startDate, this.endDate, this.status);
-
-  String id;
-  String name;
-  String lecturerName;
-  int studentCount;
-  DateTime startDate;
-  DateTime endDate;
-  String status;
+  String? id;
+  String? name;
+  String? attachedCode;
+  String? lecturerName;
+  int? studentCount;
+  String? startDate;
+  String? endDate;
+  String? status;
 
   factory Class.fromJson(Map<String, dynamic> response) =>
-      Class(response['id'], response['class_name'], response['lecturer_name'], response['student_count'], response['start_date'], response['end_date'], response['status']);
+      Class(
+          id: response['class_id'],
+          name: response['class_name'],
+          attachedCode: response['attached_code'],
+          lecturerName: response['lecturer_name'],
+          studentCount: response['student_count'],
+          startDate: response['start_date'],
+          endDate: response['end_date'],
+          status: response['status']
+      );
+
+  Class({
+    required this.id,
+    required this.name,
+    required this.attachedCode,
+    required this.lecturerName,
+    required this.studentCount,
+    required this.startDate,
+    required this.endDate,
+    required this.status
+  });
 }
 
 
-class GetSurveyResponse {
+  class GetSurveyResponse {
   final int id;
   final int assignmentId;
   final int studentId;
