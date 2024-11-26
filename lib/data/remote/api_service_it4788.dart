@@ -11,7 +11,7 @@ import 'package:qldt/helper/failure.dart';
 import 'package:http/http.dart' as http;
 
 
-const BASEURL = 'http://160.30.168.228:8080';
+const BASEURL = 'http://157.66.24.126:8080';
 
 abstract class ApiServiceIT4788 {
   Future<Either<Failure, String>> signUp(SignUpRequest request);
