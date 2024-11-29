@@ -1,7 +1,6 @@
 
 import 'dart:convert';
 import 'dart:io';
-import 'dart:js_interop';
 import 'package:dartz/dartz.dart';
 import 'package:qldt/data/model/class.dart';
 import 'package:qldt/data/model/user.dart';
@@ -101,7 +100,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
   }
 
   @override
-  Future<Either<Failure, JSAny>> changeInfoAfterSignUp() {
+  Future<Either<Failure, void>> changeInfoAfterSignUp() {
     // TODO: implement changeInfoAfterSignUp
     throw UnimplementedError();
   }

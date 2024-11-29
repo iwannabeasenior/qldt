@@ -19,14 +19,19 @@ void main() async {
 
   if (await UserPreferences.getToken() == null) {
     if (await UserPreferences.checkFirstTime()) {
-      initialRoute = 'SplashPage';
+      // initialRoute = 'SplashPage';
+      initialRoute = 'ClassPage';
+
     } else {
-      initialRoute = 'LoginPage';
+      // initialRoute = 'LoginPage';
+      initialRoute = 'ClassPage';
     }
   } else {
-    initialRoute = 'HomePage';
+    initialRoute = 'ClassPage';
   }
-  runApp(MyApp(intialRoute: initialRoute));
+  runApp(
+      MyApp(intialRoute: initialRoute)
+  );
 }
 
 // This widget is the root of your application.
