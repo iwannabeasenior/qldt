@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:qldt/presentation/page/class/absence/absence_page.dart';
+import 'package:qldt/presentation/page/class/absence/absence_page_lecturer.dart';
+import 'package:qldt/presentation/page/class/attendance/attendance_page.dart';
+import 'package:qldt/presentation/page/class/attendance/attendance_page_lecturer.dart';
 import 'package:qldt/presentation/page/class/homework/homework_page.dart';
 import 'package:qldt/presentation/page/class/reference/reference_page.dart';
 import 'package:qldt/presentation/page/class/timetable/time_table_page.dart';
@@ -41,7 +45,10 @@ class _ClassPageState extends State<ClassPage> with SingleTickerProviderStateMix
           ),
           controller: _tabController,
           tabs: [
-            Tab(text: 'Thời khóa biểu'),
+            // Tab(text: 'Xin nghỉ'),
+            // Tab(text: 'Đánh giá xin nghỉ'),
+            Tab(text: 'Điểm danh'),
+            Tab(text: 'Xem lịch sử điểm danh'),
             Tab(text: 'Bài tập'),
             Tab(text: 'Tài liệu'),
           ],
@@ -50,7 +57,10 @@ class _ClassPageState extends State<ClassPage> with SingleTickerProviderStateMix
       body: TabBarView(
         controller: _tabController,
         children: [
-          TimeTablePage(),
+          // AbsencePage(),
+          // AbsenceLecturerPage(),
+          AttendancePageLecturer(),
+          AttendancePage(),
           HomeworkPage(),
           ReferencePage(),
         ],

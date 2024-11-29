@@ -5,6 +5,7 @@ import 'package:logger/logger.dart';
 import 'package:qldt/presentation/page/auth/signup/signup_page.dart';
 import 'package:qldt/presentation/page/chat/chat_detail.dart';
 import 'package:qldt/presentation/page/chat/chat_page.dart';
+import 'package:qldt/presentation/page/class/class_page.dart';
 import 'package:qldt/presentation/page/home_page.dart';
 import 'package:qldt/presentation/page/manage_class/create_class.dart';
 import 'package:qldt/presentation/page/manage_class/open_class_list.dart';
@@ -22,6 +23,7 @@ class Routes {
       'RegisterForClassPage' : (context) => const RegisterForClass(),
       'OpenClassList': (context) => const OpenClassList(),
       'CreateClass': (context) => const CreateClass(),
+      'ClassPage': (context) => const ClassPage(),
     };
   }
   static Route? onGenerateRoute(RouteSettings settings) {
@@ -57,7 +59,7 @@ class Routes {
         });
       case 'ClassPage':
         return MaterialPageRoute(builder: (context) {
-          return const SettingsPage();
+          return const ClassPage();
         });
       case 'NotificationPage':
         return MaterialPageRoute(builder: (context) {
