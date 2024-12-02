@@ -1,13 +1,16 @@
+import 'package:qldt/helper/enum.dart';
+
 class Class {
 
-  String? id;
-  String? name;
-  String? attachedCode;
-  String? lecturerName;
-  int? studentCount;
-  String? startDate;
-  String? endDate;
-  String? status;
+  final String id;
+  final String? name;
+  final String? attachedCode;
+  final ClassType? classType;
+  final String? lecturerName;
+  final String? studentCount;
+  final String? startDate;
+  final String? endDate;
+  final String? status;
 
   factory Class.fromJson(Map<String, dynamic> response) =>
       Class(
@@ -15,6 +18,7 @@ class Class {
           name: response['class_name'],
           attachedCode: response['attached_code'],
           lecturerName: response['lecturer_name'],
+          classType: ClassType.getClassTypeFromName(response['class_type']),
           studentCount: response['student_count'],
           startDate: response['start_date'],
           endDate: response['end_date'],
@@ -26,6 +30,7 @@ class Class {
     required this.name,
     required this.attachedCode,
     required this.lecturerName,
+    required this.classType,
     required this.studentCount,
     required this.startDate,
     required this.endDate,
@@ -34,7 +39,7 @@ class Class {
 }
 
 
-  class GetSurveyResponse {
+class GetSurveyResponse {
   final int id;
   final int assignmentId;
   final int studentId;

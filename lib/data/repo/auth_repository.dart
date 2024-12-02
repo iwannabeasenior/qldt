@@ -10,10 +10,10 @@ abstract class AuthRepository {
   Future<Either<Failure, String>> signUp(SignUpRequest request);
   Future<Either<Failure, ({User user , String token, List<Class> classes})>> login(LoginRequest request);
   Future<Either<Failure, String>> getVerifyCode(String email, String password);
-  Future<Either<Failure, int>> checkVerifyCode(String email, String verifyCode);
+  Future<Either<Failure, String>> checkVerifyCode(String email, String verifyCode);
   Future<Either<Failure, void>> changePassword(String token, String oldPassword, String newPassword);
   Future<Either<Failure, void>> changeInfoAfterSignUp();
-  Future<Either<Failure, User>> getUserInfo(String token, int userId);
+  Future<Either<Failure, User>> getUserInfo(String token, String userId);
 }
 
 class AuthRepositoryImpl extends AuthRepository {
@@ -43,12 +43,12 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   @override
-  Future<Either<Failure, int>> checkVerifyCode(String email, String verifyCode) {
+  Future<Either<Failure, String>> checkVerifyCode(String email, String verifyCode) {
     return api.checkVerifyCode(email, verifyCode);
   }
 
   @override
-  Future<Either<Failure, User>> getUserInfo(String token, int userId) {
+  Future<Either<Failure, User>> getUserInfo(String token, String userId) {
     return api.getUserInfo(token, userId);
   }
 

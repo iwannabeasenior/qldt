@@ -5,15 +5,15 @@
 import 'package:qldt/helper/enum.dart';
 
 class User {
-  int? id;
+  String? id;
   String? status;
-  String? username;
+  String? name;
   Role? role;
   String? firstName;
   String? lastName;
   String? avatar;
 
-  User({required this.id, required this.status, required this.username, required this.role,
+  User({required this.id, required this.status, required this.name, required this.role,
     required this.firstName, required this.lastName, required this.avatar});
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -24,7 +24,7 @@ class User {
       avatar: json['avatar'],
       role: json['role'] == 'STUDENT' ? Role.STUDENT : Role.LECTURER,
       status: json['status'],
-      username: json['user_name']
+      name: json['name']
     );
   }
 }

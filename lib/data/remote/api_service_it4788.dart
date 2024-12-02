@@ -17,10 +17,10 @@ abstract class ApiServiceIT4788 {
   Future<Either<Failure, String>> signUp(SignUpRequest request);
   Future<Either<Failure, ({User user, String token, List<Class> classes})>> login(LoginRequest request);
   Future<Either<Failure, String>> getVerifyCode(String email, String password);
-  Future<Either<Failure, int>> checkVerifyCode(String email, String verifyCode);
+  Future<Either<Failure, String>> checkVerifyCode(String email, String verifyCode);
   Future<Either<Failure, void>> changePassword(String token, String oldPassword, String newPassword);
   Future<Either<Failure, void>> changeInfoAfterSignUp();
-  Future<Either<Failure, User>> getUserInfo(String token, int userId);
+  Future<Either<Failure, User>> getUserInfo(String token, String userId);
 }
 
 class ApiServiceIT4788Impl extends ApiServiceIT4788 {
@@ -44,7 +44,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
 
         } else {
 
-          return Left(Failure(message: body['message'], code: body['status_code']));
+          return Left(Failure(message: body['message'], code: body['code']));
 
         }
       } on SocketException {
@@ -86,7 +86,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
 
       } else {
 
-        return Left(Failure(message: body['message'], code: body['status_code']));
+        return Left(Failure(message: body['message'], code: body['code']));
 
       }
     } on SocketException {
@@ -127,7 +127,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
       if (response.statusCode == 200) {
         return Right(null);
       } else {
-        return Left(Failure(message: body['message'], code: body['status_code']));
+        return Left(Failure(message: body['message'], code: body['code']));
       }
     } on SocketException {
       return Left(Failure(message: 'No Internet connection', code: 0));
@@ -141,7 +141,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
   }
 
   @override
-  Future<Either<Failure, int>> checkVerifyCode(String email, String verifyCode) async {
+  Future<Either<Failure, String>> checkVerifyCode(String email, String verifyCode) async {
     try {
       final String endpoint = '/it4788/check_verify_code';
       final Uri url = Uri.parse(BASEURL + endpoint);
@@ -159,7 +159,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
       if (response.statusCode == 200) {
         return Right(body['userId']);
       } else {
-        return Left(Failure(message: body['message'], code: body['status_code']));
+        return Left(Failure(message: body['message'], code: body['code']));
       }
     } on SocketException {
       return Left(Failure(message: 'No Internet connection', code: 0));
@@ -172,7 +172,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
   }
 
   @override
-  Future<Either<Failure, User>> getUserInfo(String token, int userId) async {
+  Future<Either<Failure, User>> getUserInfo(String token, String userId) async {
       try {
         final String endpoint = '/it4788/get_user_info/';
         final Uri url = Uri.parse(BASEURL + endpoint);
@@ -187,9 +187,9 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
         );
         final body = jsonDecode(response.body);
         if (response.statusCode == 200) {
-          return Right(User.fromJson(body));
+          return Right(User.fromJson(body['data']));
         } else {
-          return Left(Failure(code: body['status_code'], message: body['message']));
+          return Left(Failure(code: body['code'], message: body['message']));
         }
       } on SocketException {
         return Left(Failure(message: 'No Internet connection', code: 0));
@@ -221,7 +221,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
       if (response.statusCode == 200) {
         return Right(body['data']);
       } else {
-        return Left(Failure(message: body['message'], code: body['status_code']));
+        return Left(Failure(message: body['message'], code: body['code']));
       }
     } on SocketException {
       return Left(Failure(message: 'No Internet connection', code: 0));
