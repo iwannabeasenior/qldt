@@ -13,6 +13,7 @@ class _AbsencePageState extends State<AbsencePage> {
   final _formKey = GlobalKey<FormState>();
   File? _file;
   final TextEditingController _reasonController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController(); // New controller for title
 
   // Fixed token and class data
   final String _fixedClassId = "000100"; // Fixed class ID
@@ -70,6 +71,7 @@ class _AbsencePageState extends State<AbsencePage> {
 
     final selectedDateStr =
     _selectedDate != null ? _selectedDate!.toIso8601String().split("T")[0] : "";
+    final title = _titleController.text;
     final reason = _reasonController.text;
 
     final newAbsence = {
@@ -82,7 +84,7 @@ class _AbsencePageState extends State<AbsencePage> {
         "student_id": "117",
       },
       "absence_date": selectedDateStr,
-      "title": "Nghi Hoc",
+      "title": title, // Include title in the absence object
       "reason": reason,
       "status": "PENDING",
       "file_url": _file != null ? _file!.path : null,
@@ -133,7 +135,6 @@ class _AbsencePageState extends State<AbsencePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Class ID: $_fixedClassId', style: const TextStyle(fontSize: 16)),
                 const SizedBox(height: 10),
                 GestureDetector(
                   onTap: pickDate,
@@ -162,6 +163,13 @@ class _AbsencePageState extends State<AbsencePage> {
                   ),
                 const SizedBox(height: 10),
                 TextFormField(
+                  controller: _titleController,
+                  decoration: const InputDecoration(labelText: 'Title'),
+                  validator: (value) =>
+                  value == null || value.isEmpty ? 'Title is required' : null,
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
                   controller: _reasonController,
                   decoration: const InputDecoration(labelText: 'Reason'),
                   validator: (value) =>
@@ -170,7 +178,7 @@ class _AbsencePageState extends State<AbsencePage> {
                 const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: pickFile,
-                  child: Text(_file == null ? 'Upload File (Optional)' : 'Change File'),
+                  child: Text(_file == null ? 'Tải minh chứng' : 'Change File'),
                 ),
                 if (_file != null) Text('File: ${_file!.path.split('/').last}'),
                 const SizedBox(height: 10),
@@ -184,22 +192,22 @@ class _AbsencePageState extends State<AbsencePage> {
                     }
                     submitAbsenceRequest();
                   },
-                  child: const Text('Submit Absence Request'),
+                  child: const Text('Gửi'),
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  'Absent Dates:',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
-                for (var absence in fetchAbsenceList())
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Text(
-                      'Date: ${absence["absence_date"]}, Reason: ${absence["reason"]}, Status: ${absence["status"]}',
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ),
+                // const Text(
+                //   'Absent Dates:',
+                //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                // ),
+                // const SizedBox(height: 10),
+                // for (var absence in fetchAbsenceList())
+                //   Padding(
+                //     padding: const EdgeInsets.only(bottom: 8.0),
+                //     child: Text(
+                //       'Date: ${absence["absence_date"]}, Title: ${absence["title"]}, Reason: ${absence["reason"]}, Status: ${absence["status"]}',
+                //       style: const TextStyle(fontSize: 14),
+                //     ),
+                //   ),
               ],
             ),
           ),
