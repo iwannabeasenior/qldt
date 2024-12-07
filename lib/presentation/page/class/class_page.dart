@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:qldt/presentation/page/class/dashboard/DashboardPage.dart';
 import 'package:qldt/presentation/page/class/homework/homework_page.dart';
 import 'package:qldt/presentation/page/class/reference/reference_page.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
@@ -49,9 +50,9 @@ class _ClassPageState extends State<ClassPage> with SingleTickerProviderStateMix
       body: TabBarView(
         controller: _tabController,
         children: [
-          NewPage(),
+          Dashboardpage(),
           HomeworkPage(),
-          ReferencePage(),
+          ReferencePage()
         ],
       ),
       floatingActionButton: FloatingActionButton(
