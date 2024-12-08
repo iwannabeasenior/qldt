@@ -4,13 +4,15 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:qldt/data/model/class.dart';
 import 'package:qldt/data/model/user.dart';
+import 'package:qldt/data/remote/api_service_it4788.dart';
 import 'package:qldt/data/request/login_request.dart';
 import 'package:qldt/data/request/signup_request.dart';
+import 'package:qldt/helper/constant.dart';
 import 'package:qldt/helper/failure.dart';
 import 'package:http/http.dart' as http;
 
 
-const BASEURL = 'http://157.66.24.126:8080';
+
 
 abstract class ApiServiceIT4788 {
   Future<Either<Failure, String>> signUp(SignUpRequest request);
@@ -28,7 +30,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
       try {
         final String endpoint = '/it4788/signup';
 
-        final Uri url = Uri.parse(BASEURL + endpoint);
+        final Uri url = Uri.parse(Constant.BASEURL + endpoint);
 
         var response = await http.post(
           url,
@@ -61,7 +63,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
     try {
       final String endpoint = '/it4788/login';
 
-      final Uri url = Uri.parse(BASEURL + endpoint);
+      final Uri url = Uri.parse(Constant.BASEURL + endpoint);
 
       var response = await http.post(
           url,
@@ -109,7 +111,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
   Future<Either<Failure, void>> changePassword(String token, String oldPassword, String newPassword) async {
     try {
       final String endpoint = '/it4788/change_password/';
-      final Uri url = Uri.parse(BASEURL + endpoint);
+      final Uri url = Uri.parse(Constant.BASEURL + endpoint);
       final Map<String, dynamic> data = {
         'token': token,
         'old_password': oldPassword,
@@ -143,7 +145,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
   Future<Either<Failure, String>> checkVerifyCode(String email, String verifyCode) async {
     try {
       final String endpoint = '/it4788/check_verify_code';
-      final Uri url = Uri.parse(BASEURL + endpoint);
+      final Uri url = Uri.parse(Constant.BASEURL + endpoint);
       final Map<String, dynamic> data = {
         'email': email,
         'verify_code': verifyCode
@@ -174,7 +176,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
   Future<Either<Failure, User>> getUserInfo(String token, String userId) async {
       try {
         final String endpoint = '/it4788/get_user_info/';
-        final Uri url = Uri.parse(BASEURL + endpoint);
+        final Uri url = Uri.parse(Constant.BASEURL + endpoint);
         final Map<String, dynamic> data = {
           'token': token,
           'user_id': userId
@@ -204,7 +206,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
   Future<Either<Failure, String>> getVerifyCode(String email, String password) async {
     try {
       final String endpoint = '/it4788/get_verify_code/';
-      final Uri url = Uri.parse(BASEURL + endpoint);
+      final Uri url = Uri.parse(Constant.BASEURL + endpoint);
       final Map<String, dynamic> data = {
         'email': email,
         'password': password

@@ -23,6 +23,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
         create: (context) => LoginProvider(Provider.of<AuthRepository>(context, listen: false)),
+        //child can not use this value of provider, only builder
         builder: (context, _) {
           return Consumer<LoginProvider>(
             builder: (context, controller, _) {

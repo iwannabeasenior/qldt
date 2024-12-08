@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:qldt/data/model/survey.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../data/model/class.dart';

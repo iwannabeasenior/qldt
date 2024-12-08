@@ -1,4 +1,4 @@
 class Constant {
   static const APP_NAME = 'QLDT';
-  static const BASE_URL = 'http://160.30.168.228:8080';
+  static const BASEURL = 'http://157.66.24.126:8080';
 }

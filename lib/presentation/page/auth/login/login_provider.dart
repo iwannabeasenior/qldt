@@ -26,12 +26,12 @@ class LoginProvider extends ChangeNotifier {
     response.fold(
         (left) {
           Logger().d(left.message);
-         },
+          },
         (right) {
           user = right.user;
           token = right.token;
           classes = right.classes;
-          UserPreferences.setToken(token!);
+          UserPreferences.setUserInfo(token ?? "", user?.role ?? "", user?.id ?? "");
           setLoginState = true;
         }
     );

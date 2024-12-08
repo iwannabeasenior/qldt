@@ -8,7 +8,7 @@ class User {
   String? id;
   String? status;
   String? name;
-  Role? role;
+  String? role;
   String? firstName;
   String? lastName;
   String? avatar;
@@ -22,7 +22,7 @@ class User {
       firstName: json['ho'],
       lastName: json['ten'],
       avatar: json['avatar'],
-      role: json['role'] == 'STUDENT' ? Role.STUDENT : Role.LECTURER,
+      role: json['role'],
       status: json['status'],
       name: json['name']
     );
