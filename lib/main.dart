@@ -9,6 +9,8 @@ import 'package:qldt/helper/routes.dart';
 import 'package:qldt/presentation/pref/get_shared_preferences.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 
+import 'data/remote/api_service_it5023e.dart';
+
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,13 +21,14 @@ void main() async {
 
   if (await UserPreferences.getToken() == null) {
     if (await UserPreferences.checkFirstTime()) {
-      initialRoute = 'SplashPage';
+      // initialRoute = 'SplashPage';
+      initialRoute = 'RegisterForClassPage';
 
     } else {
-      initialRoute = 'LoginPage';
+      initialRoute = 'RegisterForClassPage';
     }
   } else {
-    initialRoute = 'HomePage';
+    initialRoute = 'RegisterForClassPage';
   }
   // initialRoute = 'HomePage';
   runApp(
