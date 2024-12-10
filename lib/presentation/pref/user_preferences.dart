@@ -1,15 +1,31 @@
 
+import 'package:flutter/gestures.dart';
 import 'package:qldt/presentation/pref/get_shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserPreferences {
 
-    static Future<String?> getToken() async => await GetSharedPreferences.instance.prefs.getString("token");
+    static SharedPreferences prefs  = GetSharedPreferences.instance.prefs;
 
-    static Future<bool> isTokenExpired() async => true;
+    static String? getToken() => prefs.getString("token");
 
-    static void deleteToken() {}
+    static String? getRole() => prefs.getString('role');
 
-    static void setToken(String token) async => await GetSharedPreferences.instance.prefs.setString("token", token);
+    static String? getId() => prefs.getString('id');
 
-    static Future<bool> checkFirstTime () async => await GetSharedPreferences.instance.prefs.getBool("first_time") ?? true;
+    static bool isTokenExpired() => true; // check here to force user login again
+
+    static void deleteUserInfo() async { // logout
+        await prefs.remove('token');
+        await prefs.remove('role');
+        await prefs.remove('id');
+    }
+
+    static void setUserInfo(String token, String role, String id) async { // login
+        await prefs.setString('token', token);
+        await prefs.setString('role', role);
+        await prefs.setString('id', id);
+    }
+
+    static bool checkFirstTime () => prefs.getBool("first_time") ?? true;
 }

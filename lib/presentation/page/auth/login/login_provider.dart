@@ -7,11 +7,6 @@ import 'package:qldt/data/repo/auth_repository.dart';
 import 'package:qldt/data/request/login_request.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 
-enum ApiState {
-  Pending,
-  Success,
-  Fail,
-}
 class LoginProvider extends ChangeNotifier {
 
   bool _isLoginSuccess = false;
@@ -31,12 +26,12 @@ class LoginProvider extends ChangeNotifier {
     response.fold(
         (left) {
           Logger().d(left.message);
-         },
+          },
         (right) {
           user = right.user;
           token = right.token;
           classes = right.classes;
-          UserPreferences.setToken(token!);
+          UserPreferences.setUserInfo(token ?? "", user?.role ?? "", user?.id ?? "");
           setLoginState = true;
         }
     );

@@ -4,22 +4,24 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:qldt/data/model/class.dart';
 import 'package:qldt/data/model/user.dart';
+import 'package:qldt/data/remote/api_service_it4788.dart';
 import 'package:qldt/data/request/login_request.dart';
 import 'package:qldt/data/request/signup_request.dart';
+import 'package:qldt/helper/constant.dart';
 import 'package:qldt/helper/failure.dart';
 import 'package:http/http.dart' as http;
 
 
-const BASEURL = 'http://160.30.168.228:8080';
+
 
 abstract class ApiServiceIT4788 {
   Future<Either<Failure, String>> signUp(SignUpRequest request);
   Future<Either<Failure, ({User user, String token, List<Class> classes})>> login(LoginRequest request);
   Future<Either<Failure, String>> getVerifyCode(String email, String password);
-  Future<Either<Failure, int>> checkVerifyCode(String email, String verifyCode);
+  Future<Either<Failure, String>> checkVerifyCode(String email, String verifyCode);
   Future<Either<Failure, void>> changePassword(String token, String oldPassword, String newPassword);
   Future<Either<Failure, void>> changeInfoAfterSignUp();
-  Future<Either<Failure, User>> getUserInfo(String token, int userId);
+  Future<Either<Failure, User>> getUserInfo(String token, String userId);
 }
 
 class ApiServiceIT4788Impl extends ApiServiceIT4788 {
@@ -28,7 +30,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
       try {
         final String endpoint = '/it4788/signup';
 
-        final Uri url = Uri.parse(BASEURL + endpoint);
+        final Uri url = Uri.parse(Constant.BASEURL + endpoint);
 
         var response = await http.post(
           url,
@@ -43,7 +45,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
 
         } else {
 
-          return Left(Failure(message: body['message'], code: body['status_code']));
+          return Left(Failure(message: body['message'], code: body['code']));
 
         }
       } on SocketException {
@@ -61,7 +63,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
     try {
       final String endpoint = '/it4788/login';
 
-      final Uri url = Uri.parse(BASEURL + endpoint);
+      final Uri url = Uri.parse(Constant.BASEURL + endpoint);
 
       var response = await http.post(
           url,
@@ -85,7 +87,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
 
       } else {
 
-        return Left(Failure(message: body['message'], code: body['status_code']));
+        return Left(Failure(message: body['message'], code: body['code']));
 
       }
     } on SocketException {
@@ -109,7 +111,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
   Future<Either<Failure, void>> changePassword(String token, String oldPassword, String newPassword) async {
     try {
       final String endpoint = '/it4788/change_password/';
-      final Uri url = Uri.parse(BASEURL + endpoint);
+      final Uri url = Uri.parse(Constant.BASEURL + endpoint);
       final Map<String, dynamic> data = {
         'token': token,
         'old_password': oldPassword,
@@ -126,7 +128,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
       if (response.statusCode == 200) {
         return Right(null);
       } else {
-        return Left(Failure(message: body['message'], code: body['status_code']));
+        return Left(Failure(message: body['message'], code: body['code']));
       }
     } on SocketException {
       return Left(Failure(message: 'No Internet connection', code: 0));
@@ -140,10 +142,10 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
   }
 
   @override
-  Future<Either<Failure, int>> checkVerifyCode(String email, String verifyCode) async {
+  Future<Either<Failure, String>> checkVerifyCode(String email, String verifyCode) async {
     try {
       final String endpoint = '/it4788/check_verify_code';
-      final Uri url = Uri.parse(BASEURL + endpoint);
+      final Uri url = Uri.parse(Constant.BASEURL + endpoint);
       final Map<String, dynamic> data = {
         'email': email,
         'verify_code': verifyCode
@@ -158,7 +160,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
       if (response.statusCode == 200) {
         return Right(body['userId']);
       } else {
-        return Left(Failure(message: body['message'], code: body['status_code']));
+        return Left(Failure(message: body['message'], code: body['code']));
       }
     } on SocketException {
       return Left(Failure(message: 'No Internet connection', code: 0));
@@ -171,10 +173,10 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
   }
 
   @override
-  Future<Either<Failure, User>> getUserInfo(String token, int userId) async {
+  Future<Either<Failure, User>> getUserInfo(String token, String userId) async {
       try {
         final String endpoint = '/it4788/get_user_info/';
-        final Uri url = Uri.parse(BASEURL + endpoint);
+        final Uri url = Uri.parse(Constant.BASEURL + endpoint);
         final Map<String, dynamic> data = {
           'token': token,
           'user_id': userId
@@ -186,9 +188,9 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
         );
         final body = jsonDecode(response.body);
         if (response.statusCode == 200) {
-          return Right(User.fromJson(body));
+          return Right(User.fromJson(body['data']));
         } else {
-          return Left(Failure(code: body['status_code'], message: body['message']));
+          return Left(Failure(code: body['code'], message: body['message']));
         }
       } on SocketException {
         return Left(Failure(message: 'No Internet connection', code: 0));
@@ -204,7 +206,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
   Future<Either<Failure, String>> getVerifyCode(String email, String password) async {
     try {
       final String endpoint = '/it4788/get_verify_code/';
-      final Uri url = Uri.parse(BASEURL + endpoint);
+      final Uri url = Uri.parse(Constant.BASEURL + endpoint);
       final Map<String, dynamic> data = {
         'email': email,
         'password': password
@@ -220,7 +222,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
       if (response.statusCode == 200) {
         return Right(body['data']);
       } else {
-        return Left(Failure(message: body['message'], code: body['status_code']));
+        return Left(Failure(message: body['message'], code: body['code']));
       }
     } on SocketException {
       return Left(Failure(message: 'No Internet connection', code: 0));

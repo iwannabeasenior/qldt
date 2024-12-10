@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qldt/data/model/survey.dart';
 
 import '../../../data/model/class.dart';
 import 'detail_grading_page.dart';

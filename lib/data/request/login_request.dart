@@ -6,6 +6,6 @@ class LoginRequest {
   Map<String, dynamic> toJson() => <String, dynamic>{
     'email': email,
     'password': password,
-    'deviceId': deviceId
+    'device_id': deviceId
   };
 }

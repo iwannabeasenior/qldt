@@ -8,8 +8,9 @@ import 'package:qldt/presentation/page/class/attendance/attendance_page_lecturer
 import 'package:qldt/presentation/page/class/attendance/view_attendance_history_lecturer.dart';
 import 'package:qldt/presentation/page/class/homework/homework_page.dart';
 import 'package:qldt/presentation/page/class/reference/reference_page.dart';
-import 'package:qldt/presentation/page/class/timetable/time_table_page.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
+
+import 'dashboard/dashboard_page.dart';
 
 class ClassPage extends StatefulWidget {
   const ClassPage({super.key});
@@ -47,31 +48,18 @@ class _ClassPageState extends State<ClassPage> with SingleTickerProviderStateMix
           ),
           controller: _tabController,
           tabs: [
-            Tab(text: 'Xin nghỉ'),
-            Tab(text: 'Đánh giá xin nghỉ'),
-            Tab(text: 'Xem xin nghỉ sv'),
-
-
-            // Tab(text: 'Điểm danh'),
-            // Tab(text: 'Xem lịch sử điểm danh'),
-            // Tab(text: 'Test'),
-
-            // Tab(text: 'Bài tập'),
-            // Tab(text: 'Tài liệu'),
+            Tab(text: 'Thời khóa biểu'),
+            Tab(text: 'Bài tập'),
+            Tab(text: 'Tài liệu'),
           ],
         )
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
-          AbsencePage(),
-          AbsenceLecturerPage(),
-          ViewAbsencePageStudent(),
-          // AttendancePageLecturer(),
-          // AttendancePage(),
-          // ViewAttendanceHistoryLecturer(),
-          // HomeworkPage(),
-          // ReferencePage(),
+          Dashboardpage(),
+          HomeworkPage(),
+          ReferencePage()
         ],
       ),
       floatingActionButton: FloatingActionButton(

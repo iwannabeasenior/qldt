@@ -19,16 +19,15 @@ void main() async {
 
   if (await UserPreferences.getToken() == null) {
     if (await UserPreferences.checkFirstTime()) {
-      // initialRoute = 'SplashPage';
-      initialRoute = 'ClassPage';
+      initialRoute = 'SplashPage';
 
     } else {
-      // initialRoute = 'LoginPage';
-      initialRoute = 'ClassPage';
+      initialRoute = 'LoginPage';
     }
   } else {
-    initialRoute = 'ClassPage';
+    initialRoute = 'HomePage';
   }
+  // initialRoute = 'HomePage';
   runApp(
       MyApp(intialRoute: initialRoute)
   );
@@ -41,15 +40,17 @@ class MyApp extends StatelessWidget {
   MyApp({super.key, required this.intialRoute});
 
   String intialRoute;
-  final apiService = ApiServiceIT4788Impl();
-
-  late final AuthRepository authRepo = AuthRepositoryImpl(apiService);
+  final api1 = ApiServiceIT4788Impl();
+  final api2 = ApiServiceIT5023EImpl();
+  late final AuthRepository authRepo = AuthRepositoryImpl(api1);
+  late final ClassRepo classRepo = ClassRepoImpl(api: api2);
 
   @override
   Widget build(BuildContext context) {
     return  MultiProvider(
         providers: [
           Provider.value(value: authRepo),
+          Provider.value(value: classRepo),
         ],
       child:  MaterialApp(
         title: 'Flutter Demo',

@@ -39,7 +39,6 @@ class SignUpProvider extends ChangeNotifier {
               value.fold(
                   (left) {
                     Logger().d('error: ${left.code} ${left.message} ');
-
                     return;
                   },
                   (right) {
