@@ -42,12 +42,12 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
 
       }
     } on SocketException {
-      return Left(Failure(message: 'No Internet connection', code: 0));
+      return Left(Failure(message: 'No Internet connection', code: "0"));
     } on FormatException {
-      return Left(Failure(message: 'Bad response format', code: 0));
+      return Left(Failure(message: 'Bad response format', code: "0"));
     }
     catch(e) {
-      return Left(Failure(code: 0, message: e.toString()));
+      return Left(Failure(code: "0", message: e.toString()));
     }
 
   }

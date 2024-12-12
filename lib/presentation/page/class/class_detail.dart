@@ -1,25 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:qldt/presentation/page/class/absence/absence_page.dart';
-import 'package:qldt/presentation/page/class/absence/absence_page_lecturer.dart';
-import 'package:qldt/presentation/page/class/absence/view_absence_page_student.dart';
-import 'package:qldt/presentation/page/class/attendance/attendance_page.dart';
-import 'package:qldt/presentation/page/class/attendance/attendance_page_lecturer.dart';
-import 'package:qldt/presentation/page/class/attendance/view_attendance_history_lecturer.dart';
 import 'package:qldt/presentation/page/class/homework/homework_page.dart';
 import 'package:qldt/presentation/page/class/reference/reference_page.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 
 import 'dashboard/dashboard_page.dart';
 
-class ClassPage extends StatefulWidget {
-  const ClassPage({super.key});
+class ClassDetail extends StatefulWidget {
+  const ClassDetail({super.key});
 
   @override
-  State<ClassPage> createState() => _ClassPageState();
+  State<ClassDetail> createState() => _ClassDetailState();
 }
 
-class _ClassPageState extends State<ClassPage> with SingleTickerProviderStateMixin {
+class _ClassDetailState extends State<ClassDetail> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -48,7 +42,7 @@ class _ClassPageState extends State<ClassPage> with SingleTickerProviderStateMix
           ),
           controller: _tabController,
           tabs: [
-            Tab(text: 'Thời khóa biểu'),
+            Tab(text: 'Lớp học'),
             Tab(text: 'Bài tập'),
             Tab(text: 'Tài liệu'),
           ],
@@ -57,17 +51,10 @@ class _ClassPageState extends State<ClassPage> with SingleTickerProviderStateMix
       body: TabBarView(
         controller: _tabController,
         children: [
-          Dashboardpage(),
+          DashboardPage(),
           HomeworkPage(),
           ReferencePage()
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add, color: Colors.white,),
-          backgroundColor: QLDTColor.red,
-          onPressed: () {
-            Navigator.pushNamed(context, '/CreateClass');
-          }
       ),
     );
   }

@@ -30,9 +30,9 @@ class _CreateClassPageState extends State<CreateClass> {
 
   final DateFormat _dateFormatter = DateFormat('dd/MM/yyyy'); // Định dạng ngày
 
-  List<String> _getSemesters() {
+  List<String> _getClassType() {
     final year = DateTime.now().year;
-    return ["$year.1", "$year.2", "$year.3"];
+    return ["LT", "BT", "LT-BT"];
   }
 
   Future<void> _selectDate(BuildContext context, bool isStart) async {
@@ -119,10 +119,10 @@ class _CreateClassPageState extends State<CreateClass> {
                 DropdownButtonFormField<String>(
                   value: _selectedSemester,
                   decoration: const InputDecoration(
-                    labelText: 'Kỳ học *',
+                    labelText: 'Loai lớp *',
                     border: OutlineInputBorder(),
                   ),
-                  items: _getSemesters().map((semester) {
+                  items: _getClassType().map((semester) {
                     return DropdownMenuItem<String>(
                       value: semester,
                       child: Text(semester),
@@ -153,14 +153,6 @@ class _CreateClassPageState extends State<CreateClass> {
                     }
                     return null;
                   },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: 'Mô tả (không bắt buộc)',
-                    border: OutlineInputBorder(),
-                  ),
                 ),
                 const SizedBox(height: 16),
                 Row(

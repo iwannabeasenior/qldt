@@ -1,8 +1,8 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:qldt/presentation/bottom_icons.dart';
 import 'package:qldt/presentation/page/chat/chat_page.dart';
 import 'package:qldt/presentation/page/class/class_list.dart';
-import 'package:qldt/presentation/page/icons/bottom_icons.dart';
 import 'package:qldt/presentation/page/notification/notification_page.dart';
 import 'package:qldt/presentation/page/settings/settings_page.dart';
 import 'package:qldt/presentation/theme/color_style.dart';

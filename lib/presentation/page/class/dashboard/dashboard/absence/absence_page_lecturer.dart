@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+//View list of absence lecturer
 class AbsenceLecturerPage extends StatefulWidget {
   const AbsenceLecturerPage({super.key});
 

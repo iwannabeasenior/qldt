@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:qldt/data/remote/api_service_it4788.dart';
+import 'package:qldt/data/remote/api_service_it5023e.dart';
 import 'package:qldt/data/repo/auth_repository.dart';
 import 'package:qldt/data/repo/class_repository.dart';
 import 'package:qldt/helper/routes.dart';
 import 'package:qldt/presentation/pref/get_shared_preferences.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
-
-import 'data/remote/api_service_it5023e.dart';
 
 void main() async {
 
@@ -21,16 +20,15 @@ void main() async {
 
   if (await UserPreferences.getToken() == null) {
     if (await UserPreferences.checkFirstTime()) {
-      // initialRoute = 'SplashPage';
-      initialRoute = 'RegisterForClassPage';
+      initialRoute = 'SplashPage';
 
     } else {
-      initialRoute = 'RegisterForClassPage';
+      initialRoute = 'LoginPage';
     }
   } else {
-    initialRoute = 'RegisterForClassPage';
+    initialRoute = 'HomePage';
   }
-  // initialRoute = 'HomePage';
+  initialRoute = 'RegisterForClassPage';
   runApp(
       MyApp(intialRoute: initialRoute)
   );

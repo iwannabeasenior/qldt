@@ -80,7 +80,7 @@ class _ClassListState extends State<ClassList> {
                       final classSchedule = data[index];
                       return GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, '');
+                            Navigator.pushNamed(context, '/ClassDetail');
                           },
                           child: ClassScheduleCard(classSchedule: classSchedule)
                       );

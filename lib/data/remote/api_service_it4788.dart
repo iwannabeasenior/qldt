@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dartz/dartz.dart';
+import 'package:logger/logger.dart';
 import 'package:qldt/data/model/class.dart';
 import 'package:qldt/data/model/user.dart';
 import 'package:qldt/data/remote/api_service_it4788.dart';
@@ -49,12 +50,12 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
 
         }
       } on SocketException {
-        return Left(Failure(message: 'No Internet connection', code: 0));
+        return Left(Failure(message: 'No Internet connection', code: "0"));
       } on FormatException {
-        return Left(Failure(message: 'Bad response format', code: 0));
+        return Left(Failure(message: 'Bad response format', code: "0"));
       }
       catch(e) {
-        return Left(Failure(code: 0, message: e.toString()));
+        return Left(Failure(code: "0", message: e.toString()));
       }
     }
 
@@ -74,7 +75,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
       try {
         body = jsonDecode(response.body);
       } catch(e) {
-        return Left(Failure(code: 0, message: response.body));
+        return Left(Failure(code: "0", message: response.body));
       }
       if (response.statusCode == 200) {
         return Right(
@@ -91,12 +92,12 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
 
       }
     } on SocketException {
-      return Left(Failure(message: 'No Internet connection', code: 0));
+      return Left(Failure(message: 'No Internet connection', code: "0"));
     } on FormatException {
-      return Left(Failure(message: 'Bad response format', code: 0));
+      return Left(Failure(message: 'Bad response format', code: "0"));
     }
     catch(e) {
-      return Left(Failure(code: 0, message: e.toString()));
+      return Left(Failure(code: "0", message: e.toString()));
     }
 
   }
@@ -131,12 +132,12 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
         return Left(Failure(message: body['message'], code: body['code']));
       }
     } on SocketException {
-      return Left(Failure(message: 'No Internet connection', code: 0));
+      return Left(Failure(message: 'No Internet connection', code: "0"));
     } on FormatException {
-      return Left(Failure(message: 'Bad response format', code: 0));
+      return Left(Failure(message: 'Bad response format', code: "0"));
     }
     catch(e) {
-      return Left(Failure(code: 0, message: e.toString()));
+      return Left(Failure(code: "0", message: e.toString()));
     }
 
   }
@@ -163,12 +164,12 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
         return Left(Failure(message: body['message'], code: body['code']));
       }
     } on SocketException {
-      return Left(Failure(message: 'No Internet connection', code: 0));
+      return Left(Failure(message: 'No Internet connection', code: "0"));
     } on FormatException {
-      return Left(Failure(message: 'Bad response format', code: 0));
+      return Left(Failure(message: 'Bad response format', code: "0"));
     }
     catch(e) {
-      return Left(Failure(code: 0, message: e.toString()));
+      return Left(Failure(code: "0", message: e.toString()));
     }
   }
 
@@ -177,6 +178,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
       try {
         final String endpoint = '/it4788/get_user_info/';
         final Uri url = Uri.parse(Constant.BASEURL + endpoint);
+        Logger().d(token);
         final Map<String, dynamic> data = {
           'token': token,
           'user_id': userId
@@ -193,12 +195,12 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
           return Left(Failure(code: body['code'], message: body['message']));
         }
       } on SocketException {
-        return Left(Failure(message: 'No Internet connection', code: 0));
+        return Left(Failure(message: 'No Internet connection', code: "0"));
       } on FormatException {
-        return Left(Failure(message: 'Bad response format', code: 0));
+        return Left(Failure(message: 'Bad response format', code: "0"));
       }
       catch(e) {
-        return Left(Failure(code: 0, message: e.toString()));
+        return Left(Failure(code: "0", message: e.toString()));
       }
   }
 
@@ -225,12 +227,12 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
         return Left(Failure(message: body['message'], code: body['code']));
       }
     } on SocketException {
-      return Left(Failure(message: 'No Internet connection', code: 0));
+      return Left(Failure(message: 'No Internet connection', code: "0"));
     } on FormatException {
-      return Left(Failure(message: 'Bad response format', code: 0));
+      return Left(Failure(message: 'Bad response format', code: "0"));
     }
     catch(e) {
-      return Left(Failure(code: 0, message: e.toString()));
+      return Left(Failure(code: "0", message: e.toString()));
     }
 
   }

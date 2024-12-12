@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+// View history absence of student
 class ViewAbsencePageStudent extends StatefulWidget {
   const ViewAbsencePageStudent({super.key});
 

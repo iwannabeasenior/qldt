@@ -27,5 +27,5 @@ class UserPreferences {
         await prefs.setString('id', id);
     }
 
-    static bool checkFirstTime () => prefs.getBool("first_time") ?? true;
+    static bool checkFirstTime () => prefs.getBool("first_time") ?? false;
 }
