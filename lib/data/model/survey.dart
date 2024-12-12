@@ -1,31 +1,68 @@
+class StudentAccount {
+  final String accountId;
+  final String lastName;
+  final String firstName;
+  final String email;
+  final String studentId;
+
+  StudentAccount({
+    required this.accountId,
+    required this.lastName,
+    required this.firstName,
+    required this.email,
+    required this.studentId,
+  });
+
+  factory StudentAccount.fromJson(Map<String, dynamic> json) {
+    return StudentAccount(
+      accountId: json['account_id'] as String,
+      lastName: json['last_name'] as String,
+      firstName: json['first_name'] as String,
+      email: json['email'] as String,
+      studentId: json['student_id'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'account_id': accountId,
+      'last_name': lastName,
+      'first_name': firstName,
+      'email': email,
+      'student_id': studentId,
+    };
+  }
+}
+
 class GetSurveyResponse {
   final int id;
   final int assignmentId;
-  final int studentId;
-  final DateTime submissionTime;
+  final String submissionTime;
   double? grade;
   final String fileUrl;
   final String textResponse;
+  final StudentAccount studentAccount;
 
   GetSurveyResponse({
     required this.id,
     required this.assignmentId,
-    required this.studentId,
     required this.submissionTime,
     required this.grade,
     required this.fileUrl,
     required this.textResponse,
+    required this.studentAccount,
   });
 
   factory GetSurveyResponse.fromJson(Map<String, dynamic> json) {
     return GetSurveyResponse(
       id: json['id'],
       assignmentId: json['assignment_id'],
-      studentId: json['student_id'],
-      submissionTime: DateTime.parse(json['submission_time']),
+      submissionTime: json['submission_time'],
       grade: json['grade'].toDouble(),
       fileUrl: json['file_url'],
       textResponse: json['text_response'],
+      studentAccount: StudentAccount.fromJson(
+          json['student_account'] as Map<String, dynamic>),
     );
   }
 
@@ -33,15 +70,14 @@ class GetSurveyResponse {
     return {
       'id': id,
       'assignment_id': assignmentId,
-      'student_id': studentId,
-      'submission_time': submissionTime.toIso8601String(),
+      'submission_time': submissionTime,
       'grade': grade,
       'file_url': fileUrl,
       'text_response': textResponse,
+      'student_account': studentAccount.toJson(),
     };
   }
 }
-
 
 class Survey {
   final int id;
@@ -88,4 +124,3 @@ class Survey {
     };
   }
 }
-

@@ -1,21 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:qldt/presentation/page/auth/login/login_page.dart';
 import 'package:qldt/presentation/page/auth/signup/signup_page.dart';
-import 'package:logger/logger.dart';
-import 'package:qldt/presentation/page/auth/signup/signup_page.dart';
 import 'package:qldt/presentation/page/chat/chat_detail.dart';
 import 'package:qldt/presentation/page/chat/chat_page.dart';
-import 'package:qldt/presentation/page/class/class_detail.dart';
-import 'package:qldt/presentation/page/class/dashboard/dashboard/attendance/attendance_detail.dart';
-import 'package:qldt/presentation/page/class/dashboard/dashboard_page.dart';
 import 'package:qldt/presentation/page/home_page.dart';
 import 'package:qldt/presentation/page/manage_class/create_class.dart';
 import 'package:qldt/presentation/page/manage_class/open_class_list.dart';
 import 'package:qldt/presentation/page/manage_class/register_for_class.dart';
 import 'package:qldt/presentation/page/settings/settings_page.dart';
-import 'package:qldt/presentation/page/settings/user_info/user_detail_page.dart';
 import 'package:qldt/presentation/page/splash_page.dart';
-import 'package:qldt/presentation/page/survey_grading/survey_grading_page.dart';
 
 class Routes {
   static dynamic route() {
@@ -26,8 +19,6 @@ class Routes {
       'RegisterForClassPage' : (context) => const RegisterForClass(),
       'OpenClassList': (context) => const OpenClassList(),
       'CreateClass': (context) => const CreateClass(),
-      'ClassDetail': (context) => ClassDetail(),
-      'AttendanceDetailScreen': (context) => AttendanceDetailScreen(date: '12-12-2024',)
     };
   }
   static Route? onGenerateRoute(RouteSettings settings) {
@@ -61,6 +52,10 @@ class Routes {
         return MaterialPageRoute(builder: (context) {
           return const SettingsPage();
         });
+      case 'ClassPage':
+        return MaterialPageRoute(builder: (context) {
+          return const SettingsPage();
+        });
       case 'NotificationPage':
         return MaterialPageRoute(builder: (context) {
           return const SettingsPage();
@@ -76,18 +71,6 @@ class Routes {
       case 'CreateClass':
         return MaterialPageRoute(builder: (context) {
           return const CreateClass();
-        });
-      case 'SurveyGrading':
-        return MaterialPageRoute(builder: (context) {
-          return const SurveyGradingPage();
-        });
-      case 'UserInfoScreen':
-        return MaterialPageRoute(builder: (context) {
-          return UserDetailPage();
-        });
-      case 'ClassDetail':
-        return MaterialPageRoute(builder: (context) {
-          return ClassDetail();
         });
       default:
         return onUnknownRoute(const RouteSettings(name: '/Feature'));

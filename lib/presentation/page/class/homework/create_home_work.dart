@@ -2,18 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: CreateAssignmentScreen(),
-    );
-  }
-}
 
 class CreateAssignmentScreen extends StatefulWidget {
   @override
