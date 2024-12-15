@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:qldt/data/model/class.dart';
+import 'package:qldt/data/model/materials.dart';
 import 'package:qldt/data/remote/api_service_it4788.dart';
 import 'package:qldt/data/request/get_class_list_request.dart';
 import 'package:qldt/helper/constant.dart';
@@ -14,7 +15,13 @@ import 'package:http/http.dart' as http;
 
 
 abstract class ApiServiceIT5023E {
+  // class
   Future<Either<Failure, List<Class>>> getAllClass(GetClassListRequest request);
+
+  // material
+  Future<List<Materials>> getAllMaterials(String token, String classID);
+  Future<String> deleteMaterial(String token, String materialID);
+  // Future<String> uploadMaterial()
 }
 
 class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
@@ -52,14 +59,55 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
 
   }
 
+  Future<List<Materials>> getAllMaterials(String token, String classId) async {
+
+    const url = '${Constant.BASEURL}/it5023e/get_material_list';
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "token": token,
+        "class_id": classId,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['code'] == '1000') {
+        return (data['data'] as List).map((e) => Materials.fromJson(e)).toList();
+      } else {
+        throw Exception("Error: ${data['message']}");
+      }
+    } else {
+      throw Exception("Failed to fetch materials");
+    }
+  }
+
+  @override
+  Future<String> deleteMaterial(String token, String materialID) async {
+    const url = '${Constant.BASEURL}/it5023e/delete_material';
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "token": token,
+        "material_id": int.parse(materialID),
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['code'] == '1000') {
+        return data['message'];
+      } else {
+        throw Exception("Error: ${data['message']}");
+      }
+    } else {
+      throw Exception("Failed to fetch materials");
+    }
+  }
 }
 
-//{
-//     "token": "BccxRt",
-//     "role" : "LECTURER",
-//     "account_id" : "237",
-//     "pageable_request" : {
-//         "page" : "0",
-//         "page_size" : "10"
-//     }
-// }
+

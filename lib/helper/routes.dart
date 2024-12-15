@@ -3,6 +3,7 @@ import 'package:qldt/presentation/page/auth/login/login_page.dart';
 import 'package:qldt/presentation/page/auth/signup/signup_page.dart';
 import 'package:qldt/presentation/page/chat/chat_detail.dart';
 import 'package:qldt/presentation/page/chat/chat_page.dart';
+import 'package:qldt/presentation/page/class/class_detail.dart';
 import 'package:qldt/presentation/page/home_page.dart';
 import 'package:qldt/presentation/page/manage_class/create_class.dart';
 import 'package:qldt/presentation/page/manage_class/open_class_list.dart';
@@ -72,6 +73,12 @@ class Routes {
         return MaterialPageRoute(builder: (context) {
           return const CreateClass();
         });
+      case 'ClassDetail':
+        final classID = settings.arguments;
+        return MaterialPageRoute(builder: (context) {
+          return ClassDetail(classID: classID);
+        });
+
       default:
         return onUnknownRoute(const RouteSettings(name: '/Feature'));
     }

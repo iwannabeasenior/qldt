@@ -1,116 +1,61 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
+import 'package:qldt/data/model/materials.dart';
+import 'package:qldt/data/repo/material_repository.dart';
+import 'package:qldt/presentation/page/class/material/material_provider.dart';
+import 'package:qldt/presentation/pref/user_preferences.dart';
 
-void main() {
-  runApp(MyApp());
-}
 
-class MyApp extends StatelessWidget {
+class MaterialsPage extends StatelessWidget {
+  final String classID;
+
+  const MaterialsPage({super.key, required this.classID});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SubjectPage(),
+    final repo = context.read<MaterialRepo>();
+    return ChangeNotifierProvider(
+        create: (context) => MaterialProvider(repo),
+        child: MaterialsView(classID),
     );
   }
 }
 
-class SubjectPage extends StatefulWidget {
+
+class MaterialsView extends StatefulWidget {
+  final classID;
+  MaterialsView(this.classID);
+
   @override
-  _SubjectPageState createState() => _SubjectPageState();
+  State<MaterialsView> createState() => _MaterialsViewState();
 }
 
-class _SubjectPageState extends State<SubjectPage>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
+class _MaterialsViewState extends State<MaterialsView> {
   @override
   void initState() {
+    Logger().d("class id is: ${widget.classID}");
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<MaterialProvider>().fetchMaterials(UserPreferences.getToken() ?? "", widget.classID);
+    });
   }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFFAE2C2C),
-        toolbarHeight: 100,
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            // Handle back navigation
-          },
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              "HUST",
-              style: TextStyle(
-                  fontSize: 35,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ),
-            Text(
-              "IT3030",
-              style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ),
-          ],
-        ),
-      ),
-      body: Column(
-        children: [
-          TabBar(
-            controller: _tabController,
-            labelColor: Colors.green,
-            unselectedLabelColor: Colors.black,
-            indicatorColor: Colors.green,
-            tabs: [
-              Tab(text: "Thời khóa biểu"),
-              Tab(text: "Bài tập"),
-              Tab(text: "Tài liệu"),
-            ],
-          ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                Center(child: Text("Thời khóa biểu")),
-                Center(child: Text("Bài tập")),
-                DocumentTab(),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class DocumentTab extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
+    final materialProvider = Provider.of<MaterialProvider>(context, listen: true  );
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              itemCount: 10, // Số lượng tài liệu
-              itemBuilder: (context, index) {
-                return DocumentCard();
-              },
-            ),
+            child: materialProvider.isLoading
+                ? Center(child: CircularProgressIndicator())
+                : ListView.builder(
+                    itemCount: materialProvider.materials.length, // Số lượng tài liệu
+                    itemBuilder: (context, index) {
+                      return DocumentCard(material: materialProvider.materials[index],);
+                    },
+                  )
           ),
           ElevatedButton(
             onPressed: () {
@@ -140,8 +85,15 @@ class DocumentTab extends StatelessWidget {
 }
 
 class DocumentCard extends StatelessWidget {
+
+  final Materials material;
+
+  DocumentCard({required this.material});
+
   @override
   Widget build(BuildContext context) {
+    final materialController = context.read<MaterialProvider>();
+
     return Container(
       margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       padding: EdgeInsets.all(16),
@@ -157,12 +109,12 @@ class DocumentCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "BIEN CHUNG VA SIEU HINH.docx",
+                "${material.materialName}.${material.materialType}" ?? "UNKNOWN",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
               ),
               SizedBox(height: 4),
               Text(
-                "Update at 26/12/2024",
+                material.description ?? '',
                 style: TextStyle(
                     color: Colors.grey,
                     fontSize: 13,
@@ -192,7 +144,7 @@ class DocumentCard extends StatelessWidget {
                           children: [
                             ListTile(
                               leading:
-                                  Icon(Icons.folder_open, color: Colors.red),
+                              Icon(Icons.folder_open, color: Colors.red),
                               title: Text("Mở"),
                               onTap: () {
                                 Navigator.pop(context);
@@ -209,6 +161,7 @@ class DocumentCard extends StatelessWidget {
                               leading: Icon(Icons.delete, color: Colors.black),
                               title: Text("Xóa"),
                               onTap: () {
+                                materialController.deleteMaterial(UserPreferences.getToken() ?? "", material.id);
                                 Navigator.pop(context);
                               },
                             ),

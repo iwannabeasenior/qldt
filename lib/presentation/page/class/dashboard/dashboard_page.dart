@@ -16,8 +16,8 @@ List<String> titles_lecturer = [
 
 List<String> icons_student = [
   "assets/detail_class_icon/class_info.png",
-  "assets/detail_class_icon/absence_application",
-  "assets/detail_class_icon/absence",
+  "assets/detail_class_icon/absence_application.png",
+  "assets/detail_class_icon/absence.png",
   "assets/detail_class_icon/attendance_history.png",
 ];
 List<String> titles_student = [
@@ -47,12 +47,25 @@ class _DashboardPageState extends State<DashboardPage> {
         child: UserPreferences.getRole() == 'STUDENT' ? Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            for(var i = 0; i < icons_student.length; i++) _Item(title: titles_student[i], icon: icons_student[i], itemClick: () {},)
+            for(var i = 0; i < icons_student.length; i++)
+              _Item(
+                title: titles_student[i],
+                icon: icons_student[i],
+                itemClick: () {
+
+                },
+              )
           ],
         ) : Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            for(var i = 0; i < icons_lecturer.length; i++) _Item(title: titles_lecturer[i], icon: icons_lecturer[i], itemClick: () {},)
+            for(var i = 0; i < icons_lecturer.length; i++) _Item(
+              title: titles_lecturer[i],
+              icon: icons_lecturer[i],
+              itemClick: () {
+
+              },
+            )
           ],
         )
       )
@@ -63,32 +76,35 @@ class _DashboardPageState extends State<DashboardPage> {
 class _Item extends StatelessWidget {
   final title;
   final icon;
-  final Function itemClick;
+  final void Function() itemClick;
   const _Item({super.key, required this.title, required this.icon, required this.itemClick});
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       flex: 1,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        margin: EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-            border: Border.all(color: Colors.black),
-            borderRadius: BorderRadius.circular(30)
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20
+      child: GestureDetector(
+        onTap: itemClick,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          margin: EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+              border: Border.all(color: Colors.black),
+              borderRadius: BorderRadius.circular(30)
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20
+                ),
               ),
-            ),
-            Image(image: AssetImage(icon), height: 30, width: 30,)
-          ],
+              Image(image: AssetImage(icon), height: 30, width: 30,)
+            ],
+          ),
         ),
       ),
     );

@@ -6,6 +6,7 @@ import 'package:qldt/data/remote/api_service_it4788.dart';
 import 'package:qldt/data/remote/api_service_it5023e.dart';
 import 'package:qldt/data/repo/auth_repository.dart';
 import 'package:qldt/data/repo/class_repository.dart';
+import 'package:qldt/data/repo/material_repository.dart';
 import 'package:qldt/helper/routes.dart';
 import 'package:qldt/presentation/pref/get_shared_preferences.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
@@ -28,7 +29,7 @@ void main() async {
   } else {
     initialRoute = 'HomePage';
   }
-  initialRoute = 'RegisterForClassPage';
+  // initialRoute = 'RegisterForClassPage';
   runApp(
       MyApp(intialRoute: initialRoute)
   );
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
   final api2 = ApiServiceIT5023EImpl();
   late final AuthRepository authRepo = AuthRepositoryImpl(api1);
   late final ClassRepo classRepo = ClassRepoImpl(api: api2);
+  late final MaterialRepo materialRepo = MaterialRepoImpl(api: api2);
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +54,7 @@ class MyApp extends StatelessWidget {
         providers: [
           Provider.value(value: authRepo),
           Provider.value(value: classRepo),
+          Provider.value(value: materialRepo),
         ],
       child:  MaterialApp(
         title: 'Flutter Demo',
