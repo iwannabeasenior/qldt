@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:qldt/presentation/page/class/class_list.dart';
 import 'package:qldt/presentation/page/class/homework/homework_page.dart';
 import 'package:qldt/presentation/page/class/material/material_page.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
@@ -42,6 +43,7 @@ class _ClassDetailState extends State<ClassDetail>
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             // Handle back navigation
+            Navigator.of(context).pop();
           },
         ),
         title: Column(

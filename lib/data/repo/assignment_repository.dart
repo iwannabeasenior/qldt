@@ -1,8 +1,10 @@
 import 'package:qldt/data/model/assignment.dart';
+import 'package:qldt/data/model/survey.dart';
 import 'package:qldt/data/remote/api_service_it5023e.dart';
 
 abstract class AssignmentRepo {
   Future<List<Assignment>> getStudentAssignments(String token, String type, String classId);
+  Future<List<Survey>> getAllSurveys(String token, String classId);
 }
 
 class AssignmentRepoImpl extends AssignmentRepo {
@@ -13,5 +15,10 @@ class AssignmentRepoImpl extends AssignmentRepo {
   @override
   Future<List<Assignment>> getStudentAssignments(String token, String type, String classId) {
     return api.getStudentAssignments(token, type, classId);
+  }
+
+  @override
+  Future<List<Survey>> getAllSurveys(String token, String classId) {
+    return api.getAllSurveys(token, classId);
   }
 }

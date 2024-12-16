@@ -7,6 +7,7 @@ import 'package:dartz/dartz.dart';
 import 'package:qldt/data/model/assignment.dart';
 import 'package:qldt/data/model/class.dart';
 import 'package:qldt/data/model/materials.dart';
+import 'package:qldt/data/model/survey.dart';
 import 'package:qldt/data/remote/api_service_it4788.dart';
 import 'package:qldt/data/request/get_class_list_request.dart';
 import 'package:qldt/helper/constant.dart';
@@ -18,20 +19,18 @@ import 'package:http/http.dart' as http;
 abstract class ApiServiceIT5023E {
   // class
   Future<Either<Failure, List<Class>>> getAllClass(GetClassListRequest request);
-
   // material
   Future<List<Materials>> getAllMaterials(String token, String classID);
   Future<String> deleteMaterial(String token, String materialID);
   // Future<String> uploadMaterial()
-
-  //student assignments
+  // assignments
   Future<List<Assignment>> getStudentAssignments (String token, String type, String classId);
+  Future<List<Survey>> getAllSurveys (String token, String classId);
 }
 
 class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
   @override
-  Future<Either<Failure, List<Class>>> getAllClass(
-      GetClassListRequest request) async {
+  Future<Either<Failure, List<Class>>> getAllClass(GetClassListRequest request) async {
     try {
       final String endpoint = '/it5023e/get_class_list';
 
@@ -137,6 +136,33 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
       }
     } else {
       throw Exception("Failed to fetch assignments");
+    }
+  }
+
+  @override
+  Future<List<Survey>> getAllSurveys(String token, String classId) async {
+    const url = '${Constant.BASEURL}/it5023e/get_all_surveys';
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "token": token,
+        "class_id": classId,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['meta']['code'] == '1000') {
+        return (data['data'] as List)
+            .map((e) => Survey.fromJson(e))
+            .toList();
+      } else {
+        throw Exception("Error: ${data['message']}");
+      }
+    } else {
+      throw Exception("Failed to fetch surveys");
     }
   }
 

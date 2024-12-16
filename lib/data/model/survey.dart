@@ -84,9 +84,9 @@ class Survey {
   final String title;
   final String description;
   final int lecturerId;
-  final int classId;
+  final String classId;
   final DateTime deadline;
-  final String fileUrl;
+  final String? fileUrl;
 
   Survey({
     required this.id,
@@ -95,7 +95,7 @@ class Survey {
     required this.lecturerId,
     required this.classId,
     required this.deadline,
-    required this.fileUrl,
+    this.fileUrl,
   });
 
   // Factory constructor to create an instance of Survey from JSON

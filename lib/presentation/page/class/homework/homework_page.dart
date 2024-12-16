@@ -45,7 +45,7 @@ class _HomeworkPageState extends State<HomeworkPage> {
       body: Center(
         child: _role == 'STUDENT'
             ? StudentAssignmentsPage(classId: widget.classId,)
-            : const AssignmentList(),
+            : AssignmentList(classId: widget.classId,),
       ),
     );
   }

@@ -1,62 +1,55 @@
 import 'package:flutter/material.dart';
-import 'package:qldt/data/model/assignment.dart';
+import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
+import 'package:qldt/data/model/survey.dart';
+import 'package:qldt/data/repo/assignment_repository.dart';
 import 'package:qldt/helper/utils.dart';
-import 'package:qldt/presentation/page/class/homework/lecturer/submission_list.dart';
+import 'package:qldt/presentation/page/class/homework/lecturer/lecturer_assignments_provider.dart';
+import 'package:qldt/presentation/pref/user_preferences.dart';
 
-var assignments = [
-  Assignment(
-      id: 357,
-      title: "Bai tap GT3",
-      description: "bài tập tích phân",
-      lecturerId: '9',
-      deadline: "2024-12-11T14:30:00",
-      fileUrl: "https://drive.google.com/file/d/1FzRajBcROur4tjZ0b_G9WfdDy6c2-hoW/view?usp=drivesdk",
-      classId: "151203"),
-  Assignment(
-      id: 358,
-      title: "Bai tap GT3",
-      description: "bài tập tích phân",
-      lecturerId: '9',
-      deadline: "2024-12-11T14:30:00",
-      fileUrl: "https://drive.google.com/file/d/1FzRajBcROur4tjZ0b_G9WfdDy6c2-hoW/view?usp=drivesdk",
-      classId: "151203"),
-  Assignment(
-      id: 359,
-      title: "Bai tap GT3",
-      description: "bài tập tích phân",
-      lecturerId: '9',
-      deadline: "2024-12-11T14:30:00",
-      fileUrl: "https://drive.google.com/file/d/1FzRajBcROur4tjZ0b_G9WfdDy6c2-hoW/view?usp=drivesdk",
-      classId: "151203"),
-  Assignment(
-      id: 360,
-      title: "Bai tap GT3",
-      description: "bài tập tích phân",
-      lecturerId: '9',
-      deadline: "2024-12-11T14:30:00",
-      fileUrl: "https://drive.google.com/file/d/1FzRajBcROur4tjZ0b_G9WfdDy6c2-hoW/view?usp=drivesdk",
-      classId: "151203"),
-];
+class AssignmentList extends StatelessWidget {
+  final String classId;
+  const AssignmentList({super.key, required this.classId});
 
-class AssignmentList extends StatefulWidget {
-  const AssignmentList({super.key});
-
-  @override
-  State<AssignmentList> createState() => _AssignmentListState();
-}
-
-class _AssignmentListState extends State<AssignmentList> {
   @override
   Widget build(BuildContext context) {
+    final repo = context.read<AssignmentRepo>();
+    return ChangeNotifierProvider(
+        create: (context) => LecturerAssignmentProvider(repo),
+        child: SurveysView(classId),
+    );
+  }
+}
+
+class SurveysView extends StatefulWidget {
+  final classId;
+  SurveysView(this.classId);
+
+  @override
+  State<SurveysView> createState() => _SurveysViewState();
+}
+
+class _SurveysViewState extends State<SurveysView> {
+  @override
+  void initState() {
+    Logger().d(widget.classId);
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<LecturerAssignmentProvider>().fetchLecturerAssignments(UserPreferences.getToken() ?? "", widget.classId);
+    });
+  }
+  @override
+  Widget build(BuildContext context) {
+    final lecturerAssignmentProvider = Provider.of<LecturerAssignmentProvider>(context, listen: true);
     return Column(
       children: [
         Expanded(
             child: ListView(
               scrollDirection: Axis.vertical,
               children: List.generate(
-                  assignments.length,
+                  lecturerAssignmentProvider.surveys.length,
                   (index){
-                    return AssignmentCard(assignment: assignments[index]);
+                    return AssignmentCard(survey: lecturerAssignmentProvider.surveys[index]);
                   }
               ),
             )
@@ -66,14 +59,15 @@ class _AssignmentListState extends State<AssignmentList> {
   }
 }
 
-class AssignmentCard extends StatelessWidget {
-  final Assignment assignment;
 
-  const AssignmentCard({super.key, required this.assignment});
+class AssignmentCard extends StatelessWidget {
+  final Survey survey;
+
+  const AssignmentCard({super.key, required this.survey});
 
   @override
   Widget build(BuildContext context) {
-    String deadline = Utils.formatDateTime(assignment.deadline);
+    String deadline = Utils.formatDateTime(survey.deadline.toString());
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context, '/SubmissionList');
@@ -96,7 +90,7 @@ class AssignmentCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            assignment.title,
+                            survey.title,
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           const Icon(
