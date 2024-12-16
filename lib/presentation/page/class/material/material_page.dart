@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:qldt/data/model/materials.dart';
+import 'package:qldt/data/model/user.dart';
 import 'package:qldt/data/repo/material_repository.dart';
 import 'package:qldt/presentation/page/class/material/material_provider.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
@@ -60,6 +61,7 @@ class _MaterialsViewState extends State<MaterialsView> {
           ElevatedButton(
             onPressed: () {
               // Handle upload document
+              Navigator.pushNamed(context, '/EditMaterial');
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Color(0xFFAE2C2C),
@@ -68,7 +70,7 @@ class _MaterialsViewState extends State<MaterialsView> {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: Text(
+            child: const Text(
               "Tải tài liệu lên",
               style: TextStyle(
                 color: Colors.white,
@@ -150,28 +152,27 @@ class DocumentCard extends StatelessWidget {
                                 Navigator.pop(context);
                               },
                             ),
-                            ListTile(
-                              leading: Icon(Icons.edit, color: Colors.blue),
-                              title: Text("Chỉnh sửa"),
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                            ),
-                            ListTile(
-                              leading: Icon(Icons.delete, color: Colors.black),
-                              title: Text("Xóa"),
-                              onTap: () {
-                                materialController.deleteMaterial(UserPreferences.getToken() ?? "", material.id);
-                                Navigator.pop(context);
-                              },
-                            ),
-                            ListTile(
-                              leading: Icon(Icons.share, color: Colors.green),
-                              title: Text("Chia sẻ"),
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                            ),
+                            if (UserPreferences.getRole() == 'LECTURER')
+                              ListTile(
+                                leading: Icon(Icons.edit, color: Colors.blue),
+                                title: Text("Chỉnh sửa"),
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  Navigator.pushNamed(context, '/EditMaterial');
+                                },
+                              ),
+                            if (UserPreferences.getRole() == 'LECTURER')
+                              ListTile(
+                                leading:
+                                    Icon(Icons.delete, color: Colors.black),
+                                title: Text("Xóa"),
+                                onTap: () {
+                                  materialController.deleteMaterial(
+                                      UserPreferences.getToken() ?? "",
+                                      material.id);
+                                  Navigator.pop(context);
+                                },
+                              ),
                           ],
                         ),
                       ),

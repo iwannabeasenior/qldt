@@ -1,10 +1,24 @@
 import 'dart:io';
 
-class MaterialRequest {
+class UploadMaterialRequest {
   String classID;
-  String materialName;
+  String title;
   String description;
   String materialType;
   File file;
-  MaterialRequest({required this.classID, required this.materialName, required this.description, required this.materialType, required this.file});
+  String token;
+  UploadMaterialRequest({required this.classID, required this.title, required this.description, required this.materialType, required this.file, required this.token});
+}
+
+
+class EditMaterialRequest {
+  String materialId;
+  String title;
+  String description;
+  String materialType;
+  File file;
+  String token;
+
+  EditMaterialRequest({required this.materialId, required this.title, required this.description,
+      required this.materialType, required this.file, required this.token});
 }

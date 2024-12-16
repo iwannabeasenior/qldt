@@ -1,14 +1,15 @@
 import 'package:dartz/dartz.dart';
 import 'package:qldt/data/model/materials.dart';
 import 'package:qldt/data/remote/api_service_it5023e.dart';
+import 'package:qldt/data/request/material_request.dart';
 import 'package:qldt/helper/failure.dart';
 
 abstract class MaterialRepo {
   Future<List<Materials>> getMaterialList(String token, String classID);
-  Future<Either<Failure, void>> getMaterialInfo();
-  Future<Either<Failure, void>> editMaterial();
-  Future<String> deleteMaterial(String token, String materialID);
-  Future<Either<Failure, void>> uploadMaterial();
+  Future<Materials> getMaterialInfo(String token, String materialId);
+  Future<void> deleteMaterial(String token, String materialID);
+  Future<Materials> uploadMaterial(UploadMaterialRequest request);
+  Future<Materials> editMaterial(EditMaterialRequest request);
 }
 
 class MaterialRepoImpl extends MaterialRepo {
@@ -17,20 +18,18 @@ class MaterialRepoImpl extends MaterialRepo {
   MaterialRepoImpl({required this.api});
 
   @override
-  Future<String> deleteMaterial(String token, String materialID) {
+  Future<void> deleteMaterial(String token, String materialID) {
     return api.deleteMaterial(token, materialID);
   }
 
   @override
-  Future<Either<Failure, void>> editMaterial() {
-    // TODO: implement editMaterial
-    throw UnimplementedError();
+  Future<Materials> editMaterial(EditMaterialRequest request) {
+    return api.editMaterial(request);
   }
 
   @override
-  Future<Either<Failure, void>> getMaterialInfo() {
-    // TODO: implement getMaterialInfo
-    throw UnimplementedError();
+  Future<Materials> getMaterialInfo(String token, String materialId) {
+    return api.getMaterialInfo(token, materialId);
   }
 
   @override
@@ -39,9 +38,8 @@ class MaterialRepoImpl extends MaterialRepo {
   }
 
   @override
-  Future<Either<Failure, void>> uploadMaterial() {
-    // TODO: implement uploadMaterial
-    throw UnimplementedError();
+  Future<Materials> uploadMaterial(UploadMaterialRequest request) {
+    return api.uploadMaterial(request);
   }
 
 }
