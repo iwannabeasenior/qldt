@@ -4,10 +4,12 @@ import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:qldt/data/remote/api_service_it4788.dart';
 import 'package:qldt/data/remote/api_service_it5023e.dart';
+import 'package:qldt/data/repo/assignment_repository.dart';
 import 'package:qldt/data/repo/auth_repository.dart';
 import 'package:qldt/data/repo/class_repository.dart';
 import 'package:qldt/data/repo/material_repository.dart';
 import 'package:qldt/helper/routes.dart';
+import 'package:qldt/presentation/page/class/homework/student/student_assignments_provider.dart';
 import 'package:qldt/presentation/pref/get_shared_preferences.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 
@@ -47,6 +49,7 @@ class MyApp extends StatelessWidget {
   late final AuthRepository authRepo = AuthRepositoryImpl(api1);
   late final ClassRepo classRepo = ClassRepoImpl(api: api2);
   late final MaterialRepo materialRepo = MaterialRepoImpl(api: api2);
+  late final AssignmentRepo assignmentRepo = AssignmentRepoImpl(api: api2);
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +58,7 @@ class MyApp extends StatelessWidget {
           Provider.value(value: authRepo),
           Provider.value(value: classRepo),
           Provider.value(value: materialRepo),
+          Provider.value(value: assignmentRepo),
         ],
       child:  MaterialApp(
         title: 'Flutter Demo',

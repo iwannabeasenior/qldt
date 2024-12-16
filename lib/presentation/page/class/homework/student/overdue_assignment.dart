@@ -1,64 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
+import 'package:qldt/presentation/page/class/homework/student/student_assignments_provider.dart';
 import '../../../../../data/model/assignment.dart';
+import '../../../../../data/repo/assignment_repository.dart';
+import '../../../../pref/user_preferences.dart';
 import 'exercise_card.dart';
 
-var assignments = [
-  Assignment(
-      id: 4,
-      title: 'Participa nt Excercise 4',
-      description: 'mo ta',
-      isSubmitted: false,
-      deadline: "2024-12-11T14:30:00",
-      lecturerId: 1,
-      fileUrl: '',
-      classId: '147983'),
-  Assignment(
-      id: 3,
-      title: 'Participant Excercise 4',
-      description: 'mo ta',
-      isSubmitted: false,
-      deadline: "2024-12-11T14:30:00",
-      lecturerId: 1,
-      fileUrl: '',
-      classId: '147983'),
-  Assignment(
-      id: 2,
-      title: 'Participant Excercise 4',
-      description: 'mo ta',
-      isSubmitted: false,
-      deadline: "2024-12-11T14:30:00",
-      lecturerId: 1,
-      fileUrl: '',
-      classId: '147983'),
-  Assignment(
-      id: 1,
-      title: 'Participant Excercise 4',
-      description: 'mo ta',
-      isSubmitted: false,
-      deadline: "2024-12-11T14:30:00",
-      lecturerId: 1,
-      fileUrl: '',
-      classId: '147983'),
-];
+class OverdueAssignment extends StatelessWidget {
+  final String classId;
+  const OverdueAssignment({super.key, required this.classId});
 
-class OverdueAssignment extends StatefulWidget {
-  const OverdueAssignment({super.key});
-
-  @override
-  State<OverdueAssignment> createState() => _OverdueAssignmentState();
-}
-
-class _OverdueAssignmentState extends State<OverdueAssignment> {
   @override
   Widget build(BuildContext context) {
+    final repo = context.read<AssignmentRepo>();
+    return ChangeNotifierProvider(
+      create: (context) => StudentAssignmentProvider(repo),
+      child: OverdueAssignmentView(classId),
+    );
+  }
+}
+
+class OverdueAssignmentView extends StatefulWidget {
+  final classId;
+  OverdueAssignmentView(this.classId);
+
+  @override
+  State<OverdueAssignmentView> createState() => _OverdueAssignmentViewState();
+}
+
+class _OverdueAssignmentViewState extends State<OverdueAssignmentView> {
+  @override
+  void initState() {
+    Logger().d("class id is: ${widget.classId}");
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<StudentAssignmentProvider>().fetchStudentAssignments(UserPreferences.getToken() ?? "", "PASS_DUE", widget.classId);
+    });
+  }
+  @override
+  Widget build(BuildContext context) {
+    final studentAssignmentsProvider = Provider.of<StudentAssignmentProvider>(context, listen: true);
     return Column(
       children: [
         Expanded(
           child: ListView(
             scrollDirection: Axis.vertical,
-            children: List.generate(assignments.length, (index) {
+            children: List.generate(studentAssignmentsProvider.assignments.length, (index) {
               return ExerciseCard(
-                assignment: assignments[index],
+                assignment: studentAssignmentsProvider.assignments[index],
                 type: "PASS_DUE",
               );
             }),

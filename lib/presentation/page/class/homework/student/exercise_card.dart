@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qldt/helper/format_date_time.dart';
 import 'package:qldt/helper/utils.dart';
 import 'package:qldt/presentation/page/class/homework/student/assignment/assignment_info.dart';
 
@@ -13,7 +14,7 @@ class ExerciseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String deadline = Utils.formatDateTime(assignment.deadline);
+    String deadline = FormatDateTime().formatDateTime(assignment.deadline);
     return GestureDetector(
       onTap: () {
         Navigator.push(

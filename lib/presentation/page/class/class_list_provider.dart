@@ -3,7 +3,6 @@ import 'package:logger/logger.dart';
 import 'package:qldt/data/model/class.dart';
 import 'package:qldt/data/repo/class_repository.dart';
 import 'package:qldt/data/request/get_class_list_request.dart';
-import 'package:qldt/presentation/pref/get_shared_preferences.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 
 class ClassListProvider extends ChangeNotifier {
@@ -20,7 +19,7 @@ class ClassListProvider extends ChangeNotifier {
         accountId: UserPreferences.getId(),
         pageableRequest: {
           'page': "0",
-          'page_size': "1"
+          'page_size': "10"
         })
     );
     result.fold(

@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
+import 'package:qldt/main.dart';
 import 'package:qldt/presentation/page/class/homework/lecturer/assignment_list.dart';
 import 'package:qldt/presentation/page/class/homework/student/student_assignments_page.dart';
+import 'package:qldt/presentation/page/class/homework/student/student_assignments_provider.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:qldt/helper/enum.dart'; // Đừng quên import Role nếu cần
 
 class HomeworkPage extends StatefulWidget {
-  const HomeworkPage({super.key});
+  final String classId;
+  const HomeworkPage({super.key, required this.classId});
 
   @override
   State<HomeworkPage> createState() => _HomeworkPageState();
@@ -16,6 +21,7 @@ class _HomeworkPageState extends State<HomeworkPage> {
 
   @override
   void initState() {
+    Logger().d('class id is: ${widget.classId}');
     super.initState();
     _loadUserRole();
   }
@@ -38,7 +44,7 @@ class _HomeworkPageState extends State<HomeworkPage> {
     return Scaffold(
       body: Center(
         child: _role == 'STUDENT'
-            ? const StudentAssignmentsPage()
+            ? StudentAssignmentsPage(classId: widget.classId,)
             : const AssignmentList(),
       ),
     );

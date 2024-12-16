@@ -82,7 +82,7 @@ class _ClassDetailState extends State<ClassDetail>
               controller: _tabController,
               children: [
                 DashboardPage(),
-                HomeworkPage(),
+                HomeworkPage(classId: widget.classID,),
                 MaterialsPage(classID: widget.classID)
               ],
             ),

@@ -10,7 +10,7 @@ var assignment = Assignment(
     title: 'Bài tập Giải tích',
     description: 'Mô tả',
     deadline: '2024-12-04T08:23:14',
-    lecturerId: 123,
+    lecturerId: '123',
     fileUrl: '',
     classId: ''
 );

@@ -8,7 +8,7 @@ Assignment assignment = Assignment(
     description: 'Mo ta',
     isSubmitted: false,
     deadline: '23:59 - 26.9.2024',
-    lecturerId: 20211012,
+    lecturerId: '20211012',
     fileUrl: 'fileUrl',
     classId: '151203'
 );
