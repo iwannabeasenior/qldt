@@ -40,10 +40,10 @@ class SubmissionListView extends StatefulWidget {
 class _SubmissionListViewState extends State<SubmissionListView> {
   @override
   void initState() {
-    Logger().d("surveyId is: ${widget.surveyId}");
+    Logger().d("surveyId is: ${widget.surveyId}, token is ${UserPreferences.getToken()}");
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<LecturerAssignmentProvider>().fetchSubmissionList(UserPreferences.getToken() ?? "", widget.surveyId);
+      context.read<LecturerAssignmentProvider>().fetchSubmissionList(UserPreferences.getToken() ?? "1", widget.surveyId);
     });
   }
   @override
@@ -136,7 +136,7 @@ class SubmissionCard extends StatelessWidget {
   final int index;
 
   const SubmissionCard(
-      {super.key, required this.submission, required this.index});
+      {required this.submission, required this.index});
 
   @override
   Widget build(BuildContext context) {

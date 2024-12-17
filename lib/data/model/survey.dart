@@ -39,7 +39,7 @@ class GetSurveyResponse {
   final int assignmentId;
   final String submissionTime;
   double? grade;
-  final String fileUrl;
+  final String? fileUrl;
   final String textResponse;
   final StudentAccount studentAccount;
 
@@ -48,7 +48,7 @@ class GetSurveyResponse {
     required this.assignmentId,
     required this.submissionTime,
     this.grade,
-    required this.fileUrl,
+    this.fileUrl,
     required this.textResponse,
     required this.studentAccount,
   });
@@ -58,7 +58,7 @@ class GetSurveyResponse {
       id: json['id'],
       assignmentId: json['assignment_id'],
       submissionTime: json['submission_time'],
-      grade: json['grade'].toDouble(),
+      grade: json['grade'],
       fileUrl: json['file_url'],
       textResponse: json['text_response'],
       studentAccount: StudentAccount.fromJson(
