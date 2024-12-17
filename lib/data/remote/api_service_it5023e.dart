@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:logger/logger.dart';
 import 'package:path/path.dart';
 import 'package:qldt/data/model/class.dart';
 import 'package:qldt/data/model/materials.dart';
@@ -13,6 +15,8 @@ import 'package:qldt/data/request/material_request.dart';
 import 'package:qldt/helper/constant.dart';
 import 'package:qldt/helper/failure.dart';
 import 'package:http/http.dart' as http;
+
+import '../request/absence_request.dart';
 
 
 
@@ -26,6 +30,8 @@ abstract class ApiServiceIT5023E {
   Future<Materials> uploadMaterial(UploadMaterialRequest request);
   Future<Materials> editMaterial(EditMaterialRequest request);
   Future<Materials> getMaterialInfo(String token, String materialId);
+  Future<Map<String, dynamic>> requestAbsence(AbsenceRequest absenceRequest);
+
 }
 
 class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
@@ -207,6 +213,50 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
       }
     } else {
       throw Exception("Failed to get material info");
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> requestAbsence(AbsenceRequest absenceRequest) async {
+    const url = '${Constant.BASEURL}/it5023e/request_absence'; // URL của API
+
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+
+    // Thêm các trường form-data
+    request.fields['token'] = absenceRequest.token!;
+    request.fields['classId'] = absenceRequest.classId!;
+    request.fields['date'] = "2024-10-12";
+    request.fields['reason'] = absenceRequest.reason!;
+    request.fields['title'] = absenceRequest.title!;
+
+    // Tạo MultipartFile từ file
+    var fileStream = http.MultipartFile(
+      'file',
+      http.ByteStream(absenceRequest.file!.openRead()),
+      await absenceRequest.file!.length(),
+      filename: basename(absenceRequest.file!.path),
+    );
+
+    // Thêm file vào request
+    request.files.add(fileStream);
+
+    // Gửi yêu cầu và nhận phản hồi
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      Logger().d("andj");
+      final responseBody = await response.stream.bytesToString();
+      final jsonResponse = jsonDecode(responseBody);
+      // Kiểm tra mã code từ response
+      if (jsonResponse['meta']['code'] == "1000") {
+        // Trả về dữ liệu thành công
+        return jsonResponse['data'];
+      } else {
+        throw Exception(jsonResponse['meta']['message']);
+      }
+    } else {
+      final responseBody = await response.stream.bytesToString();
+      final jsonResponse = jsonDecode(responseBody);
+      throw Exception("Failed to request absence + ${jsonResponse['meta']['message']}");
     }
   }
 }
