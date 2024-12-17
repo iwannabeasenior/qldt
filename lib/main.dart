@@ -8,6 +8,7 @@ import 'package:qldt/data/repo/auth_repository.dart';
 import 'package:qldt/data/repo/class_repository.dart';
 import 'package:qldt/data/repo/material_repository.dart';
 import 'package:qldt/helper/routes.dart';
+import 'package:qldt/presentation/page/settings/user_info/user_provider.dart';
 import 'package:qldt/presentation/pref/get_shared_preferences.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 
@@ -55,6 +56,9 @@ class MyApp extends StatelessWidget {
           Provider.value(value: authRepo),
           Provider.value(value: classRepo),
           Provider.value(value: materialRepo),
+          ChangeNotifierProvider(
+            create: (_) => UserProvider(authRepo),
+          ),
         ],
       child:  MaterialApp(
         title: 'Flutter Demo',

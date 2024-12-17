@@ -22,7 +22,7 @@ abstract class ApiServiceIT4788 {
   Future<Either<Failure, String>> checkVerifyCode(String email, String verifyCode);
   Future<Either<Failure, void>> changePassword(String token, String oldPassword, String newPassword);
   Future<Either<Failure, void>> changeInfoAfterSignUp();
-  Future<Either<Failure, User>> getUserInfo(String token, String userId);
+  Future<User> getUserInfo(String token, String userId);
 }
 
 class ApiServiceIT4788Impl extends ApiServiceIT4788 {
@@ -174,34 +174,28 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
   }
 
   @override
-  Future<Either<Failure, User>> getUserInfo(String token, String userId) async {
-      try {
-        final String endpoint = '/it4788/get_user_info/';
-        final Uri url = Uri.parse(Constant.BASEURL + endpoint);
-        Logger().d(token);
-        final Map<String, dynamic> data = {
-          'token': token,
-          'user_id': userId
-        };
-        final response = await http.post(
-          url,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode(data)
-        );
-        final body = jsonDecode(response.body);
-        if (response.statusCode == 200) {
-          return Right(User.fromJson(body['data']));
-        } else {
-          return Left(Failure(code: body['code'], message: body['message']));
-        }
-      } on SocketException {
-        return Left(Failure(message: 'No Internet connection', code: "0"));
-      } on FormatException {
-        return Left(Failure(message: 'Bad response format', code: "0"));
+  Future<User> getUserInfo(String token, String userId) async {
+    const url = '${Constant.BASEURL}/it4788/get_user_info';
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "token": token,
+        "user_id": int.parse(userId),
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['code'] == '1000') {
+        return User.fromJson(data['data']);
+      } else {
+        throw Exception("Error: ${data['message']}");
       }
-      catch(e) {
-        return Left(Failure(code: "0", message: e.toString()));
-      }
+    } else {
+      throw Exception("Failed to fetch materials");
+    }
   }
 
   @override

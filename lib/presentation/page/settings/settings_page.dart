@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:qldt/presentation/page/settings/user_info/user_detail_page.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -57,7 +58,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   //Detai Information
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, "/UserInfoScreen");
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=> UserDetailPage()));
                     },
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
