@@ -26,6 +26,7 @@ abstract class ApiServiceIT5023E {
   // assignments
   Future<List<Assignment>> getStudentAssignments (String token, String type, String classId);
   Future<List<Survey>> getAllSurveys (String token, String classId);
+  Future<List<GetSurveyResponse>> getSurveyResponse (String token, String surveyId, String? score, String? submissionId);
 }
 
 class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
@@ -157,6 +158,42 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
       if (data['meta']['code'] == '1000') {
         return (data['data'] as List)
             .map((e) => Survey.fromJson(e))
+            .toList();
+      } else {
+        throw Exception("Error: ${data['message']}");
+      }
+    } else {
+      throw Exception("Failed to fetch surveys");
+    }
+  }
+
+  @override
+  Future<List<GetSurveyResponse>> getSurveyResponse(String token, String surveyId, String? score, String? submissionId) async {
+    const url = '${Constant.BASEURL}/it5023e/get_survey_response';
+
+    // Tạo body cho request
+    Map<String, dynamic> body = {
+      "token": token,
+      "survey_id": surveyId,
+    };
+    if (score != null && submissionId != null) {
+      body['grade'] = {
+        "score": score,
+        "submission_id": submissionId,
+      };
+    }
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['meta']['code'] == '1000') {
+        return (data['data'] as List)
+            .map((e) => GetSurveyResponse.fromJson(e))
             .toList();
       } else {
         throw Exception("Error: ${data['message']}");

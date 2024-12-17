@@ -5,6 +5,7 @@ import 'package:qldt/data/model/survey.dart';
 import 'package:qldt/data/repo/assignment_repository.dart';
 import 'package:qldt/helper/utils.dart';
 import 'package:qldt/presentation/page/class/homework/lecturer/lecturer_assignments_provider.dart';
+import 'package:qldt/presentation/page/class/homework/lecturer/submission_list.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 
 class AssignmentList extends StatelessWidget {
@@ -70,7 +71,7 @@ class AssignmentCard extends StatelessWidget {
     String deadline = Utils.formatDateTime(survey.deadline.toString());
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/SubmissionList');
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> SubmissionList(title: survey.title, surveyId: survey.id.toString(),)));
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:qldt/main.dart';
-import 'package:qldt/presentation/page/class/homework/lecturer/assignment_list.dart';
+import 'package:qldt/presentation/page/class/homework/lecturer/survey_list.dart';
 import 'package:qldt/presentation/page/class/homework/student/student_assignments_page.dart';
 import 'package:qldt/presentation/page/class/homework/student/student_assignments_provider.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';

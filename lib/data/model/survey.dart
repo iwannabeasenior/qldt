@@ -47,7 +47,7 @@ class GetSurveyResponse {
     required this.id,
     required this.assignmentId,
     required this.submissionTime,
-    required this.grade,
+    this.grade,
     required this.fileUrl,
     required this.textResponse,
     required this.studentAccount,
