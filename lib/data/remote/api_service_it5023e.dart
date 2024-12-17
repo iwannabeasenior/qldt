@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart';
 import 'package:qldt/data/model/class.dart';
@@ -225,20 +226,24 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     // Thêm các trường form-data
     request.fields['token'] = absenceRequest.token!;
     request.fields['classId'] = absenceRequest.classId!;
-    request.fields['date'] = "2024-10-12";
+    request.fields['date'] = "2024-11-28";
     request.fields['reason'] = absenceRequest.reason!;
     request.fields['title'] = absenceRequest.title!;
 
     // Tạo MultipartFile từ file
-    var fileStream = http.MultipartFile(
-      'file',
-      http.ByteStream(absenceRequest.file!.openRead()),
-      await absenceRequest.file!.length(),
-      filename: basename(absenceRequest.file!.path),
-    );
 
     // Thêm file vào request
-    request.files.add(fileStream);
+    for (var i = 0; i < absenceRequest.files!.length; i++) {
+      request.files.add(
+          http.MultipartFile.fromBytes(
+              'file',
+              absenceRequest.files?[i].fileData as List<int>,
+              filename: absenceRequest.files?[i].file?.name,
+              contentType: MediaType.parse("multipart/form-data")
+          )
+      );
+    }
+    request.files.add;
 
     // Gửi yêu cầu và nhận phản hồi
     var response = await request.send();
