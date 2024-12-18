@@ -1,7 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:qldt/presentation/theme/color_style.dart';
 
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: CreateAssignmentScreen(),
+    );
+  }
+}
 
 class CreateAssignmentScreen extends StatefulWidget {
   @override
@@ -146,7 +159,7 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
                   style: TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
+                  backgroundColor: QLDTColor.red,
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 ),
               ),
@@ -166,7 +179,13 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
                       startDate != null
                           ? "Bắt đầu: ${DateFormat('yyyy-MM-dd – kk:mm').format(startDate!)}"
                           : "Bắt đầu",
-                      style: TextStyle(color: Colors.red),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: QLDTColor.white,
+                      foregroundColor: QLDTColor.red,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero,
+                      ),
                     ),
                   ),
                 ),
@@ -178,7 +197,13 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
                       endDate != null
                           ? "Kết thúc: ${DateFormat('yyyy-MM-dd – kk:mm').format(endDate!)}"
                           : "Kết thúc",
-                      style: TextStyle(color: Colors.red),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: QLDTColor.white,
+                      foregroundColor: QLDTColor.red,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero,
+                      ),
                     ),
                   ),
                 ),
@@ -194,7 +219,7 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
                   style: TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
+                  backgroundColor: QLDTColor.red,
                   padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                 ),
               ),
