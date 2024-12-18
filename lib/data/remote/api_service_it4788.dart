@@ -111,7 +111,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
   @override
   Future<Either<Failure, void>> changePassword(String token, String oldPassword, String newPassword) async {
     try {
-      final String endpoint = '/it4788/change_password/';
+      final String endpoint = '/it4788/change_password';
       final Uri url = Uri.parse(Constant.BASEURL + endpoint);
       final Map<String, dynamic> data = {
         'token': token,
