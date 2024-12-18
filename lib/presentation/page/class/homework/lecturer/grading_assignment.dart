@@ -124,7 +124,7 @@ class _GradingAssignmentState extends State<GradingAssignment> {
                           ),
                           const Divider(),
                           Text(
-                            submission.fileUrl,
+                            submission.fileUrl ?? "",
                             style: const TextStyle(
                               overflow: TextOverflow.ellipsis,
                             )
@@ -153,7 +153,7 @@ class _GradingAssignmentState extends State<GradingAssignment> {
   }
 
   //launch Url
-  final Uri _url = Uri.parse(submission.fileUrl);
+  final Uri _url = Uri.parse(submission.fileUrl ?? "");
   Future<void> _launchUrl() async {
     if (!await launchUrl(_url)) {
       throw Exception('Could not launch $_url');
