@@ -266,12 +266,12 @@ class _AbsencePageStudentViewState extends State<AbsencePageStudentView> {
       // Fetch the absence requests
       context.read<AbsenceProvider>().getStudentAbsenceRequests(
         GetStudentAbsence(
-          token: "i5P1WO",
+          token: "OpRi5U",
           classId: "000100",
           status: null,
           date: null,
-          page: 0,
-          pageSize: 2,
+          page: "0",
+          pageSize: "10",
         ),
       );
     });

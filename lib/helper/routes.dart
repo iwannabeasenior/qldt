@@ -5,6 +5,7 @@ import 'package:qldt/presentation/page/chat/chat_detail.dart';
 import 'package:qldt/presentation/page/chat/chat_page.dart';
 import 'package:qldt/presentation/page/class/class_detail.dart';
 import 'package:qldt/presentation/page/class/dashboard/dashboard/absence/absence_page_lecturer.dart';
+import 'package:qldt/presentation/page/class/dashboard/dashboard/attendance/attendance_page.dart';
 import 'package:qldt/presentation/page/class/material/edit_material.dart';
 import 'package:qldt/presentation/page/home_page.dart';
 import 'package:qldt/presentation/page/manage_class/create_class.dart';
@@ -15,6 +16,8 @@ import 'package:qldt/presentation/page/splash_page.dart';
 
 import '../presentation/page/class/dashboard/dashboard/absence/absence_page.dart';
 import '../presentation/page/class/dashboard/dashboard/absence/view_absence_page_student.dart';
+import '../presentation/page/class/dashboard/dashboard/attendance/attendance_page_lecturer.dart';
+import '../presentation/page/class/dashboard/dashboard/attendance/view_attendance_history_lecturer.dart';
 
 class Routes {
   static dynamic route() {

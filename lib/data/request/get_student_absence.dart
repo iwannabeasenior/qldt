@@ -6,8 +6,8 @@ class GetStudentAbsence {
   String? classId;
   String? status;
   String? date;
-  int? page;
-  int? pageSize;
+  String? page;
+  String? pageSize;
   GetStudentAbsence({
      this.token,
      this.classId,

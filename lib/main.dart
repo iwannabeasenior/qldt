@@ -5,11 +5,13 @@ import 'package:provider/provider.dart';
 import 'package:qldt/data/remote/api_service_it4788.dart';
 import 'package:qldt/data/remote/api_service_it5023e.dart';
 import 'package:qldt/data/repo/absence_repository.dart';
+import 'package:qldt/data/repo/attendance_repository.dart';
 import 'package:qldt/data/repo/auth_repository.dart';
 import 'package:qldt/data/repo/class_repository.dart';
 import 'package:qldt/data/repo/material_repository.dart';
 import 'package:qldt/helper/routes.dart';
 import 'package:qldt/presentation/page/class/dashboard/dashboard/absence/absence_provider.dart';
+import 'package:qldt/presentation/page/class/dashboard/dashboard/attendance/attendance_provider.dart';
 import 'package:qldt/presentation/pref/get_shared_preferences.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 
@@ -54,6 +56,8 @@ class MyApp extends StatelessWidget {
   late final ClassRepo classRepo = ClassRepoImpl(api: api2);
   late final MaterialRepo materialRepo = MaterialRepoImpl(api: api2);
   late final AbsenceRepo absenceRepo = AbsenceRepoImpl(api: api2);
+  late final AttendanceRepo attendanceRepo = AttendanceRepoImpl(api: api2);
+
 
 
   @override
@@ -64,8 +68,13 @@ class MyApp extends StatelessWidget {
           Provider.value(value: classRepo),
           Provider.value(value: materialRepo),
           Provider.value(value: absenceRepo),
+          Provider.value(value: attendanceRepo),
+
           ChangeNotifierProvider(
             create: (context) => AbsenceProvider(absenceRepo),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => AttendanceProvider(attendanceRepo),
           ),
         ],
       child:  MaterialApp(

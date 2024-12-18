@@ -45,7 +45,7 @@ class AbsenceLecturer {
   String title;
   String reason;
   String status;
-  String fileUrl;
+  String? fileUrl;
 
   // Constructor
   AbsenceLecturer({
@@ -55,7 +55,7 @@ class AbsenceLecturer {
     required this.title,
     required this.reason,
     required this.status,
-    required this.fileUrl,
+    this.fileUrl,
   });
 
   // Phương thức để chuyển đổi đối tượng thành JSON

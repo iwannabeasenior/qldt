@@ -20,13 +20,17 @@ import 'package:qldt/helper/constant.dart';
 import 'package:qldt/helper/failure.dart';
 import 'package:http/http.dart' as http;
 
+import '../model/attendance_student_detail.dart';
+import '../model/class_info.dart';
 import '../request/absence_request.dart';
+import '../request/get_attendance_list_request.dart';
 
 
 
 abstract class ApiServiceIT5023E {
   // class
   Future<Either<Failure, List<Class>>> getAllClass(GetClassListRequest request);
+  Future<ClassInfo> getClassInfo(String token, String role, String accountId,String classId);
 
   // material
   Future<List<Materials>> getAllMaterials(String token, String classID);
@@ -34,12 +38,27 @@ abstract class ApiServiceIT5023E {
   Future<Materials> uploadMaterial(UploadMaterialRequest request);
   Future<Materials> editMaterial(EditMaterialRequest request);
   Future<Materials> getMaterialInfo(String token, String materialId);
+
   Future<Map<String, dynamic>> requestAbsence(AbsenceRequest absenceRequest);
   Future<List<AbsenceStudent>> getStudentAbsenceRequests(GetStudentAbsence getStudentAbsence);
   Future<List<AbsenceLecturer>> getAllAbsenceRequests(GetStudentAbsence getStudentAbsence);
   Future<Map<String, dynamic>> reviewAbsenceRequest(String token, String requestId, String status);
 
-}
+  Future<List<String>> getAttendanceDates(String token, String classId);
+  Future<List<String>> getAttendanceRecord(String token, String classId);
+  Future<Map<String, dynamic>> takeAttendance({
+    required String token,
+    required String classId,
+    required String date,
+    required List<String> attendanceList,
+  });
+  Future<GetAttendanceListResponse> getAttendanceList(GetAttendanceListRequest request);
+  Future<Map<String, dynamic>> setAttendanceStatus({
+    required String token,
+    required String attendanceId,
+    required String status,
+  });
+  }
 
 class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
   @override
@@ -353,8 +372,234 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     }
   }
 
+  @override
+  Future<List<String>> getAttendanceDates(String token, String classId) async {
+    const url = '${Constant.BASEURL}/it5023e/get_attendance_dates';  // Replace with the correct endpoint
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "token": token,
+        "class_id": classId,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+      // Check if the response code is "1000", indicating success
+      if (jsonResponse['meta']['code'] == "1000") {
+        // Extract the attendance dates from the "data" key
+        final List<dynamic> data = jsonResponse['data'];
+        // Return the list of dates as strings
+        return data.map((date) => date.toString()).toList();
+      } else {
+        throw Exception("Error: ${jsonResponse['meta']['message']}");
+      }
+    } else {
+      throw Exception("Failed to fetch attendance dates. Status code: ${response.statusCode}");
+    }
+  }
+
+  @override
+  Future<List<String>> getAttendanceRecord(String token, String classId) async {
+    const url = '${Constant.BASEURL}/it5023e/get_attendance_record';  // Replace with the correct endpoint
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "token": token,
+        "class_id": classId,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+      // Check if the response code is "1000", indicating success
+      if (jsonResponse['meta']['code'] == "1000") {
+        // Check if the "absent_dates" key exists and is not null
+        final List<dynamic>? data = jsonResponse['data']['absent_dates'];
+
+        if (data != null) {
+          // Return the list of dates as strings
+          return data.map((date) => date.toString()).toList();
+        } else {
+          throw Exception("No absent dates available in the response.");
+        }
+      } else {
+        throw Exception("Error: ${jsonResponse['meta']['message']}");
+      }
+    } else {
+      throw Exception("Failed to fetch attendance dates. Status code: ${response.statusCode}");
+    }
+
+  }
+
+  @override
+  Future<ClassInfo> getClassInfo(String token, String role, String accountId, String classId,) async {
+    const url = '${Constant.BASEURL}/it5023e/get_class_info';  // Replace with the correct endpoint
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'token': token,
+        'role': role,
+        'account_id': accountId, // Replace with actual account_id if needed
+        'class_id': classId,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+      // Check if the response code is "1000", indicating success
+      if (jsonResponse['meta']['code'] == '1000') {
+        // Extract the data and return it as a ClassInfo object
+        return ClassInfo.fromJson(jsonResponse['data']);
+      } else {
+        throw Exception('Error: ${jsonResponse['meta']['message']}');
+      }
+    } else {
+      throw Exception('Failed to fetch class info. Status code: ${response.statusCode}');
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> takeAttendance({
+    required String token,
+    required String classId,
+    required String date,
+    required List<String> attendanceList,
+  }) async {
+    const url = '${Constant.BASEURL}/it5023e/take_attendance';  // Thay đổi endpoint nếu cần
+
+    // Tạo dữ liệu gửi lên API
+    final body = jsonEncode({
+      'token': token,
+      'class_id': classId,
+      'date': date,
+      'attendance_list': attendanceList,
+    });
+
+    try {
+      // Gửi yêu cầu POST đến API
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        // Đọc dữ liệu phản hồi từ API
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+        // Kiểm tra mã code từ phản hồi
+        if (jsonResponse['meta']['code'] == '1000') {
+          // Thành công
+          return jsonResponse;
+        } else {
+          // Lỗi từ API
+          throw Exception("Error: ${jsonResponse['meta']['message']}");
+        }
+      } else {
+        // Lỗi từ server
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        throw Exception("Failed to take attendance: ${jsonResponse['meta']['message']}");
+      }
+    } catch (e) {
+      // Lỗi kết nối hoặc bất kỳ lỗi nào khác
+      throw Exception("Error: $e");
+    }
+  }
+
+  @override
+  Future<GetAttendanceListResponse> getAttendanceList(GetAttendanceListRequest request) async {
+    try {
+      final String endpoint = '/it5023e/get_attendance_list';
+      final Uri url = Uri.parse(Constant.BASEURL + endpoint);
+
+      var response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(request.toJson()),
+      );
+
+      var body = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        if (body['meta']['code'] == '1000') {
+          return GetAttendanceListResponse.fromJson(body['data']);
+        } else {
+          throw Exception("Error: ${body['meta']['message']}");
+        }
+      } else {
+        throw Exception("Failed to get attendance list: ${body['meta']['message']}");
+      }
+    } catch (e) {
+      // Ensure that the exception is thrown or handled properly
+      throw Exception("Error: $e");
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> setAttendanceStatus({required String token, required String attendanceId, required String status}) async {
+    const url = '${Constant.BASEURL}/it5023e/set_attendance_status';  // Replace with correct endpoint
+
+    // Create the body of the request
+    final body = jsonEncode({
+      'token': token,
+      'attendance_id': attendanceId,
+      'status': status,  // "PRESENT", "EXCUSED_ABSENCE", "UNEXCUSED_ABSENCE"
+    });
+
+    try {
+      // Make a POST request to the API
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+        // Check if the response code is "1000", indicating success
+        if (jsonResponse['meta']['code'] == '1000') {
+          // Success
+          return jsonResponse['data'];
+        } else {
+          // Handle API error
+          throw Exception("Error: ${jsonResponse['meta']['message']}");
+        }
+      } else {
+        // Handle server errors
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        throw Exception("Failed to set attendance status: ${jsonResponse['meta']['message']}");
+      }
+    } catch (e) {
+      // Handle connection or any other errors
+      throw Exception("Error: $e");
+    }
+
+  }
+
+
 
 
 }
+
+
+
+
+
+
+
+
 
 

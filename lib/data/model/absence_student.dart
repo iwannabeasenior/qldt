@@ -45,7 +45,7 @@ class AbsenceStudent {
   String title;
   String reason;
   String status;
-  String fileUrl;
+  String? fileUrl;
   String classId;
 
   // Constructor
@@ -56,7 +56,7 @@ class AbsenceStudent {
     required this.title,
     required this.reason,
     required this.status,
-    required this.fileUrl,
+    this.fileUrl,
     required this.classId,
   });
 
