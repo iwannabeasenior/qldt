@@ -42,6 +42,11 @@ class _UserDetailPageState extends State<UserDetailPage> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context, listen: true);
+    if (userProvider.isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -56,9 +61,9 @@ class _UserDetailPageState extends State<UserDetailPage> {
               },
             ),
             const Spacer(),
-            const Column(
+            Column(
               children: [
-                Text(
+                const Text(
                   'HUST',
                   style: TextStyle(
                     color: Colors.white,
@@ -66,13 +71,21 @@ class _UserDetailPageState extends State<UserDetailPage> {
                     fontSize: 35,
                   ),
                 ),
-                Text(
+                userProvider.user.role == "STUDENT"
+                  ? const Text(
                   'Thông tin sinh viên',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 25,
                   ),
                 )
+                  : const Text(
+                  'Thông tin giảng viên',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 25,
+                  ),
+                ),
               ],
             ),
             const Spacer(),
@@ -99,11 +112,12 @@ class _UserDetailPageState extends State<UserDetailPage> {
                         backgroundColor: Colors.grey[200],
                         child: ClipOval(
                           child: Image.network(
-                            userProvider.user.avatar ?? "",
+                            convertGoogleDriveUrl(userProvider.user.avatar ?? ""),
                             width: 160,
                             height: 160,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
+                              Logger().d(userProvider.user.avatar);
                               // Hiển thị ảnh mặc định nếu ảnh từ URL không tải được
                               return Image.asset(
                                 'assets/images/default.jpg',
@@ -190,7 +204,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                         ),
                         decoration: InputDecoration(
                           label: Text(
-                            "Họ",
+                            "Tên",
                             style: TextStyle(
                               color: QLDTColor.lightBlack,
                             ),
@@ -212,6 +226,16 @@ class _UserDetailPageState extends State<UserDetailPage> {
           ),
         ),
       ),
-    );;
+    );
+  }
+
+  String convertGoogleDriveUrl(String url) {
+    final fileIdRegExp = RegExp(r'd/([a-zA-Z0-9_-]+)');
+    final match = fileIdRegExp.firstMatch(url);
+    if (match != null) {
+      final fileId = match.group(1);
+      return 'https://drive.google.com/uc?export=view&id=$fileId';
+    }
+    return url;
   }
 }
