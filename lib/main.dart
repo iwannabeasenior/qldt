@@ -28,7 +28,10 @@ void main() async {
       initialRoute = 'LoginPage';
     }
   } else {
-    initialRoute = 'AbsencePage';
+    // initialRoute = 'AbsencePage';
+    initialRoute = 'Test';
+
+
   }
   // initialRoute = 'AbsencePage';
   // initialRoute = 'AbsenceLecturerPage';
@@ -61,7 +64,9 @@ class MyApp extends StatelessWidget {
           Provider.value(value: classRepo),
           Provider.value(value: materialRepo),
           Provider.value(value: absenceRepo),
-
+          ChangeNotifierProvider(
+            create: (context) => AbsenceProvider(absenceRepo),
+          ),
         ],
       child:  MaterialApp(
         title: 'Flutter Demo',

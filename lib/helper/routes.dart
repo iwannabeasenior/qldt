@@ -14,6 +14,7 @@ import 'package:qldt/presentation/page/settings/settings_page.dart';
 import 'package:qldt/presentation/page/splash_page.dart';
 
 import '../presentation/page/class/dashboard/dashboard/absence/absence_page.dart';
+import '../presentation/page/class/dashboard/dashboard/absence/view_absence_page_student.dart';
 
 class Routes {
   static dynamic route() {
@@ -26,6 +27,7 @@ class Routes {
       'CreateClass': (context) => const CreateClass(),
       'AbsenceLecturerPage': (context) => const AbsenceLecturerPage(),
       'AbsencePage': (context) => const AbsencePage(),
+      'Test': (context) => const AbsencePageStudentView(),
 
     };
   }

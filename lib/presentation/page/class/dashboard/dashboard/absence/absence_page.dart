@@ -284,7 +284,7 @@ class _AbsenceViewState extends State<AbsenceView> {
       token: UserPreferences.getToken() ?? "",
       classId: "000100", // Static classId for now
       // date: selectedDateStr,
-      date: "2024-10-10",
+      date: "2024-11-28",
       title: "abc",
       reason: 'abc',
       file: _file,

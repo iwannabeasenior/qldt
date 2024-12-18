@@ -7,10 +7,12 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart';
+import 'package:qldt/data/model/absence_student.dart';
 import 'package:qldt/data/model/class.dart';
 import 'package:qldt/data/model/materials.dart';
 import 'package:qldt/data/remote/api_service_it4788.dart';
 import 'package:qldt/data/request/get_class_list_request.dart';
+import 'package:qldt/data/request/get_student_absence.dart';
 import 'package:qldt/data/request/material_request.dart';
 import 'package:qldt/helper/constant.dart';
 import 'package:qldt/helper/failure.dart';
@@ -31,6 +33,7 @@ abstract class ApiServiceIT5023E {
   Future<Materials> editMaterial(EditMaterialRequest request);
   Future<Materials> getMaterialInfo(String token, String materialId);
   Future<Map<String, dynamic>> requestAbsence(AbsenceRequest absenceRequest);
+  Future<List<AbsenceStudent>> getStudentAbsenceRequests(GetStudentAbsence getStudentAbsence);
 
 }
 
@@ -225,7 +228,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     // Thêm các trường form-data
     request.fields['token'] = absenceRequest.token!;
     request.fields['classId'] = absenceRequest.classId!;
-    request.fields['date'] = "2024-10-12";
+    request.fields['date'] = "2024-11-28";
     request.fields['reason'] = absenceRequest.reason!;
     request.fields['title'] = absenceRequest.title!;
 
@@ -259,6 +262,33 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
       throw Exception("Failed to request absence + ${jsonResponse['meta']['message']}");
     }
   }
+
+  @override
+  Future<List<AbsenceStudent>> getStudentAbsenceRequests(GetStudentAbsence getStudentAbsence) async {
+    const String url = '${Constant.BASEURL}/it5023e/get_student_absence_requests';
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(getStudentAbsence.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+      if (jsonResponse['meta']['code'] == "1000") {
+        // Chuyển đổi danh sách JSON thành danh sách AbsenceStudent
+        final List<dynamic> pageContent = jsonResponse['data']['page_content'];
+        return pageContent.map((json) => AbsenceStudent.fromJson(json)).toList();
+      } else {
+        throw Exception("Error: ${jsonResponse['meta']['message']}");
+      }
+    } else {
+      throw Exception("Failed to fetch student absence requests. Status code: ${response.statusCode}");
+    }
+  }
+
+
 }
 
 
