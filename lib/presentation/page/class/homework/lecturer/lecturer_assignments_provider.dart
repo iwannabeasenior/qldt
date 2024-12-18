@@ -6,15 +6,18 @@ class LecturerAssignmentProvider with ChangeNotifier {
   final AssignmentRepo _repo;
 
   LecturerAssignmentProvider(this._repo);
-
+// survey
   List<Survey> _surveys = [];
-  List<GetSurveyResponse> _surveyRespones = [];
-  bool _isLoading = false;
-
   List<Survey> get surveys => _surveys;
+//survey response
+  List<GetSurveyResponse> _surveyResponses = [];
+  List<GetSurveyResponse> get surveyResponses => _surveyResponses;
+//loading
+  bool _isLoading = false;
   bool get isLoading => _isLoading;
-
-  List<GetSurveyResponse> get surveyResponses => _surveyRespones;
+//error message
+  String? _errorMessage;
+  String? get errorMessage => _errorMessage;
 
   Future<void> fetchLecturerAssignments(String token, String classId) async {
     _isLoading = true;
@@ -22,6 +25,7 @@ class LecturerAssignmentProvider with ChangeNotifier {
 
     try {
       _surveys = await _repo.getAllSurveys(token, classId);
+      notifyListeners();
     } catch (e) {
       print(e);
     } finally {
@@ -35,8 +39,27 @@ class LecturerAssignmentProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _surveyRespones = await _repo.getSurveyResponse(token, surveyId, null, null);
-    } catch(e) {
+      _surveyResponses =
+          await _repo.getSurveyResponse(token, surveyId, null, null);
+    } catch (e) {
+      print(e);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> gradingSubmission(
+      String token, String surveyId, String score, String submissionId) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await _repo.getSurveyResponse(token, surveyId, score, submissionId);
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = "Không thể chấm điểm bài nộp: $e";
       print(e);
     } finally {
       _isLoading = false;

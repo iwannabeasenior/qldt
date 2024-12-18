@@ -3,13 +3,15 @@ import 'package:flutter/scheduler.dart';
 import 'package:qldt/presentation/page/class/class_list.dart';
 import 'package:qldt/presentation/page/class/homework/homework_page.dart';
 import 'package:qldt/presentation/page/class/material/material_page.dart';
+import 'package:qldt/presentation/page/home_page.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 
 import 'dashboard/dashboard_page.dart';
 
 class ClassDetail extends StatefulWidget {
   final classID;
-  ClassDetail({required this.classID});
+  final int initialIndex;
+  ClassDetail({required this.classID, this.initialIndex = 0});
   @override
   _ClassDetailState createState() => _ClassDetailState();
 }
@@ -21,7 +23,7 @@ class _ClassDetailState extends State<ClassDetail>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 3, initialIndex: widget.initialIndex, vsync: this);
   }
 
   @override
@@ -42,8 +44,7 @@ class _ClassDetailState extends State<ClassDetail>
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            // Handle back navigation
-            Navigator.of(context).pop();
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>HomePage(index: 1,)));
           },
         ),
         title: Column(

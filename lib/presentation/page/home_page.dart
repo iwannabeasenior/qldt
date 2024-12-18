@@ -8,7 +8,8 @@ import 'package:qldt/presentation/page/settings/settings_page.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final int index;
+  const HomePage({super.key, this.index=0});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -27,7 +28,8 @@ class _HomePageState extends State<HomePage> {
     BottomIcon.chat,
     Icons.settings
   ];
-  int _bottomNavIndex = 0;
+  late int _bottomNavIndex = widget.index;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

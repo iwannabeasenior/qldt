@@ -50,7 +50,7 @@ class _SurveysViewState extends State<SurveysView> {
               children: List.generate(
                   lecturerAssignmentProvider.surveys.length,
                   (index){
-                    return AssignmentCard(survey: lecturerAssignmentProvider.surveys[index]);
+                    return AssignmentCard(survey: lecturerAssignmentProvider.surveys[index], classId: widget.classId,);
                   }
               ),
             )
@@ -63,15 +63,16 @@ class _SurveysViewState extends State<SurveysView> {
 
 class AssignmentCard extends StatelessWidget {
   final Survey survey;
+  final String classId;
 
-  const AssignmentCard({super.key, required this.survey});
+  const AssignmentCard({super.key, required this.survey, required this.classId});
 
   @override
   Widget build(BuildContext context) {
     String deadline = Utils.formatDateTime(survey.deadline.toString());
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> SubmissionList(title: survey.title, surveyId: survey.id.toString(),)));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> SubmissionList(title: survey.title, surveyId: survey.id.toString(), classId: classId,)));
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
