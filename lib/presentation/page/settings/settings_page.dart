@@ -421,11 +421,11 @@ class _SettingsPageState extends State<SettingsPage> {
                 if (oldPassword.isEmpty ||
                     newPassword.isEmpty ||
                     confirmPassword.isEmpty) {
-                  showOverlayFillout(context, "BLANK");
+                  showOverlayFillout(context, "BLANK", "");
                 } else if (newPassword != confirmPassword) {
-                  showOverlayFillout(context, "MISMATCH");
+                  showOverlayFillout(context, "MISMATCH", "");
                 } else if (newPassword == oldPassword) {
-                  showOverlayFillout(context, "DUPLICATE");
+                  showOverlayFillout(context, "DUPLICATE", "");
                 } else {
                   showDialog(
                     context: context,
@@ -447,9 +447,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   if (settingsProvider.isSuccess) {
                     Navigator.of(context).pop(); // Đóng Dialog
-                    showOverlayFillout(context, "SUCCESS");
+                    showOverlayFillout(context, "SUCCESS", "");
                   } else {
-                    showOverlayFillout(context, "ERROR");
+                    showOverlayFillout(
+                        context, "ERROR", settingsProvider.message);
                   }
                 }
               },
@@ -474,7 +475,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  void showOverlayFillout(BuildContext context, String type) {
+  void showOverlayFillout(BuildContext context, String type, String? message) {
     final overlay = Overlay.of(context);
     final overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
@@ -554,7 +555,20 @@ class _SettingsPageState extends State<SettingsPage> {
                                   ),
                                 ],
                               )
-                            : const SizedBox.shrink(),
+                            : Row(
+                                children: [
+                                  const Icon(
+                                    Icons.error_outline,
+                                    color: Colors.red,
+                                  ),
+                                  const SizedBox(width: 16,),
+                                  Text(
+                                    message ?? "",
+                                    style:
+                                        TextStyle(color: QLDTColor.lightBlack, overflow: TextOverflow.ellipsis),
+                                  ),
+                                ],
+                              ),
           ),
         ),
       ),

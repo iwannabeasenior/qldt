@@ -12,6 +12,7 @@ class SettingsProvider extends ChangeNotifier {
   }
 
   AuthRepository repo;
+  String? message;
   SettingsProvider(this.repo);
 
   Future<void> changePassword(String token, String oldPassword, String newPassword) async {
@@ -19,6 +20,7 @@ class SettingsProvider extends ChangeNotifier {
     response.fold(
         (left) {
           Logger().d(left.message);
+          message = left.message;
           setState = false;
           notifyListeners();
         },
