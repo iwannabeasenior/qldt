@@ -5,8 +5,10 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart';
+import 'package:qldt/data/model/absence_lecturer.dart';
 import 'package:qldt/data/model/absence_student.dart';
 import 'package:qldt/data/model/class.dart';
 import 'package:qldt/data/model/materials.dart';
@@ -34,6 +36,8 @@ abstract class ApiServiceIT5023E {
   Future<Materials> getMaterialInfo(String token, String materialId);
   Future<Map<String, dynamic>> requestAbsence(AbsenceRequest absenceRequest);
   Future<List<AbsenceStudent>> getStudentAbsenceRequests(GetStudentAbsence getStudentAbsence);
+  Future<List<AbsenceLecturer>> getAllAbsenceRequests(GetStudentAbsence getStudentAbsence);
+  Future<Map<String, dynamic>> reviewAbsenceRequest(String token, String requestId, String status);
 
 }
 
@@ -233,15 +237,19 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     request.fields['title'] = absenceRequest.title!;
 
     // Tạo MultipartFile từ file
-    var fileStream = http.MultipartFile(
-      'file',
-      http.ByteStream(absenceRequest.file!.openRead()),
-      await absenceRequest.file!.length(),
-      filename: basename(absenceRequest.file!.path),
-    );
 
     // Thêm file vào request
-    request.files.add(fileStream);
+    for (var i = 0; i < absenceRequest.files!.length; i++) {
+      request.files.add(
+          http.MultipartFile.fromBytes(
+              'file',
+              absenceRequest.files?[i].fileData as List<int>,
+              filename: absenceRequest.files?[i].file?.name,
+              contentType: MediaType.parse("multipart/form-data")
+          )
+      );
+    }
+    request.files.add;
 
     // Gửi yêu cầu và nhận phản hồi
     var response = await request.send();
@@ -287,6 +295,64 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
       throw Exception("Failed to fetch student absence requests. Status code: ${response.statusCode}");
     }
   }
+
+  @override
+  Future<List<AbsenceLecturer>> getAllAbsenceRequests(GetStudentAbsence getStudentAbsence) async {
+    const String url = '${Constant.BASEURL}/it5023e/get_absence_requests';
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(getStudentAbsence.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+      if (jsonResponse['meta']['code'] == "1000") {
+        Logger().d('testtt ${jsonResponse}');
+        // Chuyển đổi danh sách JSON thành danh sách AbsenceStudent
+        final List<dynamic> pageContent = jsonResponse['data']['page_content'];
+        return pageContent.map((json) => AbsenceLecturer.fromJson(json)).toList();
+      } else {
+        throw Exception("Error: ${jsonResponse['meta']['message']}");
+      }
+    } else {
+      throw Exception("Failed to fetch student absence requests. Status code: ${response.statusCode}");
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> reviewAbsenceRequest(String token, String requestId, String status) async {
+    const url = '${Constant.BASEURL}/it5023e/review_absence_request'; // URL của API
+
+    // Tạo yêu cầu POST
+    var response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "token": token,
+        "request_id": requestId,
+        "status": status,  // ACCEPTED, PENDING, REJECTED
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+
+      // Kiểm tra mã code từ response
+      if (jsonResponse['meta']['code'] == "1000") {
+        // Trả về dữ liệu thành công
+        return jsonResponse['data'];  // Dữ liệu trả về khi yêu cầu thành công
+      } else {
+        throw Exception("Error: ${jsonResponse['meta']['message']}");
+      }
+    } else {
+      throw Exception("Failed to review absence request");
+    }
+  }
+
 
 
 }

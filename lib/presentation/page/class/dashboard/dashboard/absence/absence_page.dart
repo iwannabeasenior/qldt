@@ -218,6 +218,7 @@
 // }
 
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -254,7 +255,7 @@ class AbsenceView extends StatefulWidget {
 
 class _AbsenceViewState extends State<AbsenceView> {
   final _formKey = GlobalKey<FormState>();
-  File? _file;
+  List<AbsenceFileRequest> files = [];
   final TextEditingController _reasonController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
 
@@ -262,32 +263,29 @@ class _AbsenceViewState extends State<AbsenceView> {
 
   // Pick file function (unchanged)
   Future<void> pickFile() async {
-    final result = await FilePicker.platform.pickFiles();
-
-    if (result != null && result.files.single.path != null) {
-      setState(() {
-        _file = File(result.files.single.path!);
-      });
+    final result = await FilePicker.platform.pickFiles(allowMultiple: true);
+    if (result != null) {
+      files = result.files.map((file) => AbsenceFileRequest(file: file, fileData: file.bytes)).toList();
     }
   }
 
   // Submit absence request to the provider
   void submitAbsenceRequest(AbsenceProvider provider) {
-    // if (!_formKey.currentState!.validate()) return;
-    //
-    // final selectedDateStr =
-    // _selectedDate != null ? _selectedDate!.toIso8601String().split("T")[0] : "";
-    // final title = _titleController.text;
-    // final reason = _reasonController.text;
+    if (!_formKey.currentState!.validate()) return;
+
+    final selectedDateStr =
+    _selectedDate != null ? _selectedDate!.toIso8601String().split("T")[0] : "";
+    final title = _titleController.text;
+    final reason = _reasonController.text;
 
     final absenceRequest = AbsenceRequest(
       token: UserPreferences.getToken() ?? "",
       classId: "000100", // Static classId for now
       // date: selectedDateStr,
-      date: "2024-11-28",
-      title: "abc",
-      reason: 'abc',
-      file: _file,
+      date: '${_selectedDate?.year}-${_selectedDate?.month}-${_selectedDate?.day}',
+      title: _titleController.text,
+      reason: _reasonController.text,
+      files: files
     );
 
     provider.requestAbsence(absenceRequest).then((_) {
@@ -378,18 +376,23 @@ class _AbsenceViewState extends State<AbsenceView> {
                 const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: pickFile,
-                  child: Text(_file == null ? 'Tải minh chứng' : 'Change File'),
+                  child: Text(files.isEmpty ? 'Tải minh chứng' : 'Change File'),
                 ),
-                if (_file != null) Text('File: ${_file!.path.split('/').last}'),
+                if (files.isNotEmpty) Column(
+                  children: [
+                    for (var i = 0; i < files.length; i++)
+                    Text('File: ${files[i].file?.name?.split('/').last}'),
+                  ],
+                ),
                 const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () {
-                    // if (_selectedDate == null) {
-                    //   ScaffoldMessenger.of(context).showSnackBar(
-                    //     const SnackBar(content: Text('Please select a date')),
-                    //   );
-                    //   return;
-                    // }
+                    if (_selectedDate == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Please select a date')),
+                      );
+                      return;
+                    }
                     submitAbsenceRequest(provider);
                   },
                   child: provider.isLoading

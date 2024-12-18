@@ -49,6 +49,7 @@ dependencies:
   url_launcher: ^6.3.1
   fluttertoast: ^8.2.8
   path: ^1.9.0
+  http_parser: ^4.0.2
 
 
 dev_dependencies:

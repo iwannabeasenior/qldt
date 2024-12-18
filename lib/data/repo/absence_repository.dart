@@ -5,12 +5,15 @@ import 'package:qldt/data/remote/api_service_it5023e.dart';
 import 'package:qldt/data/request/material_request.dart';
 import 'package:qldt/helper/failure.dart';
 
+import '../model/absence_lecturer.dart';
 import '../request/absence_request.dart';
 import '../request/get_student_absence.dart';
 
 abstract class AbsenceRepo {
   Future<Map<String, dynamic>> requestAbsence(AbsenceRequest absenceRequest);
   Future<List<AbsenceStudent>> getStudentAbsenceRequests(GetStudentAbsence absenceRequest);
+  Future<List<AbsenceLecturer>> getAllAbsenceRequests(GetStudentAbsence getStudentAbsence);
+  Future<Map<String, dynamic>> reviewAbsenceRequest(String token, String requestId, String status);
 
 
 }
@@ -29,6 +32,16 @@ class AbsenceRepoImpl extends AbsenceRepo {
   Future<List<AbsenceStudent>> getStudentAbsenceRequests(GetStudentAbsence getStudentAbsence) {
     return api.getStudentAbsenceRequests(getStudentAbsence);
 
+  }
+
+  @override
+  Future<List<AbsenceLecturer>> getAllAbsenceRequests(GetStudentAbsence getStudentAbsence) {
+   return api.getAllAbsenceRequests(getStudentAbsence);
+  }
+
+  @override
+  Future<Map<String, dynamic>> reviewAbsenceRequest(String token, String requestId, String status) {
+   return api.reviewAbsenceRequest(token, requestId, status );
   }
 
 

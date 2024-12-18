@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:qldt/data/model/absence_lecturer.dart';
 import 'package:qldt/data/model/absence_student.dart';
 import 'package:qldt/data/model/materials.dart';
 import 'package:qldt/data/repo/absence_repository.dart';
@@ -16,6 +17,12 @@ class AbsenceProvider with ChangeNotifier {
   List<AbsenceStudent> _absenceStudents = [];
 
   List<AbsenceStudent> get absenceStudents => _absenceStudents;
+
+  List<AbsenceLecturer> _absenceLecturers = [];
+
+  List<AbsenceLecturer> get absenceLecturer => _absenceLecturers;
+
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
@@ -56,4 +63,47 @@ class AbsenceProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
-  }}
+  }
+
+  Future<void> getAllAbsenceRequests(GetStudentAbsence getStudentAbsence) async {
+    // Thông báo UI bắt đầu tải dữ liệu
+    notifyListeners();
+
+    try {
+      _isLoading = true;
+      // Gửi yêu cầu thông qua repository
+      _absenceLecturers = await _repo.getAllAbsenceRequests(getStudentAbsence);
+    } catch (e) {
+      // Log lỗi nếu có
+      Logger().e("Error requesting absence: $e");
+    } finally {
+      // Đảm bảo luôn gọi notifyListeners sau khi xử lý xong
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> reviewAbsenceRequest(String token, String requestId, String status) async {
+    // Thông báo UI bắt đầu tải dữ liệu
+    notifyListeners();
+
+    try {
+      _isLoading = true;
+      // Gửi yêu cầu thông qua repository và nhận kết quả
+      res = await _repo.reviewAbsenceRequest(token, requestId, status);
+      // Handle the result if needed, e.g., process res for updating state
+    } catch (e) {
+      // Log lỗi nếu có
+      Logger().e("Error reviewing absence request: $e");
+    } finally {
+      // Đảm bảo luôn gọi notifyListeners sau khi xử lý xong
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+
+
+
+
+}
