@@ -10,8 +10,7 @@ class LecturerAssignmentProvider with ChangeNotifier {
   List<Survey> _surveys = [];
   List<Survey> get surveys => _surveys;
 //survey response
-  List<GetSurveyResponse> _surveyResponses = [];
-  List<GetSurveyResponse> get surveyResponses => _surveyResponses;
+  List<GetSurveyResponse> surveyResponses = [];
 //loading
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -39,7 +38,7 @@ class LecturerAssignmentProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _surveyResponses =
+      surveyResponses =
           await _repo.getSurveyResponse(token, surveyId, null, null);
     } catch (e) {
       print(e);
@@ -56,7 +55,7 @@ class LecturerAssignmentProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      await _repo.getSurveyResponse(token, surveyId, score, submissionId);
+      surveyResponses = await _repo.getSurveyResponse(token, surveyId, score, submissionId);
       notifyListeners();
     } catch (e) {
       _errorMessage = "Không thể chấm điểm bài nộp: $e";
