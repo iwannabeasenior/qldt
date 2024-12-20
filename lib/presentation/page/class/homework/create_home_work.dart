@@ -26,17 +26,12 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
   final TextEditingController descriptionController = TextEditingController();
   DateTime? startDate;
   DateTime? endDate;
-  String? uploadedFile;
+  List<AbsenceFileRequest> files = [];
 
-  void pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf', 'doc', 'docx', 'png'],
-    );
+  Future<void> pickFile() async {
+    final result = await FilePicker.platform.pickFiles(allowMultiple: true);
     if (result != null) {
-      setState(() {
-        uploadedFile = result.files.single.name;
-      });
+      files = result.files.map((file) => AbsenceFileRequest(file: file, fileData: file.bytes)).toList();
     }
   }
 
