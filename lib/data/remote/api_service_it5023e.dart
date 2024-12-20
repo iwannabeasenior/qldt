@@ -10,6 +10,7 @@ import 'package:qldt/data/model/materials.dart';
 import 'package:qldt/data/model/survey.dart';
 import 'package:qldt/data/remote/api_service_it4788.dart';
 import 'package:qldt/data/request/get_class_list_request.dart';
+import 'package:qldt/data/request/survey_request.dart';
 import 'package:qldt/helper/constant.dart';
 import 'package:qldt/helper/failure.dart';
 import 'package:http/http.dart' as http;
@@ -27,6 +28,7 @@ abstract class ApiServiceIT5023E {
   Future<List<Assignment>> getStudentAssignments (String token, String type, String classId);
   Future<List<Survey>> getAllSurveys (String token, String classId);
   Future<List<GetSurveyResponse>> getSurveyResponse (String token, String surveyId, String? score, String? submissionId);
+  Future<Map<String, dynamic>> createSurvey(SurveyRequest surveyRequest);
 }
 
 class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
@@ -112,6 +114,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     }
   }
 
+  //assignments
   @override
   Future<List<Assignment>> getStudentAssignments(String token, String type, String classId) async {
     const url = '${Constant.BASEURL}/it5023e/get_student_assignments';
@@ -200,6 +203,31 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
       }
     } else {
       throw Exception("Failed to fetch surveys");
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> createSurvey(SurveyRequest surveyRequest) async {
+    const url = '${Constant.BASEURL}/it5023e/create_survey';
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+
+    //form-data
+    request.fields['token'] = surveyRequest.token;
+    request.fields['classId'] = surveyRequest.classId;
+    request.fields['deadline'] = surveyRequest.deadline;
+    request.fields['title'] = surveyRequest.title;
+    request.fields['description'] = surveyRequest.description;
+
+    //add files to req
+    for (var i = 0; i < surveyRequest.files.length; i++) {
+      request.files.add(
+        http.MultipartFile(
+            'file',
+            surveyRequest.files?[i].fileData as <List<int>>,
+            filename: surveyRequest.files?[i].file?.name,
+            contentType: MediaType.parse("multipart/form-data")
+        );
+      );
     }
   }
 
