@@ -31,7 +31,7 @@ class Routes {
       'CreateClass': (context) => const CreateClass(),
       'AbsenceLecturerPage': (context) => const AbsenceLecturerPage(),
       'AbsencePage': (context) => const AbsencePage(),
-      'Test': (context) => const AbsencePageStudentView(),
+      'Test': (context) => const RegisterForClassView(),
 
     };
   }

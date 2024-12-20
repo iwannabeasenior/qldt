@@ -1,19 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Thêm thư viện để định dạng ngày tháng
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
+import 'package:qldt/data/repo/manage_class_repository.dart';
+import 'package:qldt/data/request/class_create_request.dart';
+import 'package:qldt/presentation/page/manage_class/manage_class_provider.dart';
 import 'package:qldt/presentation/page/manage_class/open_class_list.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 
 import '../../../data/model/class.dart';
 
-class CreateClass extends StatefulWidget {
+class CreateClass extends StatelessWidget {
   const CreateClass({super.key});
 
   @override
-  State<CreateClass> createState() => _CreateClassPageState();
+  Widget build(BuildContext context) {
+    final repo = context.read<ManageClassRepo>();
+    return ChangeNotifierProvider(
+      create: (context) => ManageClassProvider(repo),
+      child: CreateClassView(),
+    );
+  }
 }
 
-class _CreateClassPageState extends State<CreateClass> {
+class CreateClassView extends StatefulWidget {
+  const CreateClassView({super.key});
+
+  @override
+  State<CreateClassView> createState() => _CreateClassViewState();
+}
+
+class _CreateClassViewState extends State<CreateClassView> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _classCodeController = TextEditingController();
   final TextEditingController _classNameController = TextEditingController();
@@ -32,7 +49,17 @@ class _CreateClassPageState extends State<CreateClass> {
 
   List<String> _getClassType() {
     final year = DateTime.now().year;
-    return ["LT", "BT", "LT-BT"];
+    return ["LT", "BT", "LT_BT"];
+  }
+
+  String formatDate(String dateString) {
+    // Chuyển đổi chuỗi thành DateTime
+    DateTime dateTime = DateTime.parse(dateString);
+
+    // Định dạng lại DateTime thành dạng 'yyyy-MM-dd'
+    String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
+
+    return formattedDate;
   }
 
   Future<void> _selectDate(BuildContext context, bool isStart) async {
@@ -55,26 +82,37 @@ class _CreateClassPageState extends State<CreateClass> {
     }
   }
 
-  void _createClass() {
+  void _createClass(ManageClassProvider provider) {
     if (_formKey.currentState!.validate() && _startDate != null && _endDate != null ) {
       if (_endDate!.isBefore(_startDate!)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Thời gian bắt đầu không thể sau thời gian kết thúc'))
         );
-        return;
       }
-      final classModel = ClassModel(
-        classCode: _classCodeController.text,
-        semester: _selectedSemester!,
-        className: _classNameController.text,
-        description: _descriptionController.text.isEmpty ? null : _descriptionController.text,
-        startDate: _startDate!,
-        endDate: _endDate!,
-        maxStudents: int.parse(_maxStudentsController.text),
-      );
+      // final classModel = ClassModel(
+      //   classCode: _classCodeController.text,
+      //   semester: _selectedSemester!,
+      //   className: _classNameController.text,
+      //   description: _descriptionController.text.isEmpty ? null : _descriptionController.text,
+      //   startDate: _startDate!,
+      //   endDate: _endDate!,
+      //   maxStudents: int.parse(_maxStudentsController.text),
+      // );
 
-      // Now you can use classModel for further processing (e.g., sending it to the backend)
-      Logger().d('Class created: ${classModel}');
+      String startDate = formatDate(_startDate.toString());
+      String endDate = formatDate(_endDate.toString());
+      final request = ClassCreateRequest(token:"crY51v", classId: _classCodeController.text, className: _classNameController.text, classType: _selectedSemester, startDate: startDate, endDate: endDate, maxStudentAmount: int.parse(_maxStudentsController.text));
+      provider.createClass(request).then((_) {
+        // Show success message after the request
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Tạo lớp thành công')),
+        );
+      }).catchError((e) {
+        // Show error message if there's an issue
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to submit absence request')),
+        );
+      });
 
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -85,6 +123,9 @@ class _CreateClassPageState extends State<CreateClass> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<ManageClassProvider>(context);
+
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -224,7 +265,7 @@ class _CreateClassPageState extends State<CreateClass> {
                 ),
                 const SizedBox(height: 30),
                 ElevatedButton(
-                  onPressed: _createClass,
+                  onPressed: () => _createClass(provider),  // Gọi phương thức _createClass
                   style: ElevatedButton.styleFrom(
                     backgroundColor: QLDTColor.red,
                     padding: const EdgeInsets.symmetric(vertical: 16),

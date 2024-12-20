@@ -8,11 +8,13 @@ import 'package:qldt/data/repo/absence_repository.dart';
 import 'package:qldt/data/repo/attendance_repository.dart';
 import 'package:qldt/data/repo/auth_repository.dart';
 import 'package:qldt/data/repo/class_repository.dart';
+import 'package:qldt/data/repo/manage_class_repository.dart';
 import 'package:qldt/data/repo/material_repository.dart';
 import 'package:qldt/helper/routes.dart';
 import 'package:qldt/presentation/page/class/dashboard/dashboard/absence/absence_provider.dart';
 import 'package:qldt/presentation/page/class/dashboard/dashboard/attendance/attendance_provider.dart';
 import 'package:qldt/presentation/page/class/material/material_provider.dart';
+import 'package:qldt/presentation/page/manage_class/manage_class_provider.dart';
 import 'package:qldt/presentation/pref/get_shared_preferences.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 
@@ -26,13 +28,18 @@ void main() async {
 
   if (await UserPreferences.getToken() == null) {
     if (await UserPreferences.checkFirstTime()) {
-      initialRoute = 'SplashPage';
+      // initialRoute = 'SplashPage';
+      initialRoute = 'Test';
 
     } else {
-      initialRoute = 'LoginPage';
+      // initialRoute = 'LoginPage';
+      initialRoute = 'Test';
+
     }
   } else {
-    initialRoute = 'HomePage';
+    // initialRoute = 'HomePage';
+    initialRoute = 'Test';
+
   }
   // initialRoute = 'EditMaterial';
   runApp(
@@ -54,6 +61,7 @@ class MyApp extends StatelessWidget {
   late final MaterialRepo materialRepo = MaterialRepoImpl(api: api2);
   late final AbsenceRepo absenceRepo = AbsenceRepoImpl(api: api2);
   late final AttendanceRepo attendanceRepo = AttendanceRepoImpl(api: api2);
+  late final ManageClassRepo manageClassRepo = ManageClassRepoImpl(api: api2);
 
 
 
@@ -67,12 +75,17 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (context) => MaterialProvider(materialRepo)),
           Provider.value(value: absenceRepo),
           Provider.value(value: attendanceRepo),
+          Provider.value(value: manageClassRepo),
+
 
           ChangeNotifierProvider(
             create: (context) => AbsenceProvider(absenceRepo),
           ),
           ChangeNotifierProvider(
             create: (context) => AttendanceProvider(attendanceRepo),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => ManageClassProvider(manageClassRepo),
           ),
         ],
       child:  MaterialApp(
