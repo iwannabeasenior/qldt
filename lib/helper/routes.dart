@@ -5,6 +5,7 @@ import 'package:qldt/presentation/page/chat/chat_detail.dart';
 import 'package:qldt/presentation/page/chat/chat_page.dart';
 import 'package:qldt/presentation/page/class/class_detail.dart';
 import 'package:qldt/presentation/page/class/material/edit_material.dart';
+import 'package:qldt/presentation/page/class/material/upload_material.dart';
 import 'package:qldt/presentation/page/home_page.dart';
 import 'package:qldt/presentation/page/manage_class/create_class.dart';
 import 'package:qldt/presentation/page/manage_class/open_class_list.dart';
@@ -80,9 +81,12 @@ class Routes {
           return ClassDetail(classID: classID);
         });
       case 'EditMaterial':
+        final material = (settings.arguments as Map<String, dynamic>)['material'];
         return MaterialPageRoute(builder: (context) {
-          return EditMaterialPage();
+          return EditMaterialPage(material: material,);
         });
+      case 'UploadMaterial':
+        return MaterialPageRoute(builder: (context) => UploadMaterialPage());
       default:
         return onUnknownRoute(const RouteSettings(name: '/Feature'));
     }

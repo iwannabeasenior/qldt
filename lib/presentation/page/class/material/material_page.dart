@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 import 'package:qldt/data/model/materials.dart';
 import 'package:qldt/data/model/user.dart';
 import 'package:qldt/data/repo/material_repository.dart';
+import 'package:qldt/helper/utils.dart';
 import 'package:qldt/presentation/page/class/material/material_provider.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 class MaterialsPage extends StatelessWidget {
@@ -13,13 +15,17 @@ class MaterialsPage extends StatelessWidget {
 
   const MaterialsPage({super.key, required this.classID});
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   final repo = context.read<MaterialRepo>();
+  //   return ChangeNotifierProvider(
+  //       create: (context) => MaterialProvider(repo),
+  //       child: MaterialsView(classID),
+  //   );
+  // }
   @override
   Widget build(BuildContext context) {
-    final repo = context.read<MaterialRepo>();
-    return ChangeNotifierProvider(
-        create: (context) => MaterialProvider(repo),
-        child: MaterialsView(classID),
-    );
+    return MaterialsView(classID);
   }
 }
 
@@ -43,7 +49,7 @@ class _MaterialsViewState extends State<MaterialsView> {
   }
   @override
   Widget build(BuildContext context) {
-    final materialProvider = Provider.of<MaterialProvider>(context, listen: true  );
+    final materialProvider = Provider.of<MaterialProvider>(context, listen: true);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -61,7 +67,7 @@ class _MaterialsViewState extends State<MaterialsView> {
           ElevatedButton(
             onPressed: () {
               // Handle upload document
-              Navigator.pushNamed(context, '/EditMaterial');
+              Navigator.pushNamed(context, '/UploadMaterial', arguments: widget.classID);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Color(0xFFAE2C2C),
@@ -148,7 +154,12 @@ class DocumentCard extends StatelessWidget {
                               leading:
                               Icon(Icons.folder_open, color: Colors.red),
                               title: Text("Mở"),
-                              onTap: () {
+                              onTap: () async {
+                                try {
+                                  await Utils.launchUrlString(material.materialLink ?? "");
+                                } catch(e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Can not open url")));
+                                }
                                 Navigator.pop(context);
                               },
                             ),
@@ -158,7 +169,7 @@ class DocumentCard extends StatelessWidget {
                                 title: Text("Chỉnh sửa"),
                                 onTap: () {
                                   Navigator.pop(context);
-                                  Navigator.pushNamed(context, '/EditMaterial');
+                                  Navigator.pushNamed(context, '/EditMaterial', arguments: { 'material': material});
                                 },
                               ),
                             if (UserPreferences.getRole() == 'LECTURER')

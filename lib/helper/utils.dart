@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Utils {
   static String datetimeFormatter(DateTime datetime) {
@@ -37,5 +38,12 @@ class Utils {
 
     // Kết hợp thành chuỗi theo định dạng mong muốn
     return '${hour}h${minute}p - $formattedDate';
+  }
+  static Future<void> launchUrlString(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not open url';
+    }
   }
 }

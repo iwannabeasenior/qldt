@@ -8,6 +8,7 @@ import 'package:qldt/data/repo/auth_repository.dart';
 import 'package:qldt/data/repo/class_repository.dart';
 import 'package:qldt/data/repo/material_repository.dart';
 import 'package:qldt/helper/routes.dart';
+import 'package:qldt/presentation/page/class/material/material_provider.dart';
 import 'package:qldt/presentation/pref/get_shared_preferences.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 
@@ -29,7 +30,7 @@ void main() async {
   } else {
     initialRoute = 'HomePage';
   }
-  // initialRoute = 'RegisterForClassPage';
+  // initialRoute = 'EditMaterial';
   runApp(
       MyApp(intialRoute: initialRoute)
   );
@@ -55,6 +56,7 @@ class MyApp extends StatelessWidget {
           Provider.value(value: authRepo),
           Provider.value(value: classRepo),
           Provider.value(value: materialRepo),
+          ChangeNotifierProvider(create: (context) => MaterialProvider(materialRepo))
         ],
       child:  MaterialApp(
         title: 'Flutter Demo',

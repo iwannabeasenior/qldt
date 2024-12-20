@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:qldt/presentation/bottom_icons.dart';
 import 'package:qldt/presentation/page/chat/chat_page.dart';
 import 'package:qldt/presentation/page/class/class_list.dart';
+import 'package:qldt/presentation/page/class/material/edit_material.dart';
 import 'package:qldt/presentation/page/notification/notification_page.dart';
 import 'package:qldt/presentation/page/settings/settings_page.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
@@ -62,3 +63,4 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+

@@ -1,0 +1,4 @@
+enum MaterialActionType {
+  EDIT,
+  UPLOAD
+}

@@ -13,14 +13,12 @@ import 'package:qldt/presentation/pref/user_preferences.dart';
 
 
 
-class EditMaterialPage extends StatefulWidget {
-  Materials material;
-  EditMaterialPage({required this.material});
+class UploadMaterialPage extends StatefulWidget {
   @override
-  _EditMaterialPageState createState() => _EditMaterialPageState();
+  _UploadMaterialPageState createState() => _UploadMaterialPageState();
 }
 
-class _EditMaterialPageState extends State<EditMaterialPage> {
+class _UploadMaterialPageState extends State<UploadMaterialPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -30,6 +28,8 @@ class _EditMaterialPageState extends State<EditMaterialPage> {
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<MaterialProvider>();
+
+    final classId = ModalRoute.of(context)?.settings.arguments as String;
 
     return Scaffold(
       appBar: AppBar(
@@ -44,7 +44,6 @@ class _EditMaterialPageState extends State<EditMaterialPage> {
             children: [
               // Title Field
               TextFormField(
-                initialValue: widget.material.materialName,
                 controller: _titleController,
                 decoration: InputDecoration(
                   labelText: 'Title',
@@ -61,7 +60,6 @@ class _EditMaterialPageState extends State<EditMaterialPage> {
 
               // Description Field
               TextFormField(
-                initialValue: widget.material.description,
                 controller: _descriptionController,
                 decoration: InputDecoration(
                   labelText: 'Description',
@@ -95,10 +93,13 @@ class _EditMaterialPageState extends State<EditMaterialPage> {
                     });
                   } else {
                     // User canceled the picker
-                    // nothing happen
+                    setState(() {
+                      _files = null;
+                      _uploadedFileNames = null;
+                    });
                   }
                 },
-                child: Center(child: Text('Change files')),
+                child: Center(child: Text((_uploadedFileNames == null || _uploadedFileNames?.isEmpty == true) ? 'Upload Files' : 'Change Files')),
               ),
               SizedBox(height: 8.0),
 
@@ -114,7 +115,7 @@ class _EditMaterialPageState extends State<EditMaterialPage> {
                 )
               else
                 Text(
-                  widget.material.materialLink.toString(),
+                  'No files selected',
                   style: TextStyle(color: Colors.red),
                 ),
               SizedBox(height: 16.0),
@@ -133,18 +134,18 @@ class _EditMaterialPageState extends State<EditMaterialPage> {
                         );
                       } else {
                         // Process form data
-                        
-                        controller.editMaterial(EditMaterialRequest(materialId: widget.material.id, title: _descriptionController.text, description: _descriptionController.text, materialType: widget.material.materialType, files: _files ?? List.empty(), token: UserPreferences.getToken() ?? ""));
+
+                        controller.uploadMaterial(UploadMaterialRequest(classID: classId, title: _titleController.text, description: _descriptionController.text, materialType: "pdf", files: _files ?? List.empty(), token: UserPreferences.getToken() ?? ""));
 
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Material edit successfully!'),
+                            content: Text('Material upload successfully!'),
                           ),
                         );
                       }
                     }
                   },
-                  child: Text('Edit'),
+                  child: Text('Upload'),
                 ),
               ),
             ],

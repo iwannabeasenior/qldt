@@ -120,16 +120,16 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     var request = http.MultipartRequest('POST', Uri.parse(url));
 
     request.fields['classID'] = materialRequest.classID;
-    request.fields['title'] = materialRequest.title;
-    request.fields['description'] = materialRequest.description;
-    request.fields['materialType'] = materialRequest.materialType;
+    request.fields['title'] = materialRequest.title ?? "";
+    request.fields['description'] = materialRequest.description ?? "";
+    request.fields['materialType'] = materialRequest.materialType ?? "";
     request.fields['token'] = materialRequest.token;
 
     var fileStream = http.MultipartFile(
       'file',
-      materialRequest.file.openRead(),
-      await materialRequest.file.length(),
-      filename: basename(materialRequest.file.path),
+      materialRequest.files.first.openRead(),
+      await materialRequest.files.first.length(),
+      filename: basename(materialRequest.files.first.path),
     );
 
     request.files.add(fileStream);
@@ -156,16 +156,16 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     var request = http.MultipartRequest('POST', Uri.parse(url));
 
     request.fields['materialId'] = materialRequest.materialId;
-    request.fields['title'] = materialRequest.title;
-    request.fields['description'] = materialRequest.description;
-    request.fields['materialType'] = materialRequest.materialType;
+    request.fields['title'] = materialRequest.title ?? "";
+    request.fields['description'] = materialRequest.description ?? "";
+    request.fields['materialType'] = materialRequest.materialType ?? "";
     request.fields['token'] = materialRequest.token;
 
     var fileStream = http.MultipartFile(
         'file',
-        materialRequest.file.openRead(),
-        await materialRequest.file.length(),
-        filename: basename(materialRequest.file.path),
+        materialRequest.files.first.openRead(),
+        await materialRequest.files.first.length(),
+        filename: basename(materialRequest.files.first.path),
     );
 
     request.files.add(fileStream);

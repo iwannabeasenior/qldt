@@ -49,6 +49,7 @@ dependencies:
   url_launcher: ^6.3.1
   fluttertoast: ^8.2.8
   path: ^1.9.0
+  open_file: ^3.5.10
 
 
 dev_dependencies:
