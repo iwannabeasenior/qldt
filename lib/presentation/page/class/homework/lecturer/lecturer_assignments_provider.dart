@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:qldt/data/model/survey.dart';
 import 'package:qldt/data/repo/assignment_repository.dart';
+import 'package:qldt/data/request/survey_request.dart';
 
 class LecturerAssignmentProvider with ChangeNotifier {
   final AssignmentRepo _repo;
@@ -17,6 +18,9 @@ class LecturerAssignmentProvider with ChangeNotifier {
 //error message
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
+
+//type of response
+  Map<String, dynamic>? res;
 
   Future<void> fetchLecturerAssignments(String token, String classId) async {
     _isLoading = true;
@@ -48,8 +52,7 @@ class LecturerAssignmentProvider with ChangeNotifier {
     }
   }
 
-  Future<void> gradingSubmission(
-      String token, String surveyId, String score, String submissionId) async {
+  Future<void> gradingSubmission(String token, String surveyId, String score, String submissionId) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -59,6 +62,19 @@ class LecturerAssignmentProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       _errorMessage = "Không thể chấm điểm bài nộp: $e";
+      print(e);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> createSurvey(SurveyRequest surveyRequest) async {
+    notifyListeners();
+    try {
+      _isLoading = true;
+      res = await _repo.createSurvey(surveyRequest);
+    } catch(e) {
       print(e);
     } finally {
       _isLoading = false;

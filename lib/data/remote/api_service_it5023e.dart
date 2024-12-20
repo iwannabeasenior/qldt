@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:logger/logger.dart';
 import 'package:qldt/data/model/assignment.dart';
 import 'package:qldt/data/model/class.dart';
 import 'package:qldt/data/model/materials.dart';
@@ -221,13 +223,33 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     //add files to req
     for (var i = 0; i < surveyRequest.files.length; i++) {
       request.files.add(
-        http.MultipartFile(
+        http.MultipartFile.fromBytes(
             'file',
-            surveyRequest.files?[i].fileData as <List<int>>,
-            filename: surveyRequest.files?[i].file?.name,
+            surveyRequest.files[i].fileData as List<int>,
+            filename: surveyRequest.files[i].file?.name,
             contentType: MediaType.parse("multipart/form-data")
-        );
+        )
       );
+    }
+    request.files.add;
+
+    //req and res
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      Logger().d('OK');
+      final responseBody = await response.stream.bytesToString();
+      final jsonResponse = jsonDecode(responseBody);
+      //meta code message
+      if (jsonResponse['meta']['code'] == "1000") {
+        //get data successfully
+        return jsonResponse['data'];
+      } else {
+        throw(jsonResponse['meta']['message']);
+      }
+    } else {
+      final responseBody = await response.stream.bytesToString();
+      final jsonResponse = jsonDecode(responseBody);
+      throw Exception("Failed to request absence + ${jsonResponse['meta']['message']}");
     }
   }
 

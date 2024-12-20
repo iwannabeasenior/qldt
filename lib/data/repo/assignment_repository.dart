@@ -2,10 +2,13 @@ import 'package:qldt/data/model/assignment.dart';
 import 'package:qldt/data/model/survey.dart';
 import 'package:qldt/data/remote/api_service_it5023e.dart';
 
+import '../request/survey_request.dart';
+
 abstract class AssignmentRepo {
   Future<List<Assignment>> getStudentAssignments(String token, String type, String classId);
   Future<List<Survey>> getAllSurveys(String token, String classId);
   Future<List<GetSurveyResponse>> getSurveyResponse(String token, String surveyId, String? score, String? submissionId);
+  Future<Map<String, dynamic>> createSurvey(SurveyRequest surveyRequest);
 }
 
 class AssignmentRepoImpl extends AssignmentRepo {
@@ -26,5 +29,10 @@ class AssignmentRepoImpl extends AssignmentRepo {
   @override
   Future<List<GetSurveyResponse>> getSurveyResponse(String token, String surveyId, String? score, String? submissionId) {
     return api.getSurveyResponse(token, surveyId, score, submissionId);
+  }
+
+  @override
+  Future<Map<String, dynamic>> createSurvey(SurveyRequest surveyRequest) {
+    return api.createSurvey(surveyRequest);
   }
 }

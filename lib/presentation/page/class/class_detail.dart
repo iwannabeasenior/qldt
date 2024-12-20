@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:qldt/presentation/page/class/class_list.dart';
-import 'package:qldt/presentation/page/class/homework/create_home_work.dart';
+import 'package:qldt/presentation/page/class/homework/lecturer/create_home_work.dart';
 import 'package:qldt/presentation/page/class/homework/homework_page.dart';
 import 'package:qldt/presentation/page/class/material/material_page.dart';
 import 'package:qldt/presentation/page/home_page.dart';
@@ -101,12 +101,12 @@ class _ClassDetailState extends State<ClassDetail>
         _tabController.index == 1 && role != 'STUDENT'
           ? FloatingActionButton(
             onPressed: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context)=> CreateAssignmentScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> CreateHomeWork(classId: widget.classID)));
             },
             backgroundColor: QLDTColor.red,
             child: const Icon(Icons.add, color: Colors.white,),
         )
-          : SizedBox.shrink(),
+          : const SizedBox.shrink(),
     );
   }
 }
