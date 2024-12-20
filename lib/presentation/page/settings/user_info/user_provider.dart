@@ -1,49 +1,39 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 import 'package:qldt/data/model/user.dart';
 import 'package:qldt/data/repo/auth_repository.dart';
-import 'package:qldt/presentation/pref/user_preferences.dart';
 
-enum ApiState {
-  Pending,
-  Success,
-  Fail,
-}
-class UserProvider extends ChangeNotifier {
-  bool _isLoadUserData = false;
+class UserProvider with ChangeNotifier {
+  final AuthRepository _repo;
 
-  bool get isLoadUserData => _isLoadUserData;
-  set setLoadUserData(bool state) {
-    _isLoadUserData = state;
-    notifyListeners();
-  }
+  UserProvider(this._repo);
 
-  AuthRepository repo;
-  User? user;
-  String? token = UserPreferences.getToken();
-  String? userId = UserPreferences.getId();
+  User _user = User(
+      id: '',
+      status: '',
+      name: '',
+      role: '',
+      firstName: '',
+      lastName: '',
+      avatar: '',
+      email: '');
 
-  UserProvider(this.repo);
+  bool _isLoading = false;
 
-  // Future<void> initialize() async {
-  //   token = UserPreferences.getToken();
-  //   userId = UserPreferences.getId();
-  //   notifyListeners();
-  // }
+  User get user => _user;
+
+  bool get isLoading => _isLoading;
 
   Future<void> getUserInfo(String token, String userId) async {
-    var response = await repo.getUserInfo(token, userId);
-    response.fold(
-        (left) {
-          Logger().d(left.code + ":" + left.message);
-        },
-        (right) {
-          user = right;
-          Logger().d(user);
-          setLoadUserData = true;
-        },
-    );
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      _user = await _repo.getUserInfo(token, userId);
+    } catch (e) {
+      print(e);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }
-

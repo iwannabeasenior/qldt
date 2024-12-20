@@ -13,7 +13,7 @@ abstract class AuthRepository {
   Future<Either<Failure, String>> checkVerifyCode(String email, String verifyCode);
   Future<Either<Failure, void>> changePassword(String token, String oldPassword, String newPassword);
   Future<Either<Failure, void>> changeInfoAfterSignUp();
-  Future<Either<Failure, User>> getUserInfo(String token, String userId);
+  Future<User> getUserInfo(String token, String userId);
 }
 
 class AuthRepositoryImpl extends AuthRepository {
@@ -48,7 +48,7 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   @override
-  Future<Either<Failure, User>> getUserInfo(String token, String userId) {
+  Future<User> getUserInfo(String token, String userId) {
     return api.getUserInfo(token, userId);
   }
 

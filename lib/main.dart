@@ -10,6 +10,8 @@ import 'package:qldt/data/repo/auth_repository.dart';
 import 'package:qldt/data/repo/class_repository.dart';
 import 'package:qldt/data/repo/material_repository.dart';
 import 'package:qldt/helper/routes.dart';
+import 'package:qldt/presentation/page/settings/settings_provider.dart';
+import 'package:qldt/presentation/page/settings/user_info/user_provider.dart';
 import 'package:qldt/presentation/page/class/dashboard/dashboard/absence/absence_provider.dart';
 import 'package:qldt/presentation/page/class/dashboard/dashboard/attendance/attendance_provider.dart';
 import 'package:qldt/presentation/page/class/material/material_provider.dart';
@@ -34,7 +36,7 @@ void main() async {
   } else {
     initialRoute = 'HomePage';
   }
-  // initialRoute = 'EditMaterial';
+  // initialRoute = 'RegisterForClassPage';
   runApp(
       MyApp(intialRoute: initialRoute)
   );
@@ -64,6 +66,12 @@ class MyApp extends StatelessWidget {
           Provider.value(value: authRepo),
           Provider.value(value: classRepo),
           Provider.value(value: materialRepo),
+          ChangeNotifierProvider(
+            create: (_) => UserProvider(authRepo),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => SettingsProvider(authRepo),
+          ),
           ChangeNotifierProvider(create: (context) => MaterialProvider(materialRepo)),
           Provider.value(value: absenceRepo),
           Provider.value(value: attendanceRepo),

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
+import 'package:qldt/presentation/page/settings/settings_provider.dart';
+import 'package:qldt/presentation/page/settings/user_info/user_detail_page.dart';
+import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -57,7 +61,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   //Detai Information
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, "/UserInfoScreen");
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const UserDetailPage()));
                     },
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -365,7 +372,8 @@ class _SettingsPageState extends State<SettingsPage> {
   void _showChangePasswordDialog() {
     final TextEditingController oldPasswordController = TextEditingController();
     final TextEditingController newPasswordController = TextEditingController();
-    final TextEditingController confirmPasswordController = TextEditingController();
+    final TextEditingController confirmPasswordController =
+        TextEditingController();
 
     showDialog(
       context: context,
@@ -405,23 +413,45 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           actions: [
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 String oldPassword = oldPasswordController.text.trim();
                 String newPassword = newPasswordController.text.trim();
                 String confirmPassword = confirmPasswordController.text.trim();
 
-                if (oldPassword.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty) {
-                  showOverlayFillout(context, "BLANK");
+                if (oldPassword.isEmpty ||
+                    newPassword.isEmpty ||
+                    confirmPassword.isEmpty) {
+                  showOverlayFillout(context, "BLANK", "");
                 } else if (newPassword != confirmPassword) {
-                  // Hiển thị thông báo mật khẩu không khớp
-                  showOverlayFillout(context, "MISMATCH");
-                } else if (newPassword == oldPassword){
-                  // Hiển thị thông báo mật khẩu không khớp
-                  showOverlayFillout(context, "DUPLICATE");
+                  showOverlayFillout(context, "MISMATCH", "");
+                } else if (newPassword == oldPassword) {
+                  showOverlayFillout(context, "DUPLICATE", "");
                 } else {
-                  // Xử lý đổi mật khẩu thành công
-                  Navigator.of(context).pop();
-                  showOverlayFillout(context, "SUCCESS");
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return const Center(child: CircularProgressIndicator());
+                    },
+                  );
+
+                  final settingsProvider =
+                      Provider.of<SettingsProvider>(context, listen: false);
+                  await settingsProvider.changePassword(
+                    UserPreferences.getToken() ?? "",
+                    oldPassword,
+                    newPassword,
+                  );
+
+                  Navigator.of(context).pop(); // Đóng Loading Indicator
+
+                  if (settingsProvider.isSuccess) {
+                    Navigator.of(context).pop(); // Đóng Dialog
+                    showOverlayFillout(context, "SUCCESS", "");
+                  } else {
+                    showOverlayFillout(
+                        context, "ERROR", settingsProvider.message);
+                  }
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -445,8 +475,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-
-  void showOverlayFillout(BuildContext context, String type) {
+  void showOverlayFillout(BuildContext context, String type, String? message) {
     final overlay = Overlay.of(context);
     final overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
@@ -464,63 +493,82 @@ class _SettingsPageState extends State<SettingsPage> {
                 BoxShadow(color: Colors.black26, blurRadius: 10),
               ],
             ),
-            child: type == "BLANK" ? Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Icon(
-                  Icons.error_outline,
-                  color: Colors.yellow,
-                ),
-                Text(
-                  "Vui lòng điền đầy đủ thông tin!",
-                  style: TextStyle(color: QLDTColor.lightBlack),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            )
-                : type == "SUCCESS" ? Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Icon(
-                  Icons.check_box_outlined,
-                  color: Colors.green,
-                ),
-                Text(
-                  "Đổi mật khẩu thành công!",
-                  style: TextStyle(color: QLDTColor.lightBlack),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            )
-                : type == "MISMATCH" ? Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Icon(
-                  Icons.error_outline,
-                  color: Colors.yellow,
-                ),
-                Text(
-                  "Mật khẩu mới không trùng nhau!",
-                  style: TextStyle(color: QLDTColor.lightBlack),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            )
-                : type == "DUPLICATE" ? Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Icon(
-                  Icons.error_outline,
-                  color: Colors.yellow,
-                ),
-                Text(
-                  "Mật khẩu mới trùng mật khẩu cũ!",
-                  style: TextStyle(color: QLDTColor.lightBlack),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            )
-                : const SizedBox.shrink(),
+            child: type == "BLANK"
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        color: Colors.yellow,
+                      ),
+                      Text(
+                        "Vui lòng điền đầy đủ thông tin!",
+                        style: TextStyle(color: QLDTColor.lightBlack),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  )
+                : type == "SUCCESS"
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Icon(
+                            Icons.check_box_outlined,
+                            color: Colors.green,
+                          ),
+                          Text(
+                            "Đổi mật khẩu thành công!",
+                            style: TextStyle(color: QLDTColor.lightBlack),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      )
+                    : type == "MISMATCH"
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Icon(
+                                Icons.error_outline,
+                                color: Colors.yellow,
+                              ),
+                              Text(
+                                "Mật khẩu mới không trùng nhau!",
+                                style: TextStyle(color: QLDTColor.lightBlack),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          )
+                        : type == "DUPLICATE"
+                            ? Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Icon(
+                                    Icons.error_outline,
+                                    color: Colors.yellow,
+                                  ),
+                                  Text(
+                                    "Mật khẩu mới trùng mật khẩu cũ!",
+                                    style:
+                                        TextStyle(color: QLDTColor.lightBlack),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              )
+                            : Row(
+                                children: [
+                                  const Icon(
+                                    Icons.error_outline,
+                                    color: Colors.red,
+                                  ),
+                                  const SizedBox(width: 16,),
+                                  Text(
+                                    message ?? "",
+                                    style:
+                                        TextStyle(color: QLDTColor.lightBlack, overflow: TextOverflow.ellipsis),
+                                  ),
+                                ],
+                              ),
           ),
         ),
       ),

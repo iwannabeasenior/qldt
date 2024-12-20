@@ -87,6 +87,7 @@ flutter:
     - assets/images/
     - assets/main-image.png
     - assets/detail_class_icon/
+    - assets/images/default.jpg
 
   fonts:
     - family: Chat
