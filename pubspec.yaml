@@ -50,6 +50,7 @@ dependencies:
   fluttertoast: ^8.2.8
   path: ^1.9.0
   open_file: ^3.5.10
+  http_parser: ^4.0.2
 
 
 dev_dependencies:

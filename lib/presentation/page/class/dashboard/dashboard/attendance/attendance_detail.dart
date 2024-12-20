@@ -1,25 +1,80 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
+import 'package:qldt/data/request/get_attendance_list_request.dart';
 
-class AttendanceDetailScreen extends StatefulWidget {
+import '../../../../../../data/model/class_info.dart';
+import '../../../../../../data/repo/attendance_repository.dart';
+import 'attendance_provider.dart';
+
+class AttendanceDetail extends StatelessWidget {
   final String date; // Pass the selected date
-  const AttendanceDetailScreen({super.key, required this.date});
-
-  @override
-  State<AttendanceDetailScreen> createState() =>
-      _AttendanceDetailScreenState();
-}
-
-class _AttendanceDetailScreenState extends State<AttendanceDetailScreen> {
-  final List<Map<String, dynamic>> students = [
-    {"id": "20215482", "name": "Nguyễn TT", "status": "PRESENT"},
-    {"id": "20222023", "name": "Phạm Quốc Đạt", "status": "EXCUSED_ABSENCE"},
-
-  ];
-
-  final List<String> statuses = ["PRESENT", "EXCUSED_ABSENCE", "UNEXCUSED_ABSENCE"];
+  const AttendanceDetail({super.key, required this.date});
 
   @override
   Widget build(BuildContext context) {
+    final repo = context.read<AttendanceRepo>();  // Reading the AttendanceRepo
+
+    return ChangeNotifierProvider(
+      create: (context) => AttendanceProvider(repo),
+      child: AttendanceDetailView(date: date),  // Passing the AttendancePageView widget
+    );
+  }
+}
+
+class AttendanceDetailView extends StatefulWidget {
+  final String date;
+  const AttendanceDetailView({super.key, required this.date});
+  @override
+  State<AttendanceDetailView> createState() => _AttendanceDetailViewState();
+}
+
+class _AttendanceDetailViewState extends State<AttendanceDetailView> {
+
+  final List<String> statuses = ["PRESENT", "EXCUSED_ABSENCE", "UNEXCUSED_ABSENCE"];
+  Map<String, String> previousStatuses = {}; // This will be an empty map initially
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<AttendanceProvider>();
+      provider.getAttendanceStudentDetail(GetAttendanceListRequest(token: "wVIo5R", classId: "000100", date: widget.date, pageableRequest: PageableRequest(page: "0", pageSize: "10")));
+      provider.fetchStudentAccounts("wVIo5R", "LECTURER", "237", "000100");
+
+    });
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.watch<AttendanceProvider>(); // Watch the provider for updates
+
+    final attendanceStudentDetail = provider.attendanceStudentDetail;
+    final studentLists = provider.studentLists; // Get student data
+    if (previousStatuses.isEmpty) {
+      for (var i = 0; i < attendanceStudentDetail.length; i++) {
+        final student = attendanceStudentDetail[i];
+        // Initialize previousStatuses with the current status if not set
+        previousStatuses[student.attendanceId!] = student.status;
+      }
+    }
+
+
+    // Update the names in attendanceStudentDetail using studentLists
+    for (var i = 0; i < attendanceStudentDetail.length; i++) {
+      final student = attendanceStudentDetail[i];
+      // Search for the matching studentId in studentLists
+      final matchedStudent = studentLists.firstWhere(
+              (studentList) => studentList.studentId == student.studentId,
+      );
+      // Set the name of the student from studentLists
+      student.name = '${matchedStudent.firstName} ${matchedStudent.lastName}';
+      if (!previousStatuses.containsKey(student.attendanceId)) {
+        previousStatuses[student.attendanceId!] = student.status;
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red,
@@ -80,7 +135,8 @@ class _AttendanceDetailScreenState extends State<AttendanceDetailScreen> {
                       ),
                     ],
                   ),
-                  for (int i = 0; i < students.length; i++)
+                  // Render student data from the provider's list
+                  for (int i = 0; i < attendanceStudentDetail.length; i++)
                     TableRow(children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -88,22 +144,28 @@ class _AttendanceDetailScreenState extends State<AttendanceDetailScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(students[i]["id"]),
+                        child: Text(attendanceStudentDetail[i].studentId),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(students[i]["name"]),
+                        child: Text(attendanceStudentDetail[i].name ?? 'No Name'), // Fallback value
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: DropdownButton<String>(
-                          value: students[i]["status"].isEmpty
+                          value: attendanceStudentDetail[i].status.isEmpty
                               ? null
-                              : students[i]["status"],
+                              : attendanceStudentDetail[i].status,
                           isExpanded: true,
                           onChanged: (String? newValue) {
                             setState(() {
-                              students[i]["status"] = newValue!;
+                              // attendanceStudentDetail[i].status = newValue!;
+                              // If the status has changed, update it
+                              // if (previousStatuses[attendanceStudentDetail[i].attendanceId] != newValue) {
+                              //   Logger().d('reigh');
+                              //   attendanceStudentDetail[i].status = newValue!;                                Logger().d('new ${previousStatuses[attendanceStudentDetail[i].attendanceId]} và ${attendanceStudentDetail[i].attendanceId} ');
+                              // }
+                              attendanceStudentDetail[i].status = newValue!;
                             });
                           },
                           items: statuses
@@ -135,12 +197,16 @@ class _AttendanceDetailScreenState extends State<AttendanceDetailScreen> {
               const EdgeInsets.symmetric(horizontal: 32.0, vertical: 12.0),
             ),
             onPressed: () {
-              // Implement your submission logic here
-              final submissionData = {
-                "date": widget.date,
-                "students": students,
-              };
-              print(submissionData); // Replace with actual submission
+    for (var student in attendanceStudentDetail) {
+    // Only call setAttendanceStatus if the status has changed
+    if (previousStatuses[student.attendanceId] != student.status) {
+    provider.setAttendanceStatus(
+    token: "wVIo5R", // The token (can be dynamic or passed)
+    attendanceId: student.attendanceId, // Get the attendanceId
+    status: student.status, // Get the status
+    );
+    }}
+
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text("Attendance submitted!")),
               );
