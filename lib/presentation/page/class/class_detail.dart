@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:qldt/presentation/page/class/class_list.dart';
+import 'package:qldt/presentation/page/class/homework/create_home_work.dart';
 import 'package:qldt/presentation/page/class/homework/homework_page.dart';
 import 'package:qldt/presentation/page/class/material/material_page.dart';
 import 'package:qldt/presentation/page/home_page.dart';
+import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 
 import 'dashboard/dashboard_page.dart';
@@ -24,6 +26,9 @@ class _ClassDetailState extends State<ClassDetail>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, initialIndex: widget.initialIndex, vsync: this);
+    _tabController.addListener((){
+      setState(() {});
+    });
   }
 
   @override
@@ -35,7 +40,7 @@ class _ClassDetailState extends State<ClassDetail>
   @override
   Widget build(BuildContext context) {
     // final argument = ModalRoute.of(context)?.settings.arguments as String;
-
+    final String role = UserPreferences.getRole() ?? "";
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFFAE2C2C),
@@ -92,6 +97,16 @@ class _ClassDetailState extends State<ClassDetail>
           ),
         ],
       ),
+      floatingActionButton:
+        _tabController.index == 1 && role != 'STUDENT'
+          ? FloatingActionButton(
+            onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> CreateAssignmentScreen()));
+            },
+            backgroundColor: QLDTColor.red,
+            child: const Icon(Icons.add, color: Colors.white,),
+        )
+          : SizedBox.shrink(),
     );
   }
 }
