@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:qldt/data/request/files_request.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 
-void main() {
-  runApp(MyApp());
-}
+class CreateHomeWork extends StatelessWidget {
+  const CreateHomeWork({super.key});
 
-class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: CreateAssignmentScreen(),
-    );
+    return const Placeholder();
   }
 }
+
 
 class CreateAssignmentScreen extends StatefulWidget {
   @override
@@ -24,82 +22,36 @@ class CreateAssignmentScreen extends StatefulWidget {
 class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
-  DateTime? startDate;
-  DateTime? endDate;
-  List<AbsenceFileRequest> files = [];
+  DateTime? _selectedDate;
+  List<FileRequest> files = [];
 
-  Future<void> pickFile() async {
+  Future<void> pickFiles() async {
     final result = await FilePicker.platform.pickFiles(allowMultiple: true);
     if (result != null) {
-      files = result.files.map((file) => AbsenceFileRequest(file: file, fileData: file.bytes)).toList();
+      files = result.files.map((file) => FileRequest(file: file, fileData: file.bytes)).toList();
     }
   }
 
-  Future<void> selectDateTime(BuildContext context, bool isStart) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null) {
-      final TimeOfDay? pickedTime = await showTimePicker(
+  Future<void> pickDate() async {
+    final pickedDate = await showDatePicker(
         context: context,
-        initialTime: TimeOfDay.now(),
-      );
-      if (pickedTime != null) {
-        setState(() {
-          final selectedDateTime = DateTime(
-            picked.year,
-            picked.month,
-            picked.day,
-            pickedTime.hour,
-            pickedTime.minute,
-          );
-          if (isStart) {
-            startDate = selectedDateTime;
-          } else {
-            endDate = selectedDateTime;
-          }
-        });
-      }
-    }
-  }
-
-  void submit() {
-    if (titleController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Tên bài kiểm tra không được để trống")),
-      );
-      return;
-    }
-
-    if (startDate == null || endDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Vui lòng chọn thời gian bắt đầu và kết thúc")),
-      );
-      return;
-    }
-
-    if (endDate!.isBefore(startDate!)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text("Thời gian kết thúc phải sau thời gian bắt đầu")),
-      );
-      return;
-    }
-
-    // Xử lý lưu bài kiểm tra
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Bài kiểm tra đã được tạo thành công!")),
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2024),
+        lastDate: DateTime(2025),
     );
-  }
+
+    if (pickedDate != null) {
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    }
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Column(
+        title: const Column(
           children: [
             Text(
               "HUST",
@@ -126,96 +78,78 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
             // Tên bài kiểm tra
             TextField(
               controller: titleController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: "Tên bài kiểm tra*",
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             // Mô tả
             TextField(
               controller: descriptionController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: "Mô tả",
                 border: OutlineInputBorder(),
               ),
               maxLines: 3,
             ),
-            SizedBox(height: 16),
-            Center(child: Text("Hoặc", style: TextStyle(color: Colors.grey))),
-            SizedBox(height: 8),
+            const SizedBox(height: 16),
+            const Center(child: Text("Hoặc", style: TextStyle(color: Colors.grey))),
+            const SizedBox(height: 8),
             // Nút tải tài liệu
             Center(
               child: ElevatedButton.icon(
-                onPressed: pickFile,
-                icon: Icon(Icons.upload_file, color: Colors.white),
+                onPressed: pickFiles,
+                icon: const Icon(Icons.upload_file, color: Colors.white),
                 label: Text(
-                  "Tải tài liệu lên",
-                  style: TextStyle(color: Colors.white),
+                  files.isEmpty ? "Tải tài liệu lên" : "Change Files",
+                  style: const TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: QLDTColor.red,
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 ),
               ),
             ),
-            if (uploadedFile != null)
-              Center(
-                  child: Text("Đã chọn file: $uploadedFile",
-                      style: TextStyle(color: Colors.grey))),
-            SizedBox(height: 16),
-            // Chọn thời gian bắt đầu và kết thúc
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => selectDateTime(context, true),
-                    child: Text(
-                      startDate != null
-                          ? "Bắt đầu: ${DateFormat('yyyy-MM-dd – kk:mm').format(startDate!)}"
-                          : "Bắt đầu",
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor: QLDTColor.white,
-                      foregroundColor: QLDTColor.red,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                    ),
-                  ),
+            //Hiển thị danh sách tài liệu
+            if (files.isNotEmpty)
+              Column(
+                children: [
+                  for (var i = 0; i < files.length; i++)
+                    Text('File: ${files[i].file?.name.split('/').last}'),
+                ],
+              ),
+            const SizedBox(height: 16),
+            // Chọn thời gian kết thúc
+            GestureDetector(
+              onTap: pickDate,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 16.0, horizontal: 12.0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: QLDTColor.red),
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
-                SizedBox(width: 16),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => selectDateTime(context, false),
-                    child: Text(
-                      endDate != null
-                          ? "Kết thúc: ${DateFormat('yyyy-MM-dd – kk:mm').format(endDate!)}"
-                          : "Kết thúc",
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor: QLDTColor.white,
-                      foregroundColor: QLDTColor.red,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                    ),
-                  ),
+                child: Text(
+                  _selectedDate != null
+                      ? _selectedDate!.toIso8601String().split("T")[0]
+                      : 'Select Date',
+                  style: const TextStyle(fontSize: 16.0),
                 ),
-              ],
+              ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             // Nút submit
             Center(
               child: ElevatedButton(
-                onPressed: submit,
-                child: Text(
-                  "Submit",
-                  style: TextStyle(color: Colors.white),
-                ),
+                onPressed: (){},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: QLDTColor.red,
-                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                ),
+                child: const Text(
+                  "Submit",
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
