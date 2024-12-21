@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:qldt/data/model/assignment.dart';
+import 'package:qldt/presentation/page/class/homework/student/assignment/submit_assignment.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
-
-Assignment assignment = Assignment(
-    id: 1,
-    title: 'Tieu de',
-    description: 'Mo ta',
-    isSubmitted: false,
-    deadline: '23:59 - 26.9.2024',
-    lecturerId: '20211012',
-    fileUrl: 'fileUrl',
-    classId: '151203'
-);
+import 'package:url_launcher/url_launcher.dart';
 
 class AssignmentInfoPage extends StatelessWidget {
   final String type;
-  const AssignmentInfoPage({super.key, required this.type});
+  final Assignment assignment;
+  const AssignmentInfoPage({super.key, required this.type, required this.assignment});
 
   @override
   Widget build(BuildContext context) {
+    //launch Url
+    late final Uri _url = Uri.parse(assignment.fileUrl ?? "");
+    Future<void> _launchUrl() async {
+      if (!await launchUrl(_url)) {
+        throw Exception('Could not launch $_url');
+      }
+    }
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -112,7 +111,7 @@ class AssignmentInfoPage extends StatelessWidget {
                 children: [
                   //Xem tài liệu
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: _launchUrl,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: QLDTColor.red,
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -126,7 +125,7 @@ class AssignmentInfoPage extends StatelessWidget {
                   (type == 'UPCOMING')
                       ? ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/SubmitAssignmentPage');
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>SubmitAssignment(assignmentId: assignment.id.toString(),)));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: QLDTColor.red,

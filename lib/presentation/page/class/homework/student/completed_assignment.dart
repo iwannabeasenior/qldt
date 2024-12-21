@@ -43,7 +43,9 @@ class _CompletedAssignmentViewState extends State<CompletedAssignmentView> {
     return Column(
       children: [
         Expanded(
-          child: ListView(
+          child: studentAssignmentsProvider.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : ListView(
             scrollDirection: Axis.vertical,
             children: List.generate(studentAssignmentsProvider.assignments.length, (index) {
               return ExerciseCard(

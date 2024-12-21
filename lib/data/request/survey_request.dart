@@ -10,13 +10,27 @@ class SurveyRequest {
   List<FileRequest> files;
 
   SurveyRequest(
-      {
-      required this.token,
+      {required this.token,
       this.classId,
       this.title,
       required this.deadline,
       required this.description,
       required this.files,
-      this.assignmentId
-      });
+      this.assignmentId});
+}
+
+class SubmitSurveyRequest {
+  String token;
+  String assignmentId;
+  String textResponse;
+  List<FileRequest> files;
+
+  SubmitSurveyRequest(
+      {
+        required this.token,
+        required this.assignmentId,
+        required this.textResponse,
+        required this.files
+      }
+    );
 }

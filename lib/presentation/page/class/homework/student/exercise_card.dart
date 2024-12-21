@@ -19,7 +19,7 @@ class ExerciseCard extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => AssignmentInfoPage(type: type,))
+          MaterialPageRoute(builder: (context) => AssignmentInfoPage(type: type, assignment: assignment,))
         );
       },
       child: Padding(
