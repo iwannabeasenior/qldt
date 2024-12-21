@@ -31,6 +31,7 @@ abstract class ApiServiceIT5023E {
   Future<List<Survey>> getAllSurveys (String token, String classId);
   Future<List<GetSurveyResponse>> getSurveyResponse (String token, String surveyId, String? score, String? submissionId);
   Future<Map<String, dynamic>> createSurvey(SurveyRequest surveyRequest);
+  Future<Map<String, dynamic>> editSurvey(SurveyRequest surveyRequest);
 }
 
 class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
@@ -215,9 +216,9 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
 
     //form-data
     request.fields['token'] = surveyRequest.token;
-    request.fields['classId'] = surveyRequest.classId;
+    request.fields['classId'] = surveyRequest.classId!;
     request.fields['deadline'] = surveyRequest.deadline;
-    request.fields['title'] = surveyRequest.title;
+    request.fields['title'] = surveyRequest.title!;
     request.fields['description'] = surveyRequest.description;
 
     //add files to req
@@ -229,6 +230,50 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
             filename: surveyRequest.files[i].file?.name,
             contentType: MediaType.parse("multipart/form-data")
         )
+      );
+    }
+    request.files.add;
+
+    //req and res
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      Logger().d('OK');
+      final responseBody = await response.stream.bytesToString();
+      final jsonResponse = jsonDecode(responseBody);
+      //meta code message
+      if (jsonResponse['meta']['code'] == "1000") {
+        //get data successfully
+        return jsonResponse['data'];
+      } else {
+        throw(jsonResponse['meta']['message']);
+      }
+    } else {
+      final responseBody = await response.stream.bytesToString();
+      final jsonResponse = jsonDecode(responseBody);
+      throw Exception("Failed to request absence + ${jsonResponse['meta']['message']}");
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> editSurvey(SurveyRequest surveyRequest) async {
+    const url = '${Constant.BASEURL}/it5023e/edit_survey';
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+
+    //form-data
+    request.fields['token'] = surveyRequest.token;
+    request.fields['assignmentId'] = surveyRequest.assignmentId!;
+    request.fields['deadline'] = surveyRequest.deadline;
+    request.fields['description'] = surveyRequest.description;
+
+    //add files to req
+    for (var i = 0; i < surveyRequest.files.length; i++) {
+      request.files.add(
+          http.MultipartFile.fromBytes(
+              'file',
+              surveyRequest.files[i].fileData as List<int>,
+              filename: surveyRequest.files[i].file?.name,
+              contentType: MediaType.parse("multipart/form-data")
+          )
       );
     }
     request.files.add;

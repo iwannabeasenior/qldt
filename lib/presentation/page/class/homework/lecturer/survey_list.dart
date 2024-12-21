@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:qldt/data/model/survey.dart';
 import 'package:qldt/data/repo/assignment_repository.dart';
 import 'package:qldt/helper/utils.dart';
+import 'package:qldt/presentation/page/class/homework/lecturer/edit_homework.dart';
 import 'package:qldt/presentation/page/class/homework/lecturer/lecturer_assignments_provider.dart';
 import 'package:qldt/presentation/page/class/homework/lecturer/submission_list.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
@@ -72,7 +73,17 @@ class AssignmentCard extends StatelessWidget {
     String deadline = Utils.formatDateTime(survey.deadline.toString());
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> SubmissionList(title: survey.title, surveyId: survey.id.toString(), classId: classId,)));
+        // Điều hướng đến SubmissionList khi nhấn vào toàn bộ Card
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SubmissionList(
+              title: survey.title,
+              surveyId: survey.id.toString(),
+              classId: classId,
+            ),
+          ),
+        );
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -95,10 +106,21 @@ class AssignmentCard extends StatelessWidget {
                             survey.title,
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          const Icon(
-                            Icons.edit_note_outlined,
-                            color: Colors.black,
-                          )
+                          GestureDetector(
+                            onTap: () {
+                              // Điều hướng đến EditSurvey khi nhấn vào icon
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EditHomeWork(survey: survey,),
+                                ),
+                              );
+                            },
+                            child: const Icon(
+                              Icons.edit_note_outlined,
+                              color: Colors.black,
+                            ),
+                          ),
                         ],
                       ),
                       const Divider(),
@@ -118,3 +140,4 @@ class AssignmentCard extends StatelessWidget {
     );
   }
 }
+

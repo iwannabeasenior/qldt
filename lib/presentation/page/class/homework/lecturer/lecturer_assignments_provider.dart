@@ -81,4 +81,17 @@ class LecturerAssignmentProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> editSurvey(SurveyRequest surveyRequest) async {
+    notifyListeners();
+    try {
+      _isLoading = true;
+      res = await _repo.editSurvey(surveyRequest);
+    } catch(e) {
+      print(e);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }

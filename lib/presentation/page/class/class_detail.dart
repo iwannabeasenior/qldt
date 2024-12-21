@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:qldt/presentation/page/class/class_list.dart';
-import 'package:qldt/presentation/page/class/homework/lecturer/create_home_work.dart';
+import 'package:qldt/presentation/page/class/homework/lecturer/create_homework.dart';
 import 'package:qldt/presentation/page/class/homework/homework_page.dart';
 import 'package:qldt/presentation/page/class/material/material_page.dart';
 import 'package:qldt/presentation/page/home_page.dart';

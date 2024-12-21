@@ -9,6 +9,7 @@ abstract class AssignmentRepo {
   Future<List<Survey>> getAllSurveys(String token, String classId);
   Future<List<GetSurveyResponse>> getSurveyResponse(String token, String surveyId, String? score, String? submissionId);
   Future<Map<String, dynamic>> createSurvey(SurveyRequest surveyRequest);
+  Future<Map<String, dynamic>> editSurvey(SurveyRequest surveyRequest);
 }
 
 class AssignmentRepoImpl extends AssignmentRepo {
@@ -34,5 +35,10 @@ class AssignmentRepoImpl extends AssignmentRepo {
   @override
   Future<Map<String, dynamic>> createSurvey(SurveyRequest surveyRequest) {
     return api.createSurvey(surveyRequest);
+  }
+
+  @override
+  Future<Map<String, dynamic>> editSurvey(SurveyRequest surveyRequest) {
+    return api.editSurvey(surveyRequest);
   }
 }
