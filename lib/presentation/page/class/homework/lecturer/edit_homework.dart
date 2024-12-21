@@ -20,7 +20,7 @@ class EditHomeWork extends StatelessWidget {
     return ChangeNotifierProvider(
         create: (context) => LecturerAssignmentProvider(repo),
         child: EditAssignmentScreen(survey: survey,),
-    );0
+    );
   }
 }
 
