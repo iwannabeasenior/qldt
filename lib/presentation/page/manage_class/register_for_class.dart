@@ -327,7 +327,7 @@ class _RegisterForClassViewState extends State<RegisterForClassView> {
 
   Future<void> _fetchOpenClassList() async {
     final provider = Provider.of<ManageClassProvider>(context, listen: false);
-    await provider.getOpenClassList("41xI4u", "0", "10");
+    await provider.getOpenClassList("0v80WG", "0", "10");
   }
 
   @override

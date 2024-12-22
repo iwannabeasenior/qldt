@@ -60,7 +60,7 @@ abstract class ApiServiceIT5023E {
     required String attendanceId,
     required String status,
   });
-  
+
   //manage_class
   Future<Map<String, dynamic>> createClass(ClassCreateRequest classCreateRequest);
   Future<List<ClassModel1>> getOpenClass(String token, String page, String pageSize);
@@ -647,7 +647,9 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        // final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
+
 
         List<dynamic> classesJson = jsonResponse['data']["page_content"];
 

@@ -72,7 +72,7 @@ class _OpenClassListViewState extends State<OpenClassListView> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _provider = context.read<ManageClassProvider>();
-      _provider.getOpenClassList("41xI4u", "0", "10");  // Adjust as necessary
+      _provider.getOpenClassList("0v80WG", "0", "10");  // Adjust as necessary
     });
   }
 
