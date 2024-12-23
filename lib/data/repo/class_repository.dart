@@ -11,6 +11,7 @@ abstract class ClassRepo {
   Future<Either<Failure, List<Class>>> getAllClass(GetClassListRequest request);
   Future<ClassInfo> getClassInfo(String token, String role, String accountId, String classId);
   Future<Map<String, dynamic>> editClass(EditClassRequest editClassRequest);
+  Future<void> addStudent(String token, String classId, String accountId);
 }
 
 
@@ -30,5 +31,10 @@ class ClassRepoImpl extends ClassRepo {
   @override
   Future<Map<String, dynamic>> editClass(EditClassRequest editClassRequest) {
     return api.editClass(editClassRequest);
+  }
+
+  @override
+  Future<void> addStudent(String token, String classId, String accountId) {
+    return api.addStudent(token, classId, accountId);
   }
 }

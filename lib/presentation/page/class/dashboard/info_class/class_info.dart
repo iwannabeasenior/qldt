@@ -2,20 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:qldt/main.dart';
+import 'package:qldt/presentation/page/class/class_list.dart';
 import 'package:qldt/presentation/page/class/dashboard/info_class/class_info_provider.dart';
 import 'package:qldt/presentation/page/class/dashboard/info_class/student_list.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 
+import '../../../../../data/model/class_info.dart';
 import 'edit_class.dart';
 
-// Dữ liệu lớp học (dùng chung)
-Map<String, dynamic> classData = {
-  'type': 'Lý thuyết-LT',
-  'lecturer': 'Nguyễn Tiến Thành',
-  'students': '100',
-  'startDate': '01/11/2024',
-  'endDate': '31/12/2024',
-};
 
 class ClassInfoScreen extends StatefulWidget {
   final String classId;
@@ -27,9 +21,9 @@ class ClassInfoScreen extends StatefulWidget {
 }
 
 class _ClassInfoScreenState extends State<ClassInfoScreen> {
+
   @override
   void initState() {
-    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ClassInfoProvider>().getClassInfo(
           UserPreferences.getToken() ?? "",
@@ -37,12 +31,14 @@ class _ClassInfoScreenState extends State<ClassInfoScreen> {
           UserPreferences.getId() ?? "",
           widget.classId);
     });
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final classInfoProvider =
         Provider.of<ClassInfoProvider>(context, listen: true);
+
     if (classInfoProvider.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -131,11 +127,22 @@ class _ClassInfoScreenState extends State<ClassInfoScreen> {
             ),
             const Spacer(),
             ElevatedButton(
-              onPressed: () {
-                Navigator.push(
+              onPressed: () async {
+                // Đợi kết quả từ EditClassScreen
+                final result = await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => StudentListScreen(classInfo: classInfoProvider.classInfo,)),
                 );
+
+                // Nếu có cập nhật thành công, refresh lại data
+                if (result == true) {
+                  await context.read<ClassInfoProvider>().getClassInfo(
+                      UserPreferences.getToken() ?? "",
+                      UserPreferences.getRole() ?? "",
+                      UserPreferences.getId() ?? "",
+                      widget.classId
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFAE2C2C),
@@ -150,12 +157,22 @@ class _ClassInfoScreenState extends State<ClassInfoScreen> {
             const SizedBox(height: 16),
             UserPreferences.getRole() == "LECTURER"
                 ? ElevatedButton(
-              onPressed: () {
-                // Chuyển đến trang chỉnh sửa lớp học
-                Navigator.push(
+              onPressed: () async {
+                // Đợi kết quả từ EditClassScreen
+                final result = await Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => EditClassScreen()),
+                  MaterialPageRoute(builder: (context) => EditClassScreen(classInfo: classInfoProvider.classInfo,)),
                 );
+
+                // Nếu có cập nhật thành công, refresh lại data
+                if (result == true) {
+                  await context.read<ClassInfoProvider>().getClassInfo(
+                      UserPreferences.getToken() ?? "",
+                      UserPreferences.getRole() ?? "",
+                      UserPreferences.getId() ?? "",
+                      widget.classId
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFAE2C2C),

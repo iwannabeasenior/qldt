@@ -33,7 +33,7 @@ abstract class ApiServiceIT5023E {
   Future<Either<Failure, List<Class>>> getAllClass(GetClassListRequest request);
   Future<ClassInfo> getClassInfo(String token, String role, String accountId,String classId);
   Future<Map<String, dynamic>> editClass(EditClassRequest editClassRequest);
-
+  Future<void> addStudent(String token, String classId, String accountId);
   // material
   Future<List<Materials>> getAllMaterials(String token, String classID);
   Future<void> deleteMaterial(String token, String materialID);
@@ -596,21 +596,25 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
   Future<Map<String, dynamic>> editClass(EditClassRequest editClassRequest) async {
     const url = '${Constant.BASEURL}/it5023e/edit_class'; // URL của API
 
-    var request = http.MultipartRequest('POST', Uri.parse(url));
+    final Map<String, dynamic> requestBody = {
+      'token': editClassRequest.token,
+      'class_id': editClassRequest.classId,
+      'class_name': editClassRequest.className,
+      'status': editClassRequest.status,
+      'start_date': editClassRequest.startDate,
+      'end_date': editClassRequest.endDate,
+    };
 
-    // Thêm các trường form-data
-    request.fields['token'] = editClassRequest.token!;
-    request.fields['class_id'] = editClassRequest.classId!;
-    request.fields['class_name'] = editClassRequest.className!;
-    request.fields['status'] = editClassRequest.status!;
-    request.fields['start_date'] = editClassRequest.startDate!;
-    request.fields['end_date'] = editClassRequest.startDate!;
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(requestBody),
+    );
 
-    // Gửi yêu cầu và nhận phản hồi
-    var response = await request.send();
     if (response.statusCode == 200) {
-      final responseBody = await response.stream.bytesToString();
-      final jsonResponse = jsonDecode(responseBody);
+      final jsonResponse = jsonDecode(response.body);
       // Kiểm tra mã code từ response
       if (jsonResponse['meta']['code'] == "1000") {
         // Trả về dữ liệu thành công
@@ -619,14 +623,44 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
         throw Exception(jsonResponse['meta']['message']);
       }
     } else {
-      final responseBody = await response.stream.bytesToString();
-      final jsonResponse = jsonDecode(responseBody);
+      final jsonResponse = jsonDecode(response.body);
       throw Exception("Failed to request absence + ${jsonResponse['meta']['message']}");
     }
   }
 
+  @override
+  Future<void> addStudent(String token, String classId, String accountId) async {
+    const url = '${Constant.BASEURL}/it5023e/add_student';
 
+    try {
+      final Map<String, dynamic> requestBody = {
+        'token': token,
+        'class_id': classId,
+        'account_id': accountId
+      };
 
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      final jsonResponse = jsonDecode(response.body);
+
+      // Kiểm tra code từ response meta
+      if (jsonResponse['meta']['code'] != "1000") {
+        throw Exception(jsonResponse['meta']['message']);
+      }
+
+      return jsonResponse['data'];
+
+    } catch (e) {
+      print('Error adding student: $e'); // Log lỗi
+      throw e; // Throw lỗi để UI xử lý
+    }
+  }
 
 }
 

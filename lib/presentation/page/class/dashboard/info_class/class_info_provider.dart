@@ -42,4 +42,20 @@ class ClassInfoProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> addStudent(String token, String classId, String accountId) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      await _repo.addStudent(token, classId, accountId);
+
+    } catch (e) {
+      print('Provider error: $e');
+      rethrow; // Ném lại lỗi để UI xử lý
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }
