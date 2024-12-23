@@ -175,17 +175,16 @@ class _ClassInfoScreenState extends State<ClassInfoScreen> {
   }
 }
 
-///// Trang chỉnh sửa lớp học
 class InfoRow extends StatelessWidget {
   final String title;
   final String value;
 
-  const InfoRow({required this.title, required this.value});
+  const InfoRow({super.key, required this.title, required this.value});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.black),
         borderRadius: BorderRadius.circular(4),
@@ -193,7 +192,7 @@ class InfoRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
           Text(value),
         ],
       ),

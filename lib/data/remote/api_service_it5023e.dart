@@ -12,6 +12,7 @@ import 'package:qldt/data/model/absence_student.dart';
 import 'package:qldt/data/model/class.dart';
 import 'package:qldt/data/model/materials.dart';
 import 'package:qldt/data/remote/api_service_it4788.dart';
+import 'package:qldt/data/request/edit_class_request.dart';
 import 'package:qldt/data/request/get_class_list_request.dart';
 import 'package:qldt/data/request/get_student_absence.dart';
 import 'package:qldt/data/request/material_request.dart';
@@ -31,6 +32,7 @@ abstract class ApiServiceIT5023E {
   // class
   Future<Either<Failure, List<Class>>> getAllClass(GetClassListRequest request);
   Future<ClassInfo> getClassInfo(String token, String role, String accountId,String classId);
+  Future<Map<String, dynamic>> editClass(EditClassRequest editClassRequest);
 
   // material
   Future<List<Materials>> getAllMaterials(String token, String classID);
@@ -39,6 +41,7 @@ abstract class ApiServiceIT5023E {
   Future<Materials> editMaterial(EditMaterialRequest request);
   Future<Materials> getMaterialInfo(String token, String materialId);
 
+  //Absence
   Future<Map<String, dynamic>> requestAbsence(AbsenceRequest absenceRequest);
   Future<List<AbsenceStudent>> getStudentAbsenceRequests(GetStudentAbsence getStudentAbsence);
   Future<List<AbsenceLecturer>> getAllAbsenceRequests(GetStudentAbsence getStudentAbsence);
@@ -587,6 +590,39 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
       throw Exception("Error: $e");
     }
 
+  }
+
+  @override
+  Future<Map<String, dynamic>> editClass(EditClassRequest editClassRequest) async {
+    const url = '${Constant.BASEURL}/it5023e/edit_class'; // URL của API
+
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+
+    // Thêm các trường form-data
+    request.fields['token'] = editClassRequest.token!;
+    request.fields['class_id'] = editClassRequest.classId!;
+    request.fields['class_name'] = editClassRequest.className!;
+    request.fields['status'] = editClassRequest.status!;
+    request.fields['start_date'] = editClassRequest.startDate!;
+    request.fields['end_date'] = editClassRequest.startDate!;
+
+    // Gửi yêu cầu và nhận phản hồi
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      final responseBody = await response.stream.bytesToString();
+      final jsonResponse = jsonDecode(responseBody);
+      // Kiểm tra mã code từ response
+      if (jsonResponse['meta']['code'] == "1000") {
+        // Trả về dữ liệu thành công
+        return jsonResponse['data'];
+      } else {
+        throw Exception(jsonResponse['meta']['message']);
+      }
+    } else {
+      final responseBody = await response.stream.bytesToString();
+      final jsonResponse = jsonDecode(responseBody);
+      throw Exception("Failed to request absence + ${jsonResponse['meta']['message']}");
+    }
   }
 
 

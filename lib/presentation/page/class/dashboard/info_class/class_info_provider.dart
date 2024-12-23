@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:logger/logger.dart';
 import 'package:qldt/data/model/class_info.dart';
+import 'package:qldt/data/request/edit_class_request.dart';
 
 import '../../../../../data/repo/class_repository.dart';
 
@@ -21,6 +23,20 @@ class ClassInfoProvider extends ChangeNotifier {
       _classInfo = await _repo.getClassInfo(token, role, accountId, classId);
     } catch (e) {
       print(e);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> editClass(EditClassRequest editClassRequest) async {
+    notifyListeners();
+
+    try {
+      _isLoading = true;
+      await _repo.editClass(editClassRequest);
+    } catch(e) {
+      Logger().e(e);
     } finally {
       _isLoading = false;
       notifyListeners();

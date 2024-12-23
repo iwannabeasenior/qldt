@@ -5,10 +5,12 @@ import 'package:qldt/data/request/get_class_list_request.dart';
 import 'package:qldt/helper/failure.dart';
 
 import '../model/class_info.dart';
+import '../request/edit_class_request.dart';
 
 abstract class ClassRepo {
   Future<Either<Failure, List<Class>>> getAllClass(GetClassListRequest request);
   Future<ClassInfo> getClassInfo(String token, String role, String accountId, String classId);
+  Future<Map<String, dynamic>> editClass(EditClassRequest editClassRequest);
 }
 
 
@@ -23,5 +25,10 @@ class ClassRepoImpl extends ClassRepo {
   @override
   Future<ClassInfo> getClassInfo(String token, String role, String accountId, String classId) {
     return api.getClassInfo(token, role, accountId, classId);
+  }
+
+  @override
+  Future<Map<String, dynamic>> editClass(EditClassRequest editClassRequest) {
+    return api.editClass(editClassRequest);
   }
 }
