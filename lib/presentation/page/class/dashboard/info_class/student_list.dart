@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:qldt/data/model/class_info.dart';
 
 class StudentListScreen extends StatelessWidget {
-  final List<Map<String, String>> students = List.generate(
-    100,
-        (index) => {'name': 'Phạm Quốc Đạt', 'id': '20215345'},
-  );
+  final ClassInfo? classInfo;
+
+  const StudentListScreen({super.key, required this.classInfo});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFFAE2C2C),
+        backgroundColor: const Color(0xFFAE2C2C),
         toolbarHeight: 115,
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.pop(context); // Quay lại màn hình trước
           },
         ),
-        title: Column(
+        title: const Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
@@ -44,21 +44,21 @@ class StudentListScreen extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.black, width: 1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                'Giải tích III - 149732',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                '${classInfo?.className} - ${classInfo?.classId}',
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 textAlign: TextAlign.center,
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Expanded(
               child: Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.black, width: 1),
                   borderRadius: BorderRadius.circular(8),
@@ -66,29 +66,29 @@ class StudentListScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      'Danh sách lớp (100)',
+                      'Danh sách lớp (${classInfo!.studentCount})',
                       style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Expanded(
                       child: ListView.separated(
-                        itemCount: students.length,
-                        separatorBuilder: (context, index) => Divider(
+                        itemCount: classInfo!.studentCount.toInt(),
+                        separatorBuilder: (context, index) => const Divider(
                           color: Colors.black26, // Gạch mờ giữa các sinh viên
                           thickness: 1,
                         ),
                         itemBuilder: (context, index) {
                           return Padding(
-                            padding: EdgeInsets.symmetric(vertical: 4),
+                            padding: const EdgeInsets.symmetric(vertical: 4),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text('${index + 1}',
                                     style:
                                     TextStyle(fontWeight: FontWeight.bold)),
-                                Text(students[index]['name']!),
-                                Text(students[index]['id']!),
+                                Text(classInfo!.studentAccounts[index].firstName + classInfo!.studentAccounts[index].lastName),
+                                Text(classInfo!.studentAccounts[index].studentId),
                               ],
                             ),
                           );

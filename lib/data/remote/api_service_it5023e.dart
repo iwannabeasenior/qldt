@@ -440,7 +440,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
 
   @override
   Future<ClassInfo> getClassInfo(String token, String role, String accountId, String classId,) async {
-    const url = '${Constant.BASEURL}/it5023e/get_class_info';  // Replace with the correct endpoint
+    const url = '${Constant.BASEURL}/it5023e/get_class_info';
 
     final response = await http.post(
       Uri.parse(url),

@@ -81,7 +81,7 @@ class _ClassDetailState extends State<ClassDetail>
             child: TabBarView(
               controller: _tabController,
               children: [
-                DashboardPage(),
+                DashboardPage(classId: widget.classID,),
                 HomeworkPage(),
                 MaterialsPage(classID: widget.classID)
               ],

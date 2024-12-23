@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qldt/presentation/page/class/dashboard/info_class/class_info.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 List<String> icons_lecturer = [
   "assets/detail_class_icon/class_info.png",
@@ -27,8 +28,10 @@ List<String> titles_student = [
   "Lịch sử điểm danh",
 ];
 
+
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
+  final String classId;
+  const DashboardPage({super.key, required this.classId});
   @override
   State<DashboardPage> createState() => _DashboardPageState();
 }
@@ -36,6 +39,12 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
+    List<Widget> screens = [
+      ClassInfoScreen(classId: widget.classId),
+      const ClassInfoScreen(classId: '',),// sửa lại sang màn hình xin nghỉ
+      const ClassInfoScreen(classId: '',),// sửa lại sang màn hình xin nghỉ
+      const ClassInfoScreen(classId: '',),// sửa lại sang màn hình điểm danh
+    ];
     return Container(
       margin: const EdgeInsets.all(15),
       decoration: BoxDecoration(
@@ -52,7 +61,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 title: titles_student[i],
                 icon: icons_student[i],
                 itemClick: () {
-
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>screens[i]));
                 },
               )
           ],
@@ -63,7 +72,7 @@ class _DashboardPageState extends State<DashboardPage> {
               title: titles_lecturer[i],
               icon: icons_lecturer[i],
               itemClick: () {
-
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>screens[i]));
               },
             )
           ],
@@ -97,7 +106,7 @@ class _Item extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20
                 ),
