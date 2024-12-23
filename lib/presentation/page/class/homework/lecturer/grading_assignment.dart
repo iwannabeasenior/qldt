@@ -157,7 +157,9 @@ class _GradingAssignmentState extends State<GradingAssignment> {
   //grading submission dialog
   void _showGradingSubmissionDialog() {
     final TextEditingController gradeController = TextEditingController();
-    gradeController.text = widget.submission.grade.toString();
+    widget.submission.grade != null
+        ? gradeController.text = widget.submission.grade.toString()
+        : gradeController.text = '';
     showDialog(
         context: context,
         builder: (BuildContext context) {

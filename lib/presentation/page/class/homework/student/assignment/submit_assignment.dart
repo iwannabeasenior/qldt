@@ -3,7 +3,11 @@ import 'package:flutter/rendering.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:qldt/data/request/survey_request.dart';
+import 'package:qldt/presentation/page/class/class_detail.dart';
+import 'package:qldt/presentation/page/class/homework/homework_page.dart';
+import 'package:qldt/presentation/page/class/homework/student/student_assignments_page.dart';
 import 'package:qldt/presentation/page/class/homework/student/student_assignments_provider.dart';
+import 'package:qldt/presentation/page/home_page.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 import 'package:file_picker/file_picker.dart';
@@ -13,21 +17,23 @@ import '../../../../../../data/request/files_request.dart';
 
 class SubmitAssignment extends StatelessWidget {
   final String assignmentId;
+  final String classId;
 
-  const SubmitAssignment({super.key, required this.assignmentId});
+  const SubmitAssignment({super.key, required this.assignmentId, required this.classId});
 
   @override
   Widget build(BuildContext context) {
     final repo = context.read<AssignmentRepo>();
     return ChangeNotifierProvider(
       create: (context) => StudentAssignmentProvider(repo),
-      child: SubmitAssignmentPage(assignmentId: assignmentId),
+      child: SubmitAssignmentPage(assignmentId: assignmentId, classId: classId),
     );
   }
 }
   class SubmitAssignmentPage extends StatefulWidget {
+    final String classId;
     final String assignmentId;
-    const SubmitAssignmentPage({super.key, required this.assignmentId});
+    const SubmitAssignmentPage({super.key, required this.assignmentId, required this.classId});
 
     @override
     State<SubmitAssignmentPage> createState() => _SubmitAssignmentPageState();
@@ -64,6 +70,7 @@ class SubmitAssignment extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('submitted successfully')),
         );
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> ClassDetail(classID: widget.classId, initialIndex: 1,)));
       }).catchError((e) {
         // Show error message if there's an issue
         ScaffoldMessenger.of(context).showSnackBar(

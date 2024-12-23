@@ -125,7 +125,7 @@ class AssignmentInfoPage extends StatelessWidget {
                   (type == 'UPCOMING')
                       ? ElevatedButton(
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>SubmitAssignment(assignmentId: assignment.id.toString(),)));
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>SubmitAssignment(assignmentId: assignment.id.toString(), classId: assignment.classId,)));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: QLDTColor.red,

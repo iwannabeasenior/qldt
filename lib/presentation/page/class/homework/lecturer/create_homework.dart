@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:qldt/data/repo/assignment_repository.dart';
 import 'package:qldt/data/request/files_request.dart';
 import 'package:qldt/data/request/survey_request.dart';
+import 'package:qldt/presentation/page/class/class_detail.dart';
 import 'package:qldt/presentation/page/class/homework/lecturer/lecturer_assignments_provider.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
@@ -99,6 +100,7 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Absence request submitted successfully')),
       );
+      Navigator.push(context, MaterialPageRoute(builder: (context)=> ClassDetail(classID: widget.classId, initialIndex: 1,)));
     }).catchError((e) {
       // Show error message if there's an issue
       ScaffoldMessenger.of(context).showSnackBar(
@@ -112,6 +114,12 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
     final provider = Provider.of<LecturerAssignmentProvider>(context);
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         title: const Column(
           children: [
             Text(
@@ -156,8 +164,6 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
                   labelText: "Mô tả",
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) =>
-                value == null || value.isEmpty ? 'Description is required' : null,
                 maxLines: 4,
               ),
               const SizedBox(height: 16),

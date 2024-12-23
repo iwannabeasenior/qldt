@@ -52,7 +52,7 @@ class _ClassDetailState extends State<ClassDetail>
             Navigator.push(context, MaterialPageRoute(builder: (context)=>HomePage(index: 1,)));
           },
         ),
-        title: Column(
+        title: const Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
@@ -63,7 +63,7 @@ class _ClassDetailState extends State<ClassDetail>
                   color: Colors.white),
             ),
             Text(
-              "IT3030",
+              "Lớp học",
               style: TextStyle(
                   fontSize: 25,
                   fontWeight: FontWeight.bold,
