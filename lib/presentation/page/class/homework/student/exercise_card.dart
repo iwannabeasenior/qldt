@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:qldt/helper/format_date_time.dart';
 import 'package:qldt/helper/utils.dart';
 import 'package:qldt/presentation/page/class/homework/student/assignment/assignment_info.dart';
+import 'package:qldt/presentation/page/class/homework/student/assignment/submission_info_page.dart';
 
 import '../../../../../data/model/assignment.dart';
 
@@ -17,10 +18,11 @@ class ExerciseCard extends StatelessWidget {
     String deadline = FormatDateTime().formatDateTime(assignment.deadline);
     return GestureDetector(
       onTap: () {
-        Navigator.push(
+        type != "COMPLETED" ? Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => AssignmentInfoPage(type: type, assignment: assignment,))
-        );
+        )
+            : Navigator.push(context, MaterialPageRoute(builder: (context)=> SubmissionInfoPage(assignmentId: assignment.id.toString(), title: assignment.title,)));
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),

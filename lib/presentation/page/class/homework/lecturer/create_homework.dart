@@ -115,7 +115,7 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -137,7 +137,7 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
         ),
         toolbarHeight: 115,
         centerTitle: true,
-        backgroundColor: Color(0xFFAE2C2C),
+        backgroundColor: const Color(0xFFAE2C2C),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
