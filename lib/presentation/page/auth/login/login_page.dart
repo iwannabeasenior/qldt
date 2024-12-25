@@ -4,6 +4,8 @@ import 'package:qldt/data/repo/auth_repository.dart';
 import 'package:qldt/presentation/page/auth/login/login_provider.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 
+import '../../../pref/user_preferences.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -29,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
             builder: (context, controller, _) {
               if (controller.isLoginSuccess) {
                 WidgetsBinding.instance.addPostFrameCallback( (_) {
-                    Navigator.pushNamed(context, '/AbsencePage');
+                    Navigator.pushNamed(context, '/HomePage');
                     controller.setLoginState = false;
                   }
                 );
@@ -150,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
                             if (!_formKey.currentState!.validate()) {
                               return;
                             }
-                            controller.login(email, password, deviceId);
+                            controller.login(email, password, deviceId, UserPreferences.getFCMToken());
                             // In ra thông tin đăng nhập (có thể thay bằng logic đăng nhập thực tế)
                           },
                           style: ElevatedButton.styleFrom(

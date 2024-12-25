@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qldt/presentation/page/auth/login/login_page.dart';
 import 'package:qldt/presentation/page/auth/signup/signup_page.dart';
-import 'package:qldt/presentation/page/chat/chat_detail.dart';
+import 'package:qldt/presentation/page/chat/chat_detail/chat_detail.dart';
 import 'package:qldt/presentation/page/chat/chat_page.dart';
 import 'package:qldt/presentation/page/class/class_detail.dart';
 import 'package:qldt/presentation/page/class/dashboard/dashboard/absence/absence_page_lecturer.dart';
@@ -58,9 +58,9 @@ class Routes {
           return const SplashPage();
         });
       case 'ChatDetail':
-        var args = settings.arguments as Partner;
+        var args = settings.arguments as Conversation;
         return MaterialPageRoute(builder: (context) {
-          return ChatDetail(partner: args);
+          return ChatDetail(conversation: args);
         });
       case 'SettingsPage':
         return MaterialPageRoute(builder: (context) {

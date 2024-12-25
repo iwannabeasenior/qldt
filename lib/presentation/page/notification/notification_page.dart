@@ -1,47 +1,135 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
+import 'package:qldt/helper/constant.dart';
+import 'package:qldt/helper/utils.dart';
+import 'package:qldt/presentation/pref/user_preferences.dart';
 
-class NotificationPage extends StatefulWidget {
-  const NotificationPage({super.key});
 
- @override
-  State<NotificationPage> createState() => _NotificationListScreenState();
+
+
+class NotificationsPage extends StatefulWidget {
+  @override
+  _NotificationsPageState createState() => _NotificationsPageState();
 }
 
-class _NotificationListScreenState extends State<NotificationPage> {
-  final List<Map<String, dynamic>> notifications = [
-    {
-      'title': 'Android',
-      'date': '24/09/2024',
-      'content': 'Đã có điểm cuối kì Android',
-      'details': 'Điểm cuối kì Android',
-      'score': '9.5',
-      'isExpanded': false
-    },
-    {
-      'title': 'PPTTKHT',
-      'date': '24/09/2024',
-      'content': 'Đã có điểm cuối kì PPTTKHT',
-      'details': 'Điểm cuối kì PPTTKHT',
-      'score': '9.0',
-      'isExpanded': false
-    },
-    {
-      'title': 'Giải tích 1',
-      'date': '13/04/2024',
-      'content': 'Đã có điểm quá trình Giải tích 1',
-      'details': 'Điểm quá trình Giải tích 1',
-      'score': '8.5',
-      'isExpanded': false
-    },
-    {
-      'title': 'OOP',
-      'date': '24/09/2024',
-      'content': 'Đã có điểm quá trình OOP',
-      'details': 'Điểm quá trình OOP',
-      'score': '8.7',
-      'isExpanded': false
-    },
-  ];
+class _NotificationsPageState extends State<NotificationsPage> {
+  List<Map<String, dynamic>> notifications = [];
+  int unreadCount = 0;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchNotifications();
+    fetchUnreadNotificationCount();
+  }
+
+  Future<void> fetchNotifications() async {
+    final url = Uri.parse("${Constant.BASEURL}/it5023e/get_notifications"); // Replace with your URL
+    final payload = {
+      "token": UserPreferences.getToken(),
+      "index": 0,
+      "count": 4,
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(payload),
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+        if (jsonResponse['meta']['code'] == "1000") {
+          setState(() {
+            notifications = List<Map<String, dynamic>>.from(jsonResponse['data']);
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Error: ${jsonResponse['meta']['message']}")),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to fetch notifications")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+
+  Future<void> fetchUnreadNotificationCount() async {
+    final url = Uri.parse("${Constant.BASEURL}/it5023e/get_unread_notification_count"); // Replace with your API URL
+    final payload = {
+      "token": UserPreferences.getToken(),
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(payload),
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+        if (jsonResponse['meta']['code'] == "1000") {
+          setState(() {
+            unreadCount = jsonResponse['data'] ?? 0;
+          });
+        }
+      }
+    } catch (e) {
+      Logger().d("HelloNhiDay: $e");
+    }
+  }
+  Future<void> markAsRead(int notificationId) async {
+    final url = Uri.parse("${Constant.BASEURL}/it5023e/mark_notification_as_read"); // Replace with your API URL
+    final payload = {
+      "token": UserPreferences.getToken(),
+      "notification_id": notificationId.toString(),
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(payload),
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+        if (jsonResponse['meta']['code'] == "1000") {
+          setState(() {
+            notifications = notifications.map((notification) {
+              if (notification['id'] == notificationId) {
+                notification['status'] = "READ";
+              }
+              return notification;
+            }).toList();
+          });
+        }
+      }
+    } catch (e) {
+      Logger().d("HelloNhiDay: $e");
+    }
+  }
+
+  void forwardNotification() {
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,97 +158,75 @@ class _NotificationListScreenState extends State<NotificationPage> {
         ),
         centerTitle: true,
       ),
-      body: ListView.builder(
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : notifications.isEmpty
+          ? Center(child: Text("No notifications found"))
+          : ListView.separated(
+        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16), // More balanced padding
+        separatorBuilder: (context, index) {
+          return Divider(color: Colors.grey.shade300, thickness: 1); // Adds a subtle divider
+        },
         itemCount: notifications.length,
         itemBuilder: (context, index) {
-          var notification = notifications[index];
-          return Card(
-            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+          final notification = notifications[index];
+          final isUnread = notification['status'] == "UNREAD";
+          final notificationTime = notification['sent_time'] ?? "";
+
+          return Container(
+            margin: EdgeInsets.only(bottom: 12), // Add some spacing between items
+            decoration: BoxDecoration(
+              color: Colors.white, // Clean white background for list items
+              borderRadius: BorderRadius.circular(12), // Rounded corners for each item
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                  offset: Offset(0, 2),
+                ),
+              ], // Shadow effect to lift the card
             ),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'HUST',
-                        style: TextStyle(
-                            color: Colors.red, fontWeight: FontWeight.bold),
-                      ),
-                      Text(notification['date']),
-                    ],
-                  ),
+            child: ListTile(
+              onTap: () {
+                if (isUnread) {
+                  markAsRead(notification['id']);
+                  // go to page correspond to type
+                }
+              },
+              contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16), // Consistent padding inside the tile
+              leading: Icon(
+                Icons.notifications,
+                color: isUnread ? Colors.redAccent : Colors.grey, // Highlight unread notifications
+              ),
+              title: Text(
+                notification['title_push_notification'] ?? "No Title",
+                style: TextStyle(
+                  fontWeight: isUnread ? FontWeight.bold : FontWeight.normal,
+                  fontSize: 16,
+                  color: Colors.black87,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        notification['title'],
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      Divider(),
-                      Text(notification['content']),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {
-                            setState(() {
-                              notification['isExpanded'] =
-                              !notification['isExpanded'];
-                            });
-                          },
-                          child: Text(
-                            'Chi tiết',
-                            style: TextStyle(color: Colors.blue),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+              ),
+              subtitle: Text(
+                notification['message'] ?? "No Message",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.black54,
+                  height: 1.5, // Better line spacing for readability
                 ),
-                if (notification['isExpanded'])
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: Container(
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(notification['details'],
-                              style: TextStyle(fontSize: 18)),
-                          SizedBox(height: 10),
-                          Text(notification['score'],
-                              style: TextStyle(fontSize: 40)),
-                          SizedBox(height: 10),
-                          ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                notification['isExpanded'] = false;
-                              });
-                            },
-                            child: Text('Đóng'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-              ],
+              ),
+              trailing: Text(
+                Utils.formatDateTime(notificationTime),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade600, // Subtle date/time color
+                ),
+              ),
             ),
           );
         },
       ),
     );
   }
+
 }

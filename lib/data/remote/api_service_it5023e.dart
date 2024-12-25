@@ -58,7 +58,15 @@ abstract class ApiServiceIT5023E {
     required String attendanceId,
     required String status,
   });
-  }
+  // Chat api
+  Future<void> getListConversations(String token, int index, int count);
+  
+  Future<void> getConverstaion(String token, int index, int count, int converstationId, bool markAsRead);
+  
+  Future<void> deleteMessage(String token, int messageId, int conversationId);
+  // Noti Api
+}
+
 
 class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
   @override
@@ -587,6 +595,24 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
       throw Exception("Error: $e");
     }
 
+  }
+
+  @override
+  Future<void> deleteMessage(String token, int messageId, int conversationId) {
+    // TODO: implement deleteMessage
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> getConverstaion(String token, int index, int count, int converstationId, bool markAsRead) {
+    // TODO: implement getConverstaion
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> getListConversations(String token, int index, int count) {
+    // TODO: implement getListConversations
+    throw UnimplementedError();
   }
 
 
