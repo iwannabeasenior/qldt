@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:logger/logger.dart';
 import 'package:qldt/data/model/survey.dart';
 import 'package:qldt/data/repo/assignment_repository.dart';
 import 'package:qldt/data/request/survey_request.dart';
@@ -15,6 +16,9 @@ class LecturerAssignmentProvider with ChangeNotifier {
 //loading
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+//delete
+  bool _isLoadingDelete = false;
+  bool get isLoadingDelete => _isLoadingDelete;
 //error message
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
@@ -88,10 +92,30 @@ class LecturerAssignmentProvider with ChangeNotifier {
       _isLoading = true;
       res = await _repo.editSurvey(surveyRequest);
     } catch(e) {
-      print(e);
+      _errorMessage = e.toString();
+      throw e; //
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
+
+  Future<void> deleteSurvey(String token, String surveyId) async {
+    notifyListeners();
+    try {
+      _isLoadingDelete = true;
+      final response = await _repo.deleteSurvey(token, surveyId);
+      if (response != "delete assignment successful") {
+        // Nếu response khác thành công, ném lỗi
+        throw Exception("Failed to delete survey: $response");
+      }
+    } catch (e) {
+      Logger().e(e); // Log lỗi
+      rethrow; // Ném lỗi để UI xử lý
+    } finally {
+      _isLoadingDelete = false;
+      notifyListeners();
+    }
+  }
+
 }

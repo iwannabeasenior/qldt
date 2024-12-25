@@ -48,7 +48,9 @@ class SubmitAssignment extends StatelessWidget {
     Future<void> pickFiles() async {
       final result = await FilePicker.platform.pickFiles(allowMultiple: true);
       if (result != null) {
-        files = result.files.map((file) => FileRequest(file: file, fileData: file.bytes)).toList();
+        setState(() {
+          files = result.files.map((file) => FileRequest(file: file, fileData: file.bytes)).toList();
+        });
       }
     }
 
@@ -153,8 +155,6 @@ class SubmitAssignment extends StatelessWidget {
                       borderSide: BorderSide(color: QLDTColor.red),
                     ),
                   ),
-                  validator: (value) =>
-                  value == null || value.isEmpty ? 'Response is required' : null,
                 ),
                 const SizedBox(height: 15),
                 Container(

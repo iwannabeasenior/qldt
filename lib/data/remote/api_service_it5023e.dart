@@ -34,6 +34,7 @@ abstract class ApiServiceIT5023E {
   Future<Map<String, dynamic>> editSurvey(SurveyRequest surveyRequest);
   Future<Map<String, dynamic>> submitSurvey(SubmitSurveyRequest submitSurveyRequest);
   Future<GetSurveyResponse> getSubmission (String token, String assignmentId);
+  Future<String> deleteSurvey(String token, String surveyId);
 }
 
 class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
@@ -297,7 +298,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     } else {
       final responseBody = await response.stream.bytesToString();
       final jsonResponse = jsonDecode(responseBody);
-      throw Exception("Failed to request absence + ${jsonResponse['meta']['message']}");
+      throw Exception("${jsonResponse['data']}");
     }
   }
 
@@ -375,6 +376,38 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     }
   }
 
+  @override
+  Future<String> deleteSurvey(String token, String surveyId) async {
+    const url = '${Constant.BASEURL}/it5023e/delete_survey';
+
+    try {
+      final Map<String, dynamic> requestBody = {
+        'token': token,
+        'survey_id': surveyId
+      };
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      final jsonResponse = jsonDecode(response.body);
+
+      // Kiểm tra code từ response meta
+      if (jsonResponse['meta']['code'] != "1000") {
+        throw Exception(jsonResponse['data']);
+      }
+
+      return jsonResponse['data'];
+
+    } catch (e) {
+      print('Error delete survey: $e'); // Log lỗi
+      throw e; // Throw lỗi để UI xử lý
+    }
+  }
 
 
 }

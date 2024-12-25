@@ -6,6 +6,7 @@ import 'package:qldt/data/model/survey.dart';
 import 'package:qldt/data/repo/assignment_repository.dart';
 import 'package:qldt/data/request/files_request.dart';
 import 'package:qldt/data/request/survey_request.dart';
+import 'package:qldt/presentation/page/class/class_detail.dart';
 import 'package:qldt/presentation/page/class/homework/lecturer/lecturer_assignments_provider.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
@@ -61,7 +62,9 @@ class _EditAssignmentScreenState extends State<EditAssignmentScreen> {
   Future<void> pickFiles() async {
     final result = await FilePicker.platform.pickFiles(allowMultiple: true);
     if (result != null) {
-      files = result.files.map((file) => FileRequest(file: file, fileData: file.bytes)).toList();
+      setState(() {
+        files = result.files.map((file) => FileRequest(file: file, fileData: file.bytes)).toList();
+      });
     }
   }
   //pick date
@@ -96,8 +99,6 @@ class _EditAssignmentScreenState extends State<EditAssignmentScreen> {
 
   //submit create homework
   void submitHomework(LecturerAssignmentProvider provider) {
-    _titleController.text = widget.survey.title;
-    _descriptionController.text = widget.survey.description;
     if (!_formKey.currentState!.validate()) return;
 
     final description = _descriptionController.text;
@@ -111,16 +112,64 @@ class _EditAssignmentScreenState extends State<EditAssignmentScreen> {
     );
 
     provider.editSurvey(editSurveyRequest).then((_) {
-      // Show success message after the request
+      // Chỉ hiện thông báo thành công nếu không có lỗi
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Absence request submitted successfully')),
+        const SnackBar(content: Text('Homework updated successfully')),
       );
     }).catchError((e) {
-      // Show error message if there's an issue
+      // Hiện thông báo lỗi
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to submit absence request')),
+        SnackBar(content: Text('Failed to update homework: ${e.toString()}')),
       );
     });
+  }
+
+  //delete buton handle
+  void showDeleteConfirmationDialog(BuildContext context, LecturerAssignmentProvider provider) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Xác nhận xóa"),
+          content: const Text("Bạn có chắc chắn muốn xóa bài tập này không?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Đóng pop-up
+              },
+              child: const Text("Hủy", style: TextStyle(color: Colors.black)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Gọi hàm xóa trong provider
+                provider
+                    .deleteSurvey(
+                  UserPreferences.getToken() ?? "",
+                  widget.survey.id.toString(),
+                )
+                    .then((_) {
+                  // Hiển thị thông báo thành công
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Xóa bài tập thành công')),
+                  );
+                  Navigator.of(context).pop(); // Đóng pop-up
+                  //quay lại trang trước
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>ClassDetail(classID: widget.survey.classId, initialIndex: 1,))); // Quay lại màn hình trước
+                }).catchError((e) {
+                  // Hiển thị thông báo lỗi nếu có
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Xóa bài tập thất bại: $e')),
+                  );
+                  Navigator.of(context).pop(); // Đóng pop-up
+                });
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: QLDTColor.red),
+              child: const Text("Xóa", style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -128,6 +177,13 @@ class _EditAssignmentScreenState extends State<EditAssignmentScreen> {
     final provider = Provider.of<LecturerAssignmentProvider>(context);
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: Colors.white,
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>ClassDetail(classID: widget.survey.classId, initialIndex: 1,)));
+          },
+        ),
         title: const Column(
           children: [
             Text(
@@ -159,7 +215,13 @@ class _EditAssignmentScreenState extends State<EditAssignmentScreen> {
                 controller: _titleController,
                 decoration: const InputDecoration(
                   labelText: "Tên bài kiểm tra*",
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.black),
+                  disabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black)
+                  )
+                ),
+                style: const TextStyle(
+                  color: Colors.black
                 ),
                 enabled: false,
               ),
@@ -171,8 +233,6 @@ class _EditAssignmentScreenState extends State<EditAssignmentScreen> {
                   labelText: "Mô tả",
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) =>
-                value == null || value.isEmpty ? 'Description is required' : null,
                 maxLines: 4,
               ),
               const SizedBox(height: 16),
@@ -201,7 +261,7 @@ class _EditAssignmentScreenState extends State<EditAssignmentScreen> {
                       Text('File: ${files[i].file?.name.split('/').last}'),
                   ],
                 )
-                : SizedBox.shrink(),
+                : const SizedBox.shrink(),
               const SizedBox(height: 16),
               // Chọn thời gian
               GestureDetector(
@@ -215,8 +275,8 @@ class _EditAssignmentScreenState extends State<EditAssignmentScreen> {
                   ),
                   child: Text(
                     _selectedDate != null
-                        ? DateFormat('HH:mm - dd:MM:yyyy').format(_selectedDate!)
-                        : DateFormat('HH:mm - dd:MM:yyyy').format(widget.survey.deadline),
+                        ? DateFormat('HH:mm - dd/MM/yyyy').format(_selectedDate!)
+                        : DateFormat('HH:mm - dd/MM/yyyy').format(widget.survey.deadline),
                     style: const TextStyle(fontSize: 16.0),
                   ),
                 ),
@@ -242,6 +302,25 @@ class _EditAssignmentScreenState extends State<EditAssignmentScreen> {
                     ? const CircularProgressIndicator()
                     : const Text(
                     "Submit",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16,),
+              //Delete
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    showDeleteConfirmationDialog(context, provider);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: QLDTColor.red,
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  ),
+                  child: provider.isLoadingDelete
+                      ? const CircularProgressIndicator()
+                      : const Text(
+                    "Delete",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),

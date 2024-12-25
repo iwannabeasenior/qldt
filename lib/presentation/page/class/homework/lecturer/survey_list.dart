@@ -43,6 +43,9 @@ class _SurveysViewState extends State<SurveysView> {
   @override
   Widget build(BuildContext context) {
     final lecturerAssignmentProvider = Provider.of<LecturerAssignmentProvider>(context, listen: true);
+    if (lecturerAssignmentProvider.isLoading) {
+      return const Center(child: CircularProgressIndicator(),);
+    }
     return Column(
       children: [
         Expanded(
@@ -102,9 +105,15 @@ class AssignmentCard extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            survey.title,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          Expanded(
+                            child: Text(
+                              survey.title,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
                           ),
                           GestureDetector(
                             onTap: () {
