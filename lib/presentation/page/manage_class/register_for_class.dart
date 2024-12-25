@@ -40,7 +40,7 @@ class RegisterForClass extends StatelessWidget {
     final repo = context.read<ManageClassRepo>();
     return ChangeNotifierProvider(
       create: (context) => ManageClassProvider(repo),
-      child: OpenClassListView(),
+      child: RegisterForClassView(),
     );
   }
 }
@@ -327,7 +327,7 @@ class _RegisterForClassViewState extends State<RegisterForClassView> {
 
   Future<void> _fetchOpenClassList() async {
     final provider = Provider.of<ManageClassProvider>(context, listen: false);
-    await provider.getOpenClassList("0v80WG", "0", "10");
+    await provider.getOpenClassList("YztDTs", "0", "10");
   }
 
   @override
@@ -387,7 +387,7 @@ class _RegisterForClassViewState extends State<RegisterForClassView> {
     }
 
     final provider = Provider.of<ManageClassProvider>(context, listen: false);
-    await provider.registerClass("41xI4u", selectedClassIds).then((_) {
+    await provider.registerClass("YztDTs", selectedClassIds).then((_) {
       // Show success message after the request
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Đăng ký lớp thành công')),

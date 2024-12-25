@@ -7,13 +7,14 @@ import 'package:qldt/helper/failure.dart';
 
 import '../../presentation/page/manage_class/open_class_list.dart';
 import '../model/absence_lecturer.dart';
+import '../model/open_class_response.dart';
 import '../request/absence_request.dart';
 import '../request/class_create_request.dart';
 import '../request/get_student_absence.dart';
 
 abstract class ManageClassRepo {
   Future<Map<String, dynamic>> createClass(ClassCreateRequest classCreateRequest);
-  Future<List<ClassModel1>> getOpenClass(String token, String page, String pageSize);
+  Future<OpenClassResponse> getOpenClass(String token, String page, String pageSize);
   Future<Map<String, dynamic>> registerClass(String token, List<String> classIds);
 
 
@@ -31,7 +32,7 @@ class ManageClassRepoImpl extends ManageClassRepo {
   }
 
   @override
-  Future<List<ClassModel1>> getOpenClass(String token, String page, String pageSize) {
+  Future<OpenClassResponse> getOpenClass(String token, String page, String pageSize){
     return api.getOpenClass(token, page, pageSize);
   }
 
