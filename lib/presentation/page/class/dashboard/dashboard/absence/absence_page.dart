@@ -230,30 +230,17 @@ import '../../../../../pref/user_preferences.dart';
 import 'absence_provider.dart';  // Your AbsenceProvider
 
 
-class AbsencePage extends StatelessWidget {
-  const AbsencePage({super.key});
+
+class AbsencePage extends StatefulWidget {
+  final classId;
+  const AbsencePage({super.key, required this.classId});
 
   @override
-  Widget build(BuildContext context) {
-    final repo = context.read<AbsenceRepo>();
-    return ChangeNotifierProvider(
-        create: (context) => AbsenceProvider(repo),
-        child: AbsenceView(),
-    );
-  }
+  State<AbsencePage> createState() => _AbsencePageState();
 }
 
 
-
-class AbsenceView extends StatefulWidget {
-  const AbsenceView({super.key});
-
-  @override
-  State<AbsenceView> createState() => _AbsenceViewState();
-}
-
-
-class _AbsenceViewState extends State<AbsenceView> {
+class _AbsencePageState extends State<AbsencePage> {
   final _formKey = GlobalKey<FormState>();
   List<AbsenceFileRequest> files = [];
   final TextEditingController _reasonController = TextEditingController();
@@ -266,6 +253,9 @@ class _AbsenceViewState extends State<AbsenceView> {
     final result = await FilePicker.platform.pickFiles(allowMultiple: true);
     if (result != null) {
       files = result.files.map((file) => AbsenceFileRequest(file: file, fileData: file.bytes)).toList();
+      setState(() {
+
+      });
     }
   }
 
@@ -280,7 +270,7 @@ class _AbsenceViewState extends State<AbsenceView> {
 
     final absenceRequest = AbsenceRequest(
       token: UserPreferences.getToken() ?? "",
-      classId: "000100", // Static classId for now
+      classId: widget.classId, // Static classId for now
       // date: selectedDateStr,
       date: '${_selectedDate?.year}-${_selectedDate?.month}-${_selectedDate?.day}',
       title: _titleController.text,

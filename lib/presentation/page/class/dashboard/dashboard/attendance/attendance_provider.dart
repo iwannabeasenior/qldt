@@ -6,6 +6,7 @@ import 'package:qldt/data/model/materials.dart';
 import 'package:qldt/data/repo/absence_repository.dart';
 import 'package:qldt/data/repo/material_repository.dart';
 import 'package:qldt/data/request/material_request.dart';
+import 'package:qldt/helper/utils.dart';
 
 import '../../../../../../data/model/attendance_student_detail.dart';
 import '../../../../../../data/model/class_info.dart';
@@ -60,7 +61,7 @@ class AttendanceProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchStudentAccounts(String token,  String role,
+  Future<bool?> fetchStudentAccounts(String token,  String role,
       String accountId,String classId) async {
     _isLoading = true;
     notifyListeners();
@@ -72,6 +73,10 @@ class AttendanceProvider with ChangeNotifier {
 
       // Chỉ lấy danh sách studentAccounts và gán vào studentLists
       studentLists = classInfo.studentAccounts;
+      final endDate = Utils.stringToDateTime(classInfo.endDate);
+      final now = DateTime.now();
+      Logger().d("end: $endDate - now: $now");
+      return DateTime.now().isAfter(endDate);
     } catch (e) {
       debugPrint("Error fetching student accounts: $e");
     } finally {

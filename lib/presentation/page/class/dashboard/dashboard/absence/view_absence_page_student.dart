@@ -186,33 +186,21 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:qldt/data/model/absence_student.dart';
+import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../../data/repo/absence_repository.dart';
 import '../../../../../../data/request/get_student_absence.dart';
 import 'absence_provider.dart';
 
-class AbsencePageStudent extends StatelessWidget {
-  const AbsencePageStudent({super.key});
+
+
+class AbsencePageStudent extends StatefulWidget {
+  final classId;
+  const AbsencePageStudent({super.key, this.classId});
 
   @override
-  Widget build(BuildContext context) {
-    final repo = context.read<AbsenceRepo>();
-    return ChangeNotifierProvider(
-      create: (context) => AbsenceProvider(repo),
-      child: AbsencePageStudentView(),
-    );
-
-    return AbsencePageStudentView();
-  }
-}
-
-
-class AbsencePageStudentView extends StatefulWidget {
-  const AbsencePageStudentView({super.key});
-
-  @override
-  State<AbsencePageStudentView> createState() => _AbsencePageStudentViewState();
+  State<AbsencePageStudent> createState() => _AbsencePageStudentState();
 }
   void openFileUrl(String fileUrl) async {
     if (await canLaunch(fileUrl)) {
@@ -255,7 +243,7 @@ class AbsencePageStudentView extends StatefulWidget {
     );
   }
 
-class _AbsencePageStudentViewState extends State<AbsencePageStudentView> {
+class _AbsencePageStudentState extends State<AbsencePageStudent> {
   List<AbsenceStudent> _absenceRequests = [];
   bool _isLoading = true;
 
@@ -266,8 +254,8 @@ class _AbsencePageStudentViewState extends State<AbsencePageStudentView> {
       // Fetch the absence requests
       context.read<AbsenceProvider>().getStudentAbsenceRequests(
         GetStudentAbsence(
-          token: "OpRi5U",
-          classId: "000100",
+          token: UserPreferences.getToken() ?? "",
+          classId: widget.classId,
           status: null,
           date: null,
           page: "0",

@@ -260,7 +260,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     // Thêm các trường form-data
     request.fields['token'] = absenceRequest.token!;
     request.fields['classId'] = absenceRequest.classId!;
-    request.fields['date'] = "2024-11-28";
+    request.fields['date'] = absenceRequest.date!;
     request.fields['reason'] = absenceRequest.reason!;
     request.fields['title'] = absenceRequest.title!;
 

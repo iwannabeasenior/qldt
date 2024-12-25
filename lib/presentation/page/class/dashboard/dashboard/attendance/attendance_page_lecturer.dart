@@ -3,45 +3,49 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
+import 'package:qldt/presentation/pref/user_preferences.dart';
 
 import '../../../../../../data/repo/attendance_repository.dart';
 import 'attendance_provider.dart';
 
-class AttendancePageLecturer extends StatelessWidget {
-  const AttendancePageLecturer({super.key});
+//lecturer
+class AttendancePageLecturer  extends StatefulWidget {
+  final classId;
+  const AttendancePageLecturer ({super.key, required this.classId});
 
   @override
-  Widget build(BuildContext context) {
-    final repo = context.read<AttendanceRepo>();  // Reading the AttendanceRepo
-
-    return ChangeNotifierProvider(
-      create: (context) => AttendanceProvider(repo),
-      child: const AttendancePageLecturerView(),  // Passing the AttendancePageView widget
-    );
-  }
-
-
+  State<AttendancePageLecturer > createState() => _AttendancePageLecturerState();
 }
 
-class AttendancePageLecturerView  extends StatefulWidget {
-  const AttendancePageLecturerView ({super.key});
-
-  @override
-  State<AttendancePageLecturerView > createState() => _AttendancePageLecturerViewState();
-}
-
-class _AttendancePageLecturerViewState extends State<AttendancePageLecturerView> {
+class _AttendancePageLecturerState extends State<AttendancePageLecturer> {
   Map<String, bool> attendanceRecords = {};
 
   @override
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Fetch the student accounts when the page is loaded
-      context.read<AttendanceProvider>().fetchStudentAccounts(
-        "wVIo5R", "LECTURER", "237", "000100",
+      final isValidDate = await context.read<AttendanceProvider>().fetchStudentAccounts(
+        UserPreferences.getToken() ?? "", "LECTURER", UserPreferences.getId() ?? "", widget.classId,
       );
+      if (isValidDate != true) {
+      } else {
+        showDialog(context: context, builder: (context) {
+          return AlertDialog(
+            title: Text("Notification"),
+            content: Text("Lớp học đã kết thúc, không thể điểm danh"),
+            actions: [
+              TextButton(onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+                  child: Text("Close")
+              )
+            ],
+          );
+        });
+      }
     });
   }
 
@@ -85,24 +89,22 @@ class _AttendancePageLecturerViewState extends State<AttendancePageLecturerView>
 
 
     // If no checkboxes are selected, show a message and exit
-    if (!anyChecked) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No students selected for attendance')),
-      );
-      return;
-    }
+    // if (!anyChecked) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(content: Text('No students selected for attendance')),
+    //   );
+    //   return;
+    // }
 
-    // Prepare the data to pass to the provider's takeAttendance method
-    final token = "wVIo5R";
-    final classId = "000100";
+    // Prepare the data to pass to the provider's takeAttendance method;
     final date = getCurrentDate(); // Use current date as the attendance date
 
     try {
       // Call the takeAttendance method from the provider
       await context.read<AttendanceProvider>().takeAttendance(
-        token: token,
-        classId: classId,
-        date: "2024-11-30",
+        token: UserPreferences.getToken() ?? "",
+        classId: widget.classId,
+        date: date,
         attendanceList: attendanceList,
       );
 
@@ -110,7 +112,7 @@ class _AttendancePageLecturerViewState extends State<AttendancePageLecturerView>
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Attendance sent successfully')),
       );
-
+      Navigator.pop(context);
       // Clear attendance records after saving
       setState(() {
         attendanceRecords.clear();
