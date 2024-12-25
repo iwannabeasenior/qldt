@@ -9,6 +9,22 @@ import 'package:qldt/presentation/pref/user_preferences.dart';
 
 
 
+enum NotiType {
+  ABSENCE,
+  ACCEPT_ABSENCE_REQUEST,
+  REJECT_ABSENCE_REQUEST,
+  ASSIGNMENT_GRADE;
+
+  static NotiType fromStringType(String type) {
+    return switch(type) {
+      "ABSENCE" => NotiType.ABSENCE,
+      "ACCEPT_ABSENCE_REQUEST" => NotiType.ACCEPT_ABSENCE_REQUEST,
+      "REJECT_ABSENCE_REQUEST" => NotiType.REJECT_ABSENCE_REQUEST,
+      "ASSIGNMENT_GRADE" => NotiType.ASSIGNMENT_GRADE,
+      _ => NotiType.ABSENCE
+    };
+  }
+}
 
 class NotificationsPage extends StatefulWidget {
   @override
@@ -172,6 +188,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
           final notification = notifications[index];
           final isUnread = notification['status'] == "UNREAD";
           final notificationTime = notification['sent_time'] ?? "";
+          final type = NotiType.fromStringType(notification['type']);
 
           return Container(
             margin: EdgeInsets.only(bottom: 12), // Add some spacing between items
@@ -191,7 +208,16 @@ class _NotificationsPageState extends State<NotificationsPage> {
               onTap: () {
                 if (isUnread) {
                   markAsRead(notification['id']);
-                  // go to page correspond to type
+                  switch(type) {
+                    case NotiType.ABSENCE:
+                      //navigate
+                    case NotiType.ACCEPT_ABSENCE_REQUEST:
+                      //navigate
+                    case NotiType.REJECT_ABSENCE_REQUEST:
+                      //navigate
+                    case NotiType.ASSIGNMENT_GRADE:
+                      //navigate
+                  }
                 }
               },
               contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16), // Consistent padding inside the tile
