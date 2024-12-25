@@ -12,6 +12,7 @@ import 'package:qldt/data/model/absence_student.dart';
 import 'package:qldt/data/model/class.dart';
 import 'package:qldt/data/model/materials.dart';
 import 'package:qldt/data/remote/api_service_it4788.dart';
+import 'package:qldt/data/request/class_create_request.dart';
 import 'package:qldt/data/request/get_class_list_request.dart';
 import 'package:qldt/data/request/get_student_absence.dart';
 import 'package:qldt/data/request/material_request.dart';
@@ -19,9 +20,11 @@ import 'package:qldt/helper/constant.dart';
 import 'package:qldt/helper/failure.dart';
 import 'package:http/http.dart' as http;
 
+import '../../presentation/page/manage_class/open_class_list.dart';
 import '../model/absence_lecturer.dart';
 import '../model/attendance_student_detail.dart';
 import '../model/class_info.dart';
+import '../model/open_class_response.dart';
 import '../request/absence_request.dart';
 import '../request/get_attendance_list_request.dart';
 
@@ -58,6 +61,12 @@ abstract class ApiServiceIT5023E {
     required String attendanceId,
     required String status,
   });
+
+  //manage_class
+  Future<Map<String, dynamic>> createClass(ClassCreateRequest classCreateRequest);
+  Future<OpenClassResponse> getOpenClass(String token, String page, String pageSize);
+  Future<Map<String, dynamic>> registerClass(String token, List<String> classIds);
+
   }
 
 class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
@@ -588,6 +597,144 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     }
 
   }
+
+  @override
+  Future<Map<String, dynamic>> createClass(ClassCreateRequest classCreateRequest) async {
+    const url = '${Constant.BASEURL}/it5023e/create_class';
+
+    try {
+      Logger().d("tesssst ${classCreateRequest.toJson()}");
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(classCreateRequest.toJson()),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+        if (jsonResponse['meta']['code'] == '1000') {
+          return jsonResponse['data'];
+        } else {
+          throw Exception("${jsonResponse['meta']['message']}");
+        }
+      } else {
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        throw Exception("Failed to create class: ${jsonResponse['meta']['message']}");
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  // @override
+  // Future<List<ClassModel1>> getOpenClass(String token, String page, String pageSize) async {
+  //   const url = '${Constant.BASEURL}/it5023e/get_open_classes';
+  //
+  //   // Create request parameters
+  //   final requestPayload = {
+  //     "token": token,
+  //     "pageable_request": {
+  //       "page": page,
+  //       "page_size": pageSize,
+  //     }
+  //   };
+  //
+  //   try {
+  //     final response = await http.post(
+  //       Uri.parse(url),
+  //       headers: {'Content-Type': 'application/json'},
+  //       body: jsonEncode(requestPayload),
+  //     );
+  //
+  //     if (response.statusCode == 200) {
+  //       // final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+  //       final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
+  //
+  //
+  //       List<dynamic> classesJson = jsonResponse['data']["page_content"];
+  //
+  //       List<ClassModel1> classList = classesJson.map((classJson) {
+  //         return ClassModel1.fromJson(classJson);
+  //       }).toList();
+  //
+  //       return classList;
+  //     } else {
+  //       throw Exception("Failed to load open classes: ${response.body}");
+  //     }
+  //   } catch (e) {
+  //     throw Exception("Error: $e");
+  //   }
+  // }
+
+  @override
+  Future<OpenClassResponse> getOpenClass(String token, String page, String pageSize) async {
+    const url = '${Constant.BASEURL}/it5023e/get_open_classes';
+
+    // Tạo payload yêu cầu
+    final requestPayload = {
+      "token": token,
+      "pageable_request": {
+        "page": page,
+        "page_size": pageSize,
+      }
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestPayload),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
+
+        // Parse dữ liệu và trả về OpenClassResponse
+        return OpenClassResponse.fromJson(jsonResponse);
+      } else {
+        throw Exception("Failed to load open classes: ${response.body}");
+      }
+    } catch (e) {
+      throw Exception("Error: $e");
+    }
+  }
+
+
+  @override
+  Future<Map<String, dynamic>> registerClass(String token, List<String> classIds) async {
+    const url = '${Constant.BASEURL}/it5023e/register_class';
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'token': token,
+          'class_ids': classIds,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+        Logger().d('anxaxnnx: ${jsonResponse['data']}');
+        return {
+          'status': 'sucesss',
+          'message': ' ${jsonResponse['data']}',
+        };
+      } else {
+        return {
+          'status': 'failure',
+          'message': 'Server error: ${response.statusCode}',
+        };
+      }
+    } catch (e) {
+      throw Exception("Error: $e");
+
+    }
+  }
+
 
 
 

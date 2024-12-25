@@ -42,6 +42,7 @@ class _ClassDetailState extends State<ClassDetail>
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             // Handle back navigation
+            Navigator.pop(context);
           },
         ),
         title: Column(

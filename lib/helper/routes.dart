@@ -26,13 +26,11 @@ class Routes {
       'SplashPage': (BuildContext context) => const SplashPage(),
       'LoginPage': (context) => const LoginPage(),
       'HomePage': (context) => const HomePage(),
-      'RegisterForClassPage' : (context) => const RegisterForClass(),
       'OpenClassList': (context) => const OpenClassList(),
       'CreateClass': (context) => const CreateClass(),
       'AbsenceLecturerPage': (context) => const AbsenceLecturerPage(),
       'AbsencePage': (context) => const AbsencePage(),
-      'Test': (context) => const AbsencePageStudentView(),
-
+      'RegisterForClass': (context) => RegisterForClass()
     };
   }
   static Route? onGenerateRoute(RouteSettings settings) {
@@ -98,10 +96,12 @@ class Routes {
         });
       case 'UploadMaterial':
         return MaterialPageRoute(builder: (context) => UploadMaterialPage());
-        case 'AbsencePage':
+      case 'AbsencePage':
         return MaterialPageRoute(builder: (context) {
           return AbsencePage();
         });
+      case 'RegisterForClass':
+        return MaterialPageRoute(builder: (context) => RegisterForClass());
       default:
         return onUnknownRoute(const RouteSettings(name: '/Feature'));
     }

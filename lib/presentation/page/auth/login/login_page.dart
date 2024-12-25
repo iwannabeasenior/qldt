@@ -29,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
             builder: (context, controller, _) {
               if (controller.isLoginSuccess) {
                 WidgetsBinding.instance.addPostFrameCallback( (_) {
-                    Navigator.pushNamed(context, '/AbsencePage');
+                    Navigator.pushNamed(context, '/HomePage');
                     controller.setLoginState = false;
                   }
                 );
@@ -147,10 +147,10 @@ class _LoginPageState extends State<LoginPage> {
                             // Xử lý sự kiện khi nhấn nút đăng nhập
                             String email = _emailController.text;
                             String password = _passwordController.text;
-                            if (!_formKey.currentState!.validate()) {
-                              return;
-                            }
-                            controller.login(email, password, deviceId);
+                            // if (!_formKey.currentState!.validate()) {
+                            //   return;
+                            // }
+                            controller.login("lecturerhust1@hust.edu.vn", "123456", deviceId);
                             // In ra thông tin đăng nhập (có thể thay bằng logic đăng nhập thực tế)
                           },
                           style: ElevatedButton.styleFrom(
