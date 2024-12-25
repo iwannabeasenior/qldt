@@ -18,22 +18,24 @@ import '../../../../../../data/request/files_request.dart';
 class SubmitAssignment extends StatelessWidget {
   final String assignmentId;
   final String classId;
+  final String title;
 
-  const SubmitAssignment({super.key, required this.assignmentId, required this.classId});
+  const SubmitAssignment({super.key, required this.assignmentId, required this.classId, required this.title});
 
   @override
   Widget build(BuildContext context) {
     final repo = context.read<AssignmentRepo>();
     return ChangeNotifierProvider(
       create: (context) => StudentAssignmentProvider(repo),
-      child: SubmitAssignmentPage(assignmentId: assignmentId, classId: classId),
+      child: SubmitAssignmentPage(assignmentId: assignmentId, classId: classId, title: title,),
     );
   }
 }
   class SubmitAssignmentPage extends StatefulWidget {
+    final String title;
     final String classId;
     final String assignmentId;
-    const SubmitAssignmentPage({super.key, required this.assignmentId, required this.classId});
+    const SubmitAssignmentPage({super.key, required this.assignmentId, required this.classId, required this.title});
 
     @override
     State<SubmitAssignmentPage> createState() => _SubmitAssignmentPageState();
@@ -76,7 +78,7 @@ class SubmitAssignment extends StatelessWidget {
       }).catchError((e) {
         // Show error message if there's an issue
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to submit')),
+          SnackBar(content: Text('Failed to submit $e')),
         );
       });
     }
@@ -133,12 +135,13 @@ class SubmitAssignment extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 //Tiêu đề bài tập
-                const Text(
-                  'Participant Exercise',
-                  style: TextStyle(
+                Text(
+                  widget.title,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
+                  maxLines: 2,
                 ),
                 const Divider(
                   color: Colors.grey,

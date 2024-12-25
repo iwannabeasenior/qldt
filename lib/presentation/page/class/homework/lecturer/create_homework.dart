@@ -46,7 +46,9 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
   Future<void> pickFiles() async {
     final result = await FilePicker.platform.pickFiles(allowMultiple: true);
     if (result != null) {
-      files = result.files.map((file) => FileRequest(file: file, fileData: file.bytes)).toList();
+      setState(() {
+        files = result.files.map((file) => FileRequest(file: file, fileData: file.bytes)).toList();
+      });
     }
   }
   //pick date
@@ -187,6 +189,7 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
               //Hiển thị danh sách tài liệu
               if (files.isNotEmpty)
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     for (var i = 0; i < files.length; i++)
                       Text('File: ${files[i].file?.name.split('/').last}'),
@@ -205,7 +208,7 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
                   ),
                   child: Text(
                     _selectedDate != null
-                        ? DateFormat('HH:mm - dd:MM:yyyy').format(_selectedDate!)
+                        ? DateFormat('HH:mm - dd/MM/yyyy').format(_selectedDate!)
                         : 'Hạn nộp bài',
                     style: const TextStyle(fontSize: 16.0),
                   ),

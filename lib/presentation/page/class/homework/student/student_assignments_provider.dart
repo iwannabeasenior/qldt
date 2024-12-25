@@ -54,7 +54,7 @@ class StudentAssignmentProvider with ChangeNotifier {
       _isLoading = true;
       res = await _repo.submitSurvey(submitSurveyRequest);
     } catch(e) {
-      print(e);
+      throw e;
     } finally {
       _isLoading = false;
       notifyListeners();

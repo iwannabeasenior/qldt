@@ -41,9 +41,13 @@ class ExerciseCard extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            assignment.title,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          Expanded(
+                            child: Text(
+                              assignment.title,
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
                           ),
                           type == "UPCOMING"
                               ? const Icon(Icons.navigate_next_outlined,
@@ -68,7 +72,7 @@ class ExerciseCard extends StatelessWidget {
                         style: const TextStyle(color: Colors.grey),
                       )
                           : const Text(
-                        'Đã nộp vào',
+                        'Đã nộp',
                         style: TextStyle(color: Colors.grey),
                       ),
                       const SizedBox(height: 4),

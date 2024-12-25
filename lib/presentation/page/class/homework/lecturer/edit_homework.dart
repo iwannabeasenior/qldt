@@ -10,6 +10,7 @@ import 'package:qldt/presentation/page/class/class_detail.dart';
 import 'package:qldt/presentation/page/class/homework/lecturer/lecturer_assignments_provider.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EditHomeWork extends StatelessWidget {
   final Survey survey;
@@ -172,6 +173,14 @@ class _EditAssignmentScreenState extends State<EditAssignmentScreen> {
     );
   }
 
+  //launch Url
+  late final Uri _url = Uri.parse(widget.survey.fileUrl ?? "");
+  Future<void> _launchUrl() async {
+    if (!await launchUrl(_url)) {
+      throw Exception('Could not launch $_url');
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<LecturerAssignmentProvider>(context);
@@ -235,9 +244,7 @@ class _EditAssignmentScreenState extends State<EditAssignmentScreen> {
                 ),
                 maxLines: 4,
               ),
-              const SizedBox(height: 16),
-              const Center(child: Text("Hoặc", style: TextStyle(color: Colors.grey))),
-              const SizedBox(height: 8),
+              const SizedBox(height: 24),
               // Nút tải tài liệu
               Center(
                 child: ElevatedButton.icon(
@@ -261,7 +268,10 @@ class _EditAssignmentScreenState extends State<EditAssignmentScreen> {
                       Text('File: ${files[i].file?.name.split('/').last}'),
                   ],
                 )
-                : const SizedBox.shrink(),
+                : TextButton(
+                  onPressed: _launchUrl, 
+                  child: Text(widget.survey.fileUrl ?? "", overflow: TextOverflow.ellipsis,)
+              ),
               const SizedBox(height: 16),
               // Chọn thời gian
               GestureDetector(

@@ -109,12 +109,15 @@ class _SubmissionListViewState extends State<SubmissionListView> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               const SizedBox(width: 10,),
-              Text(
-                widget.title,
-                style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold
+              Expanded(
+                child: Text(
+                  widget.title,
+                  maxLines: 2,
+                  style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold
+                  ),
                 ),
               ),
             ],
@@ -126,7 +129,9 @@ class _SubmissionListViewState extends State<SubmissionListView> {
           Expanded(
               child: submissionProvider.isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : ListView(
+                  : submissionProvider.surveyResponses.isEmpty
+                      ? const Center(child: Text('Chưa có sinh viên nộp bài'))
+                      :ListView(
                 scrollDirection: Axis.vertical,
                 children: List.generate(submissionProvider.surveyResponses.length, (index) {
                   return SubmissionCard(

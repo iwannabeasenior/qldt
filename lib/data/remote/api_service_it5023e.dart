@@ -336,7 +336,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
         //get data successfully
         return jsonResponse['data'];
       } else {
-        throw(jsonResponse['meta']['message']);
+        throw(jsonResponse['data']);
       }
     } else {
       final responseBody = await response.stream.bytesToString();

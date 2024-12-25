@@ -71,6 +71,7 @@ class AssignmentInfoPage extends StatelessWidget {
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
+              maxLines: 2,
             ),
             const Divider(color: Colors.grey,),
             const SizedBox(height: 16),
@@ -125,7 +126,7 @@ class AssignmentInfoPage extends StatelessWidget {
                   (type == 'UPCOMING')
                       ? ElevatedButton(
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>SubmitAssignment(assignmentId: assignment.id.toString(), classId: assignment.classId,)));
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>SubmitAssignment(assignmentId: assignment.id.toString(), classId: assignment.classId, title: assignment.title,)));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: QLDTColor.red,
