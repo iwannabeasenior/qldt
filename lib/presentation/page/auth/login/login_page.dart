@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qldt/data/repo/auth_repository.dart';
 import 'package:qldt/presentation/page/auth/login/login_provider.dart';
-import 'package:qldt/presentation/theme/color_style.dart';
 
 
 class LoginPage extends StatefulWidget {
