@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
+import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../../data/model/absence_lecturer.dart';
@@ -8,31 +9,22 @@ import '../../../../../../data/repo/absence_repository.dart';
 import '../../../../../../data/request/get_student_absence.dart';
 import 'absence_provider.dart';
 
-class AbsenceLecturerPage extends StatelessWidget {
-  const AbsenceLecturerPage({super.key});
-  @override
-  Widget build(BuildContext context) {
-    final repo = context.read<AbsenceRepo>();
-    return ChangeNotifierProvider(
-      create: (context) => AbsenceProvider(repo),
-      child: AbsenceLecturerView(),
-    );
-  }
+// miss config
 
-}
-
-class AbsenceLecturerView extends StatefulWidget {
-  const AbsenceLecturerView({super.key});
+class AbsenceLecturerPage extends StatefulWidget {
+  final classId;
+  const AbsenceLecturerPage({super.key, required this.classId});
 
   @override
-  State<AbsenceLecturerView> createState() => _AbsenceLecturerViewState();
+  State<AbsenceLecturerPage> createState() => _AbsenceLecturerPageState();
 }
 
 
-class _AbsenceLecturerViewState extends State<AbsenceLecturerView> {
+class _AbsenceLecturerPageState extends State<AbsenceLecturerPage> {
   String _selectedStatusFilter = "ALL";
   String? _selectedDateFilter;
-
+  List<AbsenceLecturer> allDates = [];
+  String token = UserPreferences.getToken() ?? "";
   @override
   void initState() {
     super.initState();
@@ -40,10 +32,10 @@ class _AbsenceLecturerViewState extends State<AbsenceLecturerView> {
       // Fetch the absence requests
       context.read<AbsenceProvider>().getAllAbsenceRequests(
         GetStudentAbsence(
-          token: "IYs9jC",
-          classId: "000100",
-          status: null,
-          date: null,
+          token: token,
+          classId: widget.classId,
+          status: null, // config
+          date: null, // config
           page: "0",
           pageSize: "10",
         ),
@@ -65,6 +57,9 @@ class _AbsenceLecturerViewState extends State<AbsenceLecturerView> {
     if (_selectedDateFilter != null) {
       requests =
           requests.where((req) => req.absenceDate == _selectedDateFilter).toList();
+    }
+    if (allDates.isEmpty) {
+      allDates = requests;
     }
     return requests;
   }
@@ -95,7 +90,6 @@ class _AbsenceLecturerViewState extends State<AbsenceLecturerView> {
 
     if (changes.isNotEmpty) {
       // Token for authorization
-      String token = "bq1EzE";
 
       // Call `reviewAbsenceRequest` for each change
       for (var change in changes) {
@@ -160,7 +154,7 @@ class _AbsenceLecturerViewState extends State<AbsenceLecturerView> {
                         value: "ALL_DATES",
                         child: Text("Tất cả các ngày"),
                       ),
-                      ...filteredRequests
+                      ...allDates
                           .map((req) => req?.absenceDate)
                           .where((date) => date != null) // Filter out null values
                           .cast<String>() // Ensure the type is String, not String?

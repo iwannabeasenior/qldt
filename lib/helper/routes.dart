@@ -26,13 +26,9 @@ class Routes {
       'SplashPage': (BuildContext context) => const SplashPage(),
       'LoginPage': (context) => const LoginPage(),
       'HomePage': (context) => const HomePage(),
-      'RegisterForClassPage' : (context) => const RegisterForClass(),
       'OpenClassList': (context) => const OpenClassList(),
       'CreateClass': (context) => const CreateClass(),
-      'AbsenceLecturerPage': (context) => const AbsenceLecturerPage(),
-      'AbsencePage': (context) => const AbsencePage(),
-      'Test': (context) => const AbsencePageStudentView(),
-
+      'RegisterForClass': (context) => RegisterForClass()
     };
   }
   static Route? onGenerateRoute(RouteSettings settings) {
@@ -98,10 +94,36 @@ class Routes {
         });
       case 'UploadMaterial':
         return MaterialPageRoute(builder: (context) => UploadMaterialPage());
-        case 'AbsencePage':
-        return MaterialPageRoute(builder: (context) {
-          return AbsencePage();
-        });
+      case 'RegisterForClass':
+        return MaterialPageRoute(builder: (context) => RegisterForClass());
+
+      /// lecturer
+      case 'AttendancePageLecturer':
+        final classId = (settings.arguments as String);
+        return MaterialPageRoute(builder: (context) => AttendancePageLecturer(classId: classId,));
+
+      case 'AttendanceHistoryLecturer':
+        final classId = (settings.arguments as String);
+        return MaterialPageRoute(builder: (context) => AttendanceHistoryLecturer(classId: classId,));
+
+      case 'AbsenceLecturerPage':
+        final classId = (settings.arguments as String);
+        return MaterialPageRoute(builder: (context) => AbsenceLecturerPage(classId: classId,));
+
+      ///  student
+      case 'AttendancePage':
+        final classId = (settings.arguments as String);
+        return MaterialPageRoute(builder: (context) => AttendancePage(classId: classId,));
+
+      case 'AbsencePage':
+        final classId = (settings.arguments as String);
+        return MaterialPageRoute(builder: (context) => AbsencePage(classId: classId,));
+
+      case 'AbsencePageStudent':
+        final classId = (settings.arguments as String);
+        return MaterialPageRoute(builder: (context) => AbsencePageStudent(classId: classId,));
+
+
       default:
         return onUnknownRoute(const RouteSettings(name: '/Feature'));
     }

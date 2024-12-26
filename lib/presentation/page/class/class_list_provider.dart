@@ -20,7 +20,7 @@ class ClassListProvider extends ChangeNotifier {
         accountId: UserPreferences.getId(),
         pageableRequest: {
           'page': "0",
-          'page_size': "1"
+          'page_size': "10"
         })
     );
     result.fold(

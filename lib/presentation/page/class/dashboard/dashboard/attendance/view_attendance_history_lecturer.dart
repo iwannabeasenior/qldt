@@ -1,39 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:qldt/presentation/pref/user_preferences.dart';
 
 import '../../../../../../data/repo/attendance_repository.dart';
 import 'attendance_detail.dart';
 import 'attendance_provider.dart';
-
-class AttendanceHistoryLecturer extends StatelessWidget {
-  const AttendanceHistoryLecturer({super.key});
-
+//lecturer
+class AttendanceHistoryLecturer extends StatefulWidget {
+  final classId;
+  const AttendanceHistoryLecturer({super.key, required this.classId});
   @override
-  Widget build(BuildContext context) {
-    final repo = context.read<AttendanceRepo>();
-
-    return ChangeNotifierProvider(
-      create: (context) => AttendanceProvider(repo),
-      child: AttendanceHistoryLecturerView(),
-    );
-  }
-}
-
-class AttendanceHistoryLecturerView extends StatefulWidget {
-  const AttendanceHistoryLecturerView({super.key});
-  @override
-  State<AttendanceHistoryLecturerView> createState() => _AttendanceHistoryLecturerViewState();
+  State<AttendanceHistoryLecturer> createState() => _AttendanceHistoryLecturerState();
 }
 
 
-class _AttendanceHistoryLecturerViewState
-    extends State<AttendanceHistoryLecturerView> {
+class _AttendanceHistoryLecturerState
+    extends State<AttendanceHistoryLecturer> {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = context.read<AttendanceProvider>();
-      provider.fetchAttendanceDates("wVIo5R", "000100");  // Adjust as necessary
+      provider.fetchAttendanceDates(UserPreferences.getToken() ?? "", widget.classId);  // Adjust as necessary
     });
   }
 
@@ -111,7 +99,7 @@ class _AttendanceHistoryLecturerViewState
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => AttendanceDetail(date: date),
+                                builder: (context) => AttendanceDetail(date: date, classId: widget.classId),
                               ),
                             );
                           },

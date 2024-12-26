@@ -2,34 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:qldt/data/request/get_attendance_list_request.dart';
+import 'package:qldt/presentation/pref/user_preferences.dart';
 
 import '../../../../../../data/model/class_info.dart';
 import '../../../../../../data/repo/attendance_repository.dart';
 import 'attendance_provider.dart';
-
-class AttendanceDetail extends StatelessWidget {
-  final String date; // Pass the selected date
-  const AttendanceDetail({super.key, required this.date});
-
-  @override
-  Widget build(BuildContext context) {
-    final repo = context.read<AttendanceRepo>();  // Reading the AttendanceRepo
-
-    return ChangeNotifierProvider(
-      create: (context) => AttendanceProvider(repo),
-      child: AttendanceDetailView(date: date),  // Passing the AttendancePageView widget
-    );
-  }
-}
-
-class AttendanceDetailView extends StatefulWidget {
+// lecturer
+class AttendanceDetail extends StatefulWidget {
   final String date;
-  const AttendanceDetailView({super.key, required this.date});
+  final String classId;
+  const AttendanceDetail({super.key, required this.date, required this.classId});
   @override
-  State<AttendanceDetailView> createState() => _AttendanceDetailViewState();
+  State<AttendanceDetail> createState() => _AttendanceDetailState();
 }
 
-class _AttendanceDetailViewState extends State<AttendanceDetailView> {
+class _AttendanceDetailState extends State<AttendanceDetail> {
 
   final List<String> statuses = ["PRESENT", "EXCUSED_ABSENCE", "UNEXCUSED_ABSENCE"];
   Map<String, String> previousStatuses = {}; // This will be an empty map initially
@@ -39,8 +26,8 @@ class _AttendanceDetailViewState extends State<AttendanceDetailView> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = context.read<AttendanceProvider>();
-      provider.getAttendanceStudentDetail(GetAttendanceListRequest(token: "wVIo5R", classId: "000100", date: widget.date, pageableRequest: PageableRequest(page: "0", pageSize: "10")));
-      provider.fetchStudentAccounts("wVIo5R", "LECTURER", "237", "000100");
+      provider.getAttendanceStudentDetail(GetAttendanceListRequest(token: UserPreferences.getToken() ?? "", classId: widget.classId, date: widget.date, pageableRequest: PageableRequest(page: "0", pageSize: "10")));
+      provider.fetchStudentAccounts(UserPreferences.getToken() ?? "", "LECTURER", UserPreferences.getId() ?? "", widget.classId);
 
     });
   }
@@ -201,7 +188,7 @@ class _AttendanceDetailViewState extends State<AttendanceDetailView> {
     // Only call setAttendanceStatus if the status has changed
     if (previousStatuses[student.attendanceId] != student.status) {
     provider.setAttendanceStatus(
-    token: "wVIo5R", // The token (can be dynamic or passed)
+    token: UserPreferences.getToken() ?? "", // The token (can be dynamic or passed)
     attendanceId: student.attendanceId, // Get the attendanceId
     status: student.status, // Get the status
     );

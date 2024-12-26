@@ -2,35 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qldt/data/repo/attendance_repository.dart';
 import 'package:qldt/presentation/page/class/dashboard/dashboard/attendance/attendance_provider.dart';
+import 'package:qldt/presentation/pref/user_preferences.dart';
+//student
 
-class AttendancePage extends StatelessWidget {
-  const AttendancePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final repo = context.read<AttendanceRepo>();  // Reading the AttendanceRepo
-
-    return ChangeNotifierProvider(
-      create: (context) => AttendanceProvider(repo),
-      child: const AttendancePageView(),  // Passing the AttendancePageView widget
-    );
-  }
-}
-
-class AttendancePageView extends StatefulWidget {
-  const AttendancePageView({super.key});
+class AttendancePage extends StatefulWidget {
+  final classId;
+  const AttendancePage({super.key, required this.classId});
 
   @override
-  State<AttendancePageView> createState() => _AttendancePageViewState();
+  State<AttendancePage> createState() => _AttendancePageState();
 }
 
-class _AttendancePageViewState extends State<AttendancePageView> {
+class _AttendancePageState extends State<AttendancePage> {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = context.read<AttendanceProvider>();
-      provider.fetchAttendanceRecord("j4HWOV", "000100"); // Replace with actual token and classId
+      provider.fetchAttendanceRecord(UserPreferences.getToken() ?? "", widget.classId); // Replace with actual token and classId
     });
   }
 

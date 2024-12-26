@@ -8,6 +8,11 @@ class Utils {
     String formattedDate = DateFormat('yyyy-MM-dd').format(datetime);
     return formattedDate;
   }
+  static DateTime stringToDateTime(String date) {
+    List<String> splitDate ;
+    splitDate = date.split('-');
+    return DateTime(int.parse(splitDate[0]), int.parse(splitDate[1]), int.parse(splitDate[2]));
+  }
   static void showErrorDialog({required BuildContext context, required String message}) {
     showDialog(
         context: context,

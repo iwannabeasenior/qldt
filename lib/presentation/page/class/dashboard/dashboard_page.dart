@@ -24,11 +24,12 @@ List<String> titles_student = [
   "Thông tin lớp học",
   "Lịch sử xin nghỉ",
   "Xin nghỉ",
-  "Lịch sử điểm danh",
+  "Lịch sử vắng mặt",
 ];
 
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
+  final classId;
+  const DashboardPage({super.key, this.classId});
   @override
   State<DashboardPage> createState() => _DashboardPageState();
 }
@@ -52,6 +53,16 @@ class _DashboardPageState extends State<DashboardPage> {
                 title: titles_student[i],
                 icon: icons_student[i],
                 itemClick: () {
+                  switch(i) {
+                    case 0:
+                      Navigator.pushNamed(context, '/AbsencePage', arguments: widget.classId);
+                    case 1:
+                      Navigator.pushNamed(context, '/AbsencePageStudent', arguments: widget.classId);
+                    case 2:
+                      Navigator.pushNamed(context, '/AbsencePage', arguments: widget.classId);
+                    case 3:
+                      Navigator.pushNamed(context, '/AttendancePage', arguments: widget.classId);
+                  }
 
                 },
               )
@@ -63,7 +74,16 @@ class _DashboardPageState extends State<DashboardPage> {
               title: titles_lecturer[i],
               icon: icons_lecturer[i],
               itemClick: () {
+                switch(i) {
+                  case 0:
 
+                  case 1:
+                    Navigator.pushNamed(context, '/AttendancePageLecturer', arguments: widget.classId);
+                  case 2:
+                    Navigator.pushNamed(context, '/AttendanceHistoryLecturer', arguments: widget.classId);
+                  case 3:
+                    Navigator.pushNamed(context, '/AbsenceLecturerPage', arguments: widget.classId);
+                }
               },
             )
           ],

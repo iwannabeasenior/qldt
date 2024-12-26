@@ -6,6 +6,7 @@ import 'package:qldt/presentation/page/class/class_list.dart';
 import 'package:qldt/presentation/page/class/material/edit_material.dart';
 import 'package:qldt/presentation/page/notification/notification_page.dart';
 import 'package:qldt/presentation/page/settings/settings_page.dart';
+import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 
 class HomePage extends StatefulWidget {
@@ -57,7 +58,11 @@ class _HomePageState extends State<HomePage> {
           backgroundColor: QLDTColor.green,
           child: const Text("+", style: TextStyle(fontSize: 20),),
           onPressed: () {
-            Navigator.pushNamed(context, '/CreateClass');
+            if (UserPreferences.getRole() == 'LECTURER') {
+              Navigator.pushNamed(context, '/CreateClass');
+            } else {
+              Navigator.pushNamed(context, '/RegisterForClass');
+            }
           }
       ),
     );
