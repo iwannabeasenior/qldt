@@ -1,17 +1,13 @@
-
-
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart';
 import 'package:qldt/data/model/absence_student.dart';
 import 'package:qldt/data/model/class.dart';
 import 'package:qldt/data/model/materials.dart';
-import 'package:qldt/data/remote/api_service_it4788.dart';
 import 'package:qldt/data/request/class_create_request.dart';
 import 'package:qldt/data/request/get_class_list_request.dart';
 import 'package:qldt/data/request/get_student_absence.dart';
@@ -19,14 +15,15 @@ import 'package:qldt/data/request/material_request.dart';
 import 'package:qldt/helper/constant.dart';
 import 'package:qldt/helper/failure.dart';
 import 'package:http/http.dart' as http;
-
-import '../../presentation/page/manage_class/open_class_list.dart';
 import '../model/absence_lecturer.dart';
 import '../model/attendance_student_detail.dart';
 import '../model/class_info.dart';
 import '../model/open_class_response.dart';
 import '../request/absence_request.dart';
 import '../request/get_attendance_list_request.dart';
+import '../model/assignment.dart';
+import '../model/survey.dart';
+import '../request/survey_request.dart';
 
 
 
@@ -41,12 +38,12 @@ abstract class ApiServiceIT5023E {
   Future<Materials> uploadMaterial(UploadMaterialRequest request);
   Future<Materials> editMaterial(EditMaterialRequest request);
   Future<Materials> getMaterialInfo(String token, String materialId);
-
+  //absence
   Future<Map<String, dynamic>> requestAbsence(AbsenceRequest absenceRequest);
   Future<List<AbsenceStudent>> getStudentAbsenceRequests(GetStudentAbsence getStudentAbsence);
   Future<List<AbsenceLecturer>> getAllAbsenceRequests(GetStudentAbsence getStudentAbsence);
   Future<Map<String, dynamic>> reviewAbsenceRequest(String token, String requestId, String status);
-
+  //attendance
   Future<List<String>> getAttendanceDates(String token, String classId);
   Future<List<String>> getAttendanceRecord(String token, String classId);
   Future<Map<String, dynamic>> takeAttendance({
@@ -61,19 +58,26 @@ abstract class ApiServiceIT5023E {
     required String attendanceId,
     required String status,
   });
-
   //manage_class
   Future<Map<String, dynamic>> createClass(ClassCreateRequest classCreateRequest);
   Future<OpenClassResponse> getOpenClass(String token, String page, String pageSize);
   Future<Map<String, dynamic>> registerClass(String token, List<String> classIds);
-
+  // assignments
+  Future<List<Assignment>> getStudentAssignments (String token, String type, String classId);
+  Future<List<Survey>> getAllSurveys (String token, String classId);
+  Future<List<GetSurveyResponse>> getSurveyResponse (String token, String surveyId, String? score, String? submissionId);
+  Future<Map<String, dynamic>> createSurvey(SurveyRequest surveyRequest);
+  Future<Map<String, dynamic>> editSurvey(SurveyRequest surveyRequest);
+  Future<Map<String, dynamic>> submitSurvey(SubmitSurveyRequest submitSurveyRequest);
+  Future<GetSurveyResponse> getSubmission (String token, String assignmentId);
+  Future<String> deleteSurvey(String token, String surveyId);
   }
 
 class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
   @override
   Future<Either<Failure, List<Class>>> getAllClass(GetClassListRequest request) async {
     try {
-      final String endpoint = '/it5023e/get_class_list';
+      const String endpoint = '/it5023e/get_class_list';
 
       final Uri url = Uri.parse(Constant.BASEURL + endpoint);
 
@@ -104,6 +108,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
 
   }
 
+  @override
   Future<List<Materials>> getAllMaterials(String token, String classId) async {
 
     const url = '${Constant.BASEURL}/it5023e/get_material_list';
@@ -530,7 +535,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
   @override
   Future<GetAttendanceListResponse> getAttendanceList(GetAttendanceListRequest request) async {
     try {
-      final String endpoint = '/it5023e/get_attendance_list';
+      const String endpoint = '/it5023e/get_attendance_list';
       final Uri url = Uri.parse(Constant.BASEURL + endpoint);
 
       var response = await http.post(
@@ -735,10 +740,296 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     }
   }
 
+  //assignments
+  @override
+  Future<List<Assignment>> getStudentAssignments(String token, String type, String classId) async {
+    const url = '${Constant.BASEURL}/it5023e/get_student_assignments';
 
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "token": token,
+        "type": type,
+        "class_id": classId,
+      }),
+    );
 
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['meta']['code'] == '1000') {
+        return (data['data'] as List)
+            .map((e) => Assignment.fromJson(e))
+            .toList();
+      } else {
+        throw Exception("Error: ${data['message']}");
+      }
+    } else {
+      throw Exception("Failed to fetch assignments");
+    }
+  }
 
+  @override
+  Future<List<Survey>> getAllSurveys(String token, String classId) async {
+    const url = '${Constant.BASEURL}/it5023e/get_all_surveys';
 
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "token": token,
+        "class_id": classId,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['meta']['code'] == '1000') {
+        return (data['data'] as List)
+            .map((e) => Survey.fromJson(e))
+            .toList();
+      } else {
+        throw Exception("Error: ${data['message']}");
+      }
+    } else {
+      throw Exception("Failed to fetch surveys");
+    }
+  }
+
+  @override
+  Future<List<GetSurveyResponse>> getSurveyResponse(String token, String surveyId, String? score, String? submissionId) async {
+    const url = '${Constant.BASEURL}/it5023e/get_survey_response';
+
+    // Tạo body cho request
+    Map<String, dynamic> body = {
+      "token": token,
+      "survey_id": surveyId,
+    };
+    if (score != null && submissionId != null) {
+      body['grade'] = {
+        "score": score,
+        "submission_id": submissionId,
+      };
+    }
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['meta']['code'] == '1000') {
+        return (data['data'] as List)
+            .map((e) => GetSurveyResponse.fromJson(e))
+            .toList();
+      } else {
+        throw Exception("Error: ${data['message']}");
+      }
+    } else {
+      throw Exception("Failed to call survey responses");
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> createSurvey(SurveyRequest surveyRequest) async {
+    const url = '${Constant.BASEURL}/it5023e/create_survey';
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+
+    //form-data
+    request.fields['token'] = surveyRequest.token;
+    request.fields['classId'] = surveyRequest.classId!;
+    request.fields['deadline'] = surveyRequest.deadline;
+    request.fields['title'] = surveyRequest.title!;
+    request.fields['description'] = surveyRequest.description;
+
+    //add files to req
+    for (var i = 0; i < surveyRequest.files.length; i++) {
+      request.files.add(
+          http.MultipartFile.fromBytes(
+              'file',
+              surveyRequest.files[i].fileData as List<int>,
+              filename: surveyRequest.files[i].file?.name,
+              contentType: MediaType.parse("multipart/form-data")
+          )
+      );
+    }
+    request.files.add;
+
+    //req and res
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      Logger().d('OK');
+      final responseBody = await response.stream.bytesToString();
+      final jsonResponse = jsonDecode(responseBody);
+      //meta code message
+      if (jsonResponse['meta']['code'] == "1000") {
+        //get data successfully
+        return jsonResponse['data'];
+      } else {
+        throw(jsonResponse['meta']['message']);
+      }
+    } else {
+      final responseBody = await response.stream.bytesToString();
+      final jsonResponse = jsonDecode(responseBody);
+      throw Exception("Failed to create survey + ${jsonResponse['meta']['message']}");
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> editSurvey(SurveyRequest surveyRequest) async {
+    const url = '${Constant.BASEURL}/it5023e/edit_survey';
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+
+    //form-data
+    request.fields['token'] = surveyRequest.token;
+    request.fields['assignmentId'] = surveyRequest.assignmentId!;
+    request.fields['deadline'] = surveyRequest.deadline;
+    request.fields['description'] = surveyRequest.description;
+
+    //add files to req
+    for (var i = 0; i < surveyRequest.files.length; i++) {
+      request.files.add(
+          http.MultipartFile.fromBytes(
+              'file',
+              surveyRequest.files[i].fileData as List<int>,
+              filename: surveyRequest.files[i].file?.name,
+              contentType: MediaType.parse("multipart/form-data")
+          )
+      );
+    }
+    request.files.add;
+
+    //req and res
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      Logger().d('OK');
+      final responseBody = await response.stream.bytesToString();
+      final jsonResponse = jsonDecode(responseBody);
+      //meta code message
+      if (jsonResponse['meta']['code'] == "1000") {
+        //get data successfully
+        return jsonResponse['data'];
+      } else {
+        throw(jsonResponse['meta']['message']);
+      }
+    } else {
+      final responseBody = await response.stream.bytesToString();
+      final jsonResponse = jsonDecode(responseBody);
+      throw Exception("${jsonResponse['data']}");
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> submitSurvey(SubmitSurveyRequest submitSurveyRequest) async {
+    const url = '${Constant.BASEURL}/it5023e/submit_survey';
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+
+    //form-data
+    request.fields['token'] = submitSurveyRequest.token;
+    request.fields['assignmentId'] = submitSurveyRequest.assignmentId;
+    request.fields['textResponse'] = submitSurveyRequest.textResponse;
+
+    //add files to req
+    for (var i = 0; i < submitSurveyRequest.files.length; i++) {
+      request.files.add(
+          http.MultipartFile.fromBytes(
+              'file',
+              submitSurveyRequest.files[i].fileData as List<int>,
+              filename: submitSurveyRequest.files[i].file?.name,
+              contentType: MediaType.parse("multipart/form-data")
+          )
+      );
+    }
+    request.files.add;
+
+    //req and res
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      Logger().d('OK');
+      final responseBody = await response.stream.bytesToString();
+      final jsonResponse = jsonDecode(responseBody);
+      //meta code message
+      if (jsonResponse['meta']['code'] == "1000") {
+        //get data successfully
+        return jsonResponse['data'];
+      } else {
+        throw(jsonResponse['data']);
+      }
+    } else {
+      final responseBody = await response.stream.bytesToString();
+      final jsonResponse = jsonDecode(responseBody);
+      throw Exception("Failed to submit + ${jsonResponse['meta']['message']}");
+    }
+  }
+
+  @override
+  Future<GetSurveyResponse> getSubmission(String token, String assignmentId) async {
+    const url = '${Constant.BASEURL}/it5023e/get_submission';
+
+    try {
+      final Map<String, dynamic> requestBody = {
+        'token': token,
+        'assignment_id': assignmentId
+      };
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      final jsonResponse = jsonDecode(response.body);
+
+      // Kiểm tra code từ response meta
+      if (jsonResponse['meta']['code'] == "1000") {
+        return GetSurveyResponse.fromJson(jsonResponse['data']);
+      }
+      throw Exception(jsonResponse['meta']['message']);
+    } catch (e) {
+      Logger().e('Error: $e'); // Log lỗi
+      rethrow; // Throw lỗi để UI xử lý
+    }
+  }
+
+  @override
+  Future<String> deleteSurvey(String token, String surveyId) async {
+    const url = '${Constant.BASEURL}/it5023e/delete_survey';
+
+    try {
+      final Map<String, dynamic> requestBody = {
+        'token': token,
+        'survey_id': surveyId
+      };
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      final jsonResponse = jsonDecode(response.body);
+
+      // Kiểm tra code từ response meta
+      if (jsonResponse['meta']['code'] != "1000") {
+        throw Exception(jsonResponse['data']);
+      }
+
+      return jsonResponse['data'];
+
+    } catch (e) {
+      Logger().e('Error delete survey: $e'); // Log lỗi
+      rethrow; // Throw lỗi để UI xử lý
+    }
+  }
 }
+
+
+
 
 

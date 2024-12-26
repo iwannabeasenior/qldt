@@ -39,7 +39,7 @@ class GetSurveyResponse {
   final int assignmentId;
   final String submissionTime;
   double? grade;
-  final String fileUrl;
+  final String? fileUrl;
   final String textResponse;
   final StudentAccount studentAccount;
 
@@ -47,8 +47,8 @@ class GetSurveyResponse {
     required this.id,
     required this.assignmentId,
     required this.submissionTime,
-    required this.grade,
-    required this.fileUrl,
+    this.grade,
+    this.fileUrl,
     required this.textResponse,
     required this.studentAccount,
   });
@@ -58,7 +58,7 @@ class GetSurveyResponse {
       id: json['id'],
       assignmentId: json['assignment_id'],
       submissionTime: json['submission_time'],
-      grade: json['grade'].toDouble(),
+      grade: json['grade'],
       fileUrl: json['file_url'],
       textResponse: json['text_response'],
       studentAccount: StudentAccount.fromJson(
@@ -84,9 +84,9 @@ class Survey {
   final String title;
   final String description;
   final int lecturerId;
-  final int classId;
+  final String classId;
   final DateTime deadline;
-  final String fileUrl;
+  final String? fileUrl;
 
   Survey({
     required this.id,
@@ -95,7 +95,7 @@ class Survey {
     required this.lecturerId,
     required this.classId,
     required this.deadline,
-    required this.fileUrl,
+    this.fileUrl,
   });
 
   // Factory constructor to create an instance of Survey from JSON

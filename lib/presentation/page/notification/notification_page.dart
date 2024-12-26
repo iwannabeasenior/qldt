@@ -69,6 +69,7 @@ class _NotificationListScreenState extends State<NotificationPage> {
           ],
         ),
         centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
       body: ListView.builder(
         itemCount: notifications.length,

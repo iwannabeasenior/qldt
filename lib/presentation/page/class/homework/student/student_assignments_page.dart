@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:qldt/main.dart';
+import 'package:qldt/presentation/page/class/homework/student/student_assignments_provider.dart';
 import 'package:qldt/presentation/page/class/homework/student/upcoming_assignment.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 
@@ -6,10 +9,11 @@ import 'completed_assignment.dart';
 import 'overdue_assignment.dart';
 
 class StudentAssignmentsPage extends StatefulWidget {
-  const StudentAssignmentsPage({super.key});
+  final String classId;
+  StudentAssignmentsPage({required this.classId});
 
   @override
-  State<StudentAssignmentsPage> createState() => _StudentAssignmentsPageState();
+  _StudentAssignmentsPageState createState() => _StudentAssignmentsPageState();
 }
 
 class _StudentAssignmentsPageState extends State<StudentAssignmentsPage>
@@ -97,10 +101,10 @@ class _StudentAssignmentsPageState extends State<StudentAssignmentsPage>
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: TabBarView(controller: _tabController, children: const [
-          UpcomingAssignment(),
-          OverdueAssignment(),
-          CompletedAssignment(),
+        child: TabBarView(controller: _tabController, children: [
+          UpcomingAssignment(classId: widget.classId),
+          OverdueAssignment(classId: widget.classId),
+          CompletedAssignment(classId: widget.classId),
         ]),
       ),
     );

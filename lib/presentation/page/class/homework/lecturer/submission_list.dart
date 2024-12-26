@@ -1,85 +1,66 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 import 'package:qldt/data/model/assignment.dart';
 import 'package:qldt/data/model/survey.dart';
+import 'package:qldt/data/repo/assignment_repository.dart';
+import 'package:qldt/data/repo/material_repository.dart';
 import 'package:qldt/helper/utils.dart';
+import 'package:qldt/presentation/page/class/class_detail.dart';
+import 'package:qldt/presentation/page/class/homework/homework_page.dart';
+import 'package:qldt/presentation/page/class/homework/lecturer/grading_assignment.dart';
+import 'package:qldt/presentation/page/class/homework/lecturer/lecturer_assignments_provider.dart';
+import 'package:qldt/presentation/page/class/homework/lecturer/survey_list.dart';
+import 'package:qldt/presentation/page/class/material/material_provider.dart';
+import 'package:qldt/presentation/page/home_page.dart';
+import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 import '../../../../../data/model/class.dart';
 
-var assignment = Assignment(
-    id: 1,
-    title: 'Bài tập Giải tích',
-    description: 'Mô tả',
-    deadline: '2024-12-04T08:23:14',
-    lecturerId: 123,
-    fileUrl: '',
-    classId: ''
-);
 
-var submissions = [
-  GetSurveyResponse(
-      id: 1,
-      assignmentId: 12,
-      submissionTime: '2024-12-04T08:23:14',
-      grade: 10.0,
-      fileUrl: '',
-      textResponse: '',
-      studentAccount: StudentAccount(
-          accountId: '29',
-          lastName: 'Nguyen',
-          firstName: 'Huy Hoang',
-          email: 'hoang15122003@gmail.com',
-          studentId: '16')),
-  GetSurveyResponse(
-      id: 1,
-      assignmentId: 12,
-      submissionTime: '2024-12-04T08:23:14',
-      grade: 10.0,
-      fileUrl: '',
-      textResponse: '',
-      studentAccount: StudentAccount(
-          accountId: '29',
-          lastName: 'Nguyen',
-          firstName: 'Huy Hoang',
-          email: 'hoang15122003@gmail.com',
-          studentId: '16')),
-  GetSurveyResponse(
-      id: 1,
-      assignmentId: 12,
-      submissionTime: '2024-12-04T08:23:14',
-      grade: 10.0,
-      fileUrl: '',
-      textResponse: '',
-      studentAccount: StudentAccount(
-          accountId: '29',
-          lastName: 'Nguyen',
-          firstName: 'Huy Hoang',
-          email: 'hoang15122003@gmail.com',
-          studentId: '16')),
-  GetSurveyResponse(
-      id: 1,
-      assignmentId: 12,
-      submissionTime: '2024-12-04T08:23:14',
-      grade: null,
-      fileUrl: '',
-      textResponse: '',
-      studentAccount: StudentAccount(
-          accountId: '29',
-          lastName: 'Nguyen',
-          firstName: 'Huy Hoang',
-          email: 'hoang15122003@gmail.com',
-          studentId: '16'))
-];
+class SubmissionList extends StatelessWidget {
+  final String title;
+  final String surveyId;
+  final String classId;
+  const SubmissionList({super.key, required this.title, required this.surveyId, required this.classId});
 
-class SubmissionList extends StatefulWidget {
-  const SubmissionList({super.key});
-
-  @override
-  State<SubmissionList> createState() => _SubmissionListState();
-}
-
-class _SubmissionListState extends State<SubmissionList> {
   @override
   Widget build(BuildContext context) {
+    final repo = context.read<AssignmentRepo>();
+    return ChangeNotifierProvider(
+        create: (context) => LecturerAssignmentProvider(repo),
+        child: SubmissionListView(title, surveyId, classId),
+    );
+  }
+}
+
+class SubmissionListView extends StatefulWidget {
+  final title;
+  final surveyId;
+  final String classId;
+  const SubmissionListView(this.title, this.surveyId, this.classId);
+
+  @override
+  State<SubmissionListView> createState() => _SubmissionListViewState();
+}
+
+class _SubmissionListViewState extends State<SubmissionListView> {
+  @override
+  void initState() {
+    Logger().d("surveyId is: ${widget.surveyId}, token is ${UserPreferences.getToken()}");
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<LecturerAssignmentProvider>().fetchSubmissionList(UserPreferences.getToken() ?? "", widget.surveyId);
+    });
+  }
+  @override
+  Widget build(BuildContext context) {
+    final submissionProvider = Provider.of<LecturerAssignmentProvider>(context, listen: true);
+    if (submissionProvider.isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(color: Colors.blueAccent,),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -90,7 +71,7 @@ class _SubmissionListState extends State<SubmissionList> {
                 color: Colors.white,
               ),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> ClassDetail(classID: widget.classId, initialIndex: 1,)));
               },
             ),
             const Spacer(),
@@ -128,12 +109,15 @@ class _SubmissionListState extends State<SubmissionList> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               const SizedBox(width: 10,),
-              Text(
-                assignment.title,
-                style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold
+              Expanded(
+                child: Text(
+                  widget.title,
+                  maxLines: 2,
+                  style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold
+                  ),
                 ),
               ),
             ],
@@ -143,33 +127,41 @@ class _SubmissionListState extends State<SubmissionList> {
             child: Divider(thickness: 1, color: Colors.black,),
           ),
           Expanded(
-              child: ListView(
+              child: submissionProvider.isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : submissionProvider.surveyResponses.isEmpty
+                      ? const Center(child: Text('Chưa có sinh viên nộp bài'))
+                      :ListView(
                 scrollDirection: Axis.vertical,
-                children: List.generate(submissions.length, (index) {
+                children: List.generate(submissionProvider.surveyResponses.length, (index) {
                   return SubmissionCard(
-                    submission: submissions[index],
-                    index: index + 1,
+                    submission: submissionProvider.surveyResponses[index],
+                    index: index + 1, title: widget.title, classId: widget.classId,
                   );
                 }),
-              )),
+              )
+          ),
         ],
       ),
     );
   }
 }
 
+
 class SubmissionCard extends StatelessWidget {
   final GetSurveyResponse submission;
+  final String title;
   final int index;
+  final String classId;
 
   const SubmissionCard(
-      {super.key, required this.submission, required this.index});
+      {required this.submission, required this.index, required this.title, required this.classId});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/GradingAssignment');
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>GradingAssignment(submission: submission, title: title, classId: classId,)));
       },
       child: Padding(
         padding: const EdgeInsets.all(4.0),

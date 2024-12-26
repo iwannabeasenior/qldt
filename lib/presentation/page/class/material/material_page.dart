@@ -31,6 +31,7 @@ class MaterialsPage extends StatelessWidget {
 
 
 class MaterialsView extends StatefulWidget {
+
   final classID;
   MaterialsView(this.classID);
 

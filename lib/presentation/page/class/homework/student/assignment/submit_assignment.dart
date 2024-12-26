@@ -1,40 +1,92 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
+import 'package:qldt/data/request/survey_request.dart';
+import 'package:qldt/presentation/page/class/class_detail.dart';
+import 'package:qldt/presentation/page/class/homework/homework_page.dart';
+import 'package:qldt/presentation/page/class/homework/student/student_assignments_page.dart';
+import 'package:qldt/presentation/page/class/homework/student/student_assignments_provider.dart';
+import 'package:qldt/presentation/page/home_page.dart';
+import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 import 'package:file_picker/file_picker.dart';
 
-class SubmitAssignmentPage extends StatefulWidget {
-  const SubmitAssignmentPage({super.key});
+import '../../../../../../data/repo/assignment_repository.dart';
+import '../../../../../../data/request/files_request.dart';
 
-  @override
-  State<SubmitAssignmentPage> createState() => _SubmitAssignmentPageState();
-}
+class SubmitAssignment extends StatelessWidget {
+  final String assignmentId;
+  final String classId;
+  final String title;
 
-class _SubmitAssignmentPageState extends State<SubmitAssignmentPage> {
-  List<String> selectedFilePaths = [];
-
-  // Hàm chọn nhiều tệp
-  Future<void> pickFiles() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(allowMultiple: true);
-    if (result != null) {
-      setState(() {
-        selectedFilePaths = result.paths.whereType<String>().toList();
-      });
-    } else {
-      setState(() {
-        selectedFilePaths = ["Không có tệp nào được chọn."];
-      });
-    }
-  }
+  const SubmitAssignment({super.key, required this.assignmentId, required this.classId, required this.title});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
-      child: Scaffold(
+    final repo = context.read<AssignmentRepo>();
+    return ChangeNotifierProvider(
+      create: (context) => StudentAssignmentProvider(repo),
+      child: SubmitAssignmentPage(assignmentId: assignmentId, classId: classId, title: title,),
+    );
+  }
+}
+  class SubmitAssignmentPage extends StatefulWidget {
+    final String title;
+    final String classId;
+    final String assignmentId;
+    const SubmitAssignmentPage({super.key, required this.assignmentId, required this.classId, required this.title});
+
+    @override
+    State<SubmitAssignmentPage> createState() => _SubmitAssignmentPageState();
+  }
+
+  class _SubmitAssignmentPageState extends State<SubmitAssignmentPage> {
+    final _formKey = GlobalKey<FormState>();
+    final TextEditingController _textResponseController = TextEditingController();
+
+    //pick files
+    List<FileRequest> files = [];
+    Future<void> pickFiles() async {
+      final result = await FilePicker.platform.pickFiles(allowMultiple: true);
+      if (result != null) {
+        setState(() {
+          files = result.files.map((file) => FileRequest(file: file, fileData: file.bytes)).toList();
+        });
+      }
+    }
+
+    //on submit
+    void submitSurvey(StudentAssignmentProvider provider) {
+      if (!_formKey.currentState!.validate()) return;
+
+      final textResponse = _textResponseController.text;
+
+      final submitSurveyRequest = SubmitSurveyRequest(
+          token: UserPreferences.getToken() ?? "",
+          assignmentId: widget.assignmentId,
+          textResponse: textResponse,
+          files: files
+      );
+
+      provider.submitSurvey(submitSurveyRequest).then((_){
+        // Show success message after the request
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('submitted successfully')),
+        );
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> ClassDetail(classID: widget.classId, initialIndex: 1,)));
+      }).catchError((e) {
+        // Show error message if there's an issue
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to submit $e')),
+        );
+      });
+    }
+
+    @override
+    Widget build(BuildContext context) {
+      final provider = Provider.of<StudentAssignmentProvider>(context);
+      return Scaffold(
         appBar: AppBar(
           title: Row(
             children: [
@@ -77,110 +129,116 @@ class _SubmitAssignmentPageState extends State<SubmitAssignmentPage> {
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              //Tiêu đề bài tập
-              const Text(
-                'Participant Exercise',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                //Tiêu đề bài tập
+                Text(
+                  widget.title,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 2,
                 ),
-              ),
-              const Divider(
-                color: Colors.grey,
-              ),
-              const SizedBox(height: 16),
-              //Mô tả bài tập
-              // Trường mô tả
-              TextFormField(
-                maxLines: 6,
-                decoration: InputDecoration(
-                  labelText: "Mô tả",
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: QLDTColor.red),
+                const Divider(
+                  color: Colors.grey,
+                ),
+                const SizedBox(height: 16),
+                //Mô tả bài tập
+                // Trường mô tả
+                TextFormField(
+                  controller: _textResponseController,
+                  maxLines: 6,
+                  decoration: InputDecoration(
+                    labelText: "Mô tả",
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: QLDTColor.red),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 15),
-              Container(
-                padding: const EdgeInsets.all(16),
-                width: 500,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: selectedFilePaths.isNotEmpty
-                    ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Tệp đã chọn:',
-                      style: TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    ...selectedFilePaths.map((filePath) => Text(
-                      '- $filePath',
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                          fontSize: 14, color: Colors.black),
-                    )),
-                  ],
-                )
-                    : const Text(
-                  "Tài liệu đính kèm",
-                  style: TextStyle(fontSize: 16, color: Colors.black),
-                ),
-              ),
-
-              const SizedBox(height: 15),
-
-              //Xem tài liệu và nộp bài
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    //Tải tài liệu lên
-                    ElevatedButton(
-                      onPressed: pickFiles,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: QLDTColor.red,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 12),
-                      ),
-                      child: Text(
-                        'Tải tài liệu lên',
-                        style: TextStyle(fontSize: 16, color: QLDTColor.white),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    //Submit
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: QLDTColor.red,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 12),
-                      ),
-                      child: Text(
-                        'Submit',
+                const SizedBox(height: 15),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  width: 500,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: files.isNotEmpty
+                      ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Tệp đã chọn:',
                         style: TextStyle(
-                          fontSize: 16,
-                          color: QLDTColor.white,
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      ...files.map((filePath) => Text(
+                        '- $filePath',
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontSize: 14, color: Colors.black),
+                      )),
+                    ],
+                  )
+                      : const Text(
+                    "Tài liệu đính kèm",
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  ),
+                ),
+
+                const SizedBox(height: 15),
+
+                //Xem tài liệu và nộp bài
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      //Tải tài liệu lên
+                      ElevatedButton(
+                        onPressed: pickFiles,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: QLDTColor.red,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 12),
+                        ),
+                        child: Text(
+                          'Tải tài liệu lên',
+                          style: TextStyle(fontSize: 16, color: QLDTColor.white),
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      //Submit
+                      ElevatedButton(
+                        onPressed: () {
+                          submitSurvey(provider);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: QLDTColor.red,
+                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                        ),
+                        child: provider.isLoading
+                            ? const CircularProgressIndicator()
+                            : const Text(
+                          "Submit",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    }
   }
-}
+
+

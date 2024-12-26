@@ -149,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                             // if (!_formKey.currentState!.validate()) {
                             //   return;
                             // }
-                            controller.login("studenthust1@hust.edu.vn", "123456", deviceId);
+                            controller.login(email, password, deviceId);
                             // In ra thông tin đăng nhập (có thể thay bằng logic đăng nhập thực tế)
                           },
                           style: ElevatedButton.styleFrom(

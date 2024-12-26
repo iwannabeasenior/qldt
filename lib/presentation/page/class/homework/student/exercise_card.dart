@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:qldt/helper/format_date_time.dart';
 import 'package:qldt/helper/utils.dart';
 import 'package:qldt/presentation/page/class/homework/student/assignment/assignment_info.dart';
+import 'package:qldt/presentation/page/class/homework/student/assignment/submission_info_page.dart';
 
 import '../../../../../data/model/assignment.dart';
 
@@ -13,13 +15,14 @@ class ExerciseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String deadline = Utils.formatDateTime(assignment.deadline);
+    String deadline = FormatDateTime().formatDateTime(assignment.deadline);
     return GestureDetector(
       onTap: () {
-        Navigator.push(
+        type != "COMPLETED" ? Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => AssignmentInfoPage(type: type,))
-        );
+          MaterialPageRoute(builder: (context) => AssignmentInfoPage(type: type, assignment: assignment,))
+        )
+            : Navigator.push(context, MaterialPageRoute(builder: (context)=> SubmissionInfoPage(assignmentId: assignment.id.toString(), title: assignment.title,)));
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -38,9 +41,13 @@ class ExerciseCard extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            assignment.title,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          Expanded(
+                            child: Text(
+                              assignment.title,
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
                           ),
                           type == "UPCOMING"
                               ? const Icon(Icons.navigate_next_outlined,
@@ -65,7 +72,7 @@ class ExerciseCard extends StatelessWidget {
                         style: const TextStyle(color: Colors.grey),
                       )
                           : const Text(
-                        'Đã nộp vào',
+                        'Đã nộp',
                         style: TextStyle(color: Colors.grey),
                       ),
                       const SizedBox(height: 4),

@@ -1,18 +1,47 @@
 import 'package:flutter/material.dart';
-import 'package:qldt/data/model/assignment.dart';
-import 'package:qldt/presentation/page/class/homework/student/assignment/submit_assignment.dart';
-import 'package:qldt/presentation/theme/color_style.dart';
+import 'package:provider/provider.dart';
+import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class AssignmentInfoPage extends StatelessWidget {
-  final String type;
-  final Assignment assignment;
-  const AssignmentInfoPage({super.key, required this.type, required this.assignment});
+import '../../../../../../data/repo/assignment_repository.dart';
+import '../../../../../theme/color_style.dart';
+import '../student_assignments_provider.dart';
 
+class SubmissionInfoPage extends StatelessWidget {
+  final String title;
+  final String assignmentId;
+  const SubmissionInfoPage({super.key, required this.assignmentId, required this.title});
   @override
   Widget build(BuildContext context) {
+    final repo = context.read<AssignmentRepo>();
+    return ChangeNotifierProvider(
+      create: (context) => StudentAssignmentProvider(repo),
+      child: SubmissionInfoView(title: title, assignmentId: assignmentId,),
+    );
+  }
+}
+
+class SubmissionInfoView extends StatefulWidget {
+  final String title;
+  final String assignmentId;
+  const SubmissionInfoView({super.key, required this.title, required this.assignmentId});
+  @override
+  State<SubmissionInfoView> createState() => _SubmissionInfoViewState();
+}
+
+class _SubmissionInfoViewState extends State<SubmissionInfoView> {
+  @override
+  void initState() {
+        super.initState();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          context.read<StudentAssignmentProvider>().getSubmission(UserPreferences.getToken() ?? "", widget.assignmentId);
+        });
+  }
+  @override
+  Widget build(BuildContext context) {
+    final provider = Provider.of<StudentAssignmentProvider>(context, listen: true);
     //launch Url
-    late final Uri _url = Uri.parse(assignment.fileUrl ?? "");
+    late final Uri _url = Uri.parse(provider.submission!.fileUrl ?? "");
     Future<void> _launchUrl() async {
       if (!await launchUrl(_url)) {
         throw Exception('Could not launch $_url');
@@ -43,7 +72,7 @@ class AssignmentInfoPage extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Thông tin bài tập',
+                  'Thông tin bài tập đã nộp',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 25,
@@ -61,17 +90,36 @@ class AssignmentInfoPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
+        child: provider.isLoading
+            ? const Center(child: CircularProgressIndicator(),)
+            : Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             //Tiêu đề bài tập
-            Text(
-              assignment.title,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-              maxLines: 2,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.title,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 2,
+                  ),
+                ),
+                Text(
+                  provider.submission?.grade == null
+                      ? 'Chưa có điểm'
+                      : 'Điểm: ${provider.submission?.grade.toString()}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: provider.submission?.grade.toString() != 'null' ? Colors.green : Colors.red
+                  ),
+                ),
+              ],
             ),
             const Divider(color: Colors.grey,),
             const SizedBox(height: 16),
@@ -97,7 +145,7 @@ class AssignmentInfoPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    assignment.description,
+                    provider.submission!.textResponse,
                     style: const TextStyle(fontSize: 18),
                   ),
                 ],
@@ -123,25 +171,6 @@ class AssignmentInfoPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16,),
-                  (type == 'UPCOMING')
-                      ? ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>SubmitAssignment(assignmentId: assignment.id.toString(), classId: assignment.classId, title: assignment.title,)));
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: QLDTColor.red,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 12),
-                    ),
-                    child: Text(
-                      'Nộp bài',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: QLDTColor.white,
-                      ),
-                    ),
-                  )
-                      : const SizedBox.shrink(),
                 ],
               ),
             ),
@@ -151,6 +180,3 @@ class AssignmentInfoPage extends StatelessWidget {
     );
   }
 }
-
-
-
