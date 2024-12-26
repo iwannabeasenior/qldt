@@ -89,7 +89,11 @@ class _GradingAssignmentState extends State<GradingAssignment> {
             ),
           ),
           GestureDetector(
-            onTap: _launchUrl,
+            onTap: (){
+              if (widget.submission.fileUrl != null) {
+                _launchUrl();
+              }
+            },
             child: Padding(
               padding: const EdgeInsets.all(4.0),
               child: Card(
@@ -123,6 +127,10 @@ class _GradingAssignmentState extends State<GradingAssignment> {
                               overflow: TextOverflow.ellipsis,
                             )
                           ),
+                          const SizedBox(height: 16,),
+                          const Text('Mô tả:', style: TextStyle(fontWeight: FontWeight.bold),),
+                          const SizedBox(height: 8,),
+                          Text(widget.submission.textResponse),
                         ],
                       )
                   ),

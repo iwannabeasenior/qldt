@@ -10,7 +10,6 @@ import 'package:qldt/data/model/assignment.dart';
 import 'package:qldt/data/model/class.dart';
 import 'package:qldt/data/model/materials.dart';
 import 'package:qldt/data/model/survey.dart';
-import 'package:qldt/data/remote/api_service_it4788.dart';
 import 'package:qldt/data/request/get_class_list_request.dart';
 import 'package:qldt/data/request/survey_request.dart';
 import 'package:qldt/helper/constant.dart';
@@ -41,7 +40,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
   @override
   Future<Either<Failure, List<Class>>> getAllClass(GetClassListRequest request) async {
     try {
-      final String endpoint = '/it5023e/get_class_list';
+      const String endpoint = '/it5023e/get_class_list';
 
       final Uri url = Uri.parse(Constant.BASEURL + endpoint);
 
@@ -209,7 +208,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
         throw Exception("Error: ${data['message']}");
       }
     } else {
-      throw Exception("Failed to fetch surveys");
+      throw Exception("Failed to call survey responses");
     }
   }
 
@@ -254,7 +253,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     } else {
       final responseBody = await response.stream.bytesToString();
       final jsonResponse = jsonDecode(responseBody);
-      throw Exception("Failed to request absence + ${jsonResponse['meta']['message']}");
+      throw Exception("Failed to create survey + ${jsonResponse['meta']['message']}");
     }
   }
 
@@ -309,7 +308,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
 
     //form-data
     request.fields['token'] = submitSurveyRequest.token;
-    request.fields['assignmentId'] = submitSurveyRequest.assignmentId!;
+    request.fields['assignmentId'] = submitSurveyRequest.assignmentId;
     request.fields['textResponse'] = submitSurveyRequest.textResponse;
 
     //add files to req
@@ -341,7 +340,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     } else {
       final responseBody = await response.stream.bytesToString();
       final jsonResponse = jsonDecode(responseBody);
-      throw Exception("Failed to request absence + ${jsonResponse['meta']['message']}");
+      throw Exception("Failed to submit + ${jsonResponse['meta']['message']}");
     }
   }
 
@@ -371,8 +370,8 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
       }
       throw Exception(jsonResponse['meta']['message']);
     } catch (e) {
-      print('Error adding student: $e'); // Log lỗi
-      throw e; // Throw lỗi để UI xử lý
+      Logger().e('Error: $e'); // Log lỗi
+      rethrow; // Throw lỗi để UI xử lý
     }
   }
 
@@ -404,8 +403,8 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
       return jsonResponse['data'];
 
     } catch (e) {
-      print('Error delete survey: $e'); // Log lỗi
-      throw e; // Throw lỗi để UI xử lý
+      Logger().e('Error delete survey: $e'); // Log lỗi
+      rethrow; // Throw lỗi để UI xử lý
     }
   }
 
