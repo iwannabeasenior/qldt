@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:qldt/data/model/user.dart';
@@ -84,38 +83,38 @@ class _MyAppState extends State<MyApp> {
   String? _fcmToken;
 
 
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  // final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-  Future<void> setupFlutterNotifications() async {
-    const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+  // Future<void> setupFlutterNotifications() async {
+  //   const AndroidInitializationSettings initializationSettingsAndroid =
+  //   AndroidInitializationSettings('@mipmap/ic_launcher');
+  //
+  //   const InitializationSettings initializationSettings =
+  //   InitializationSettings(android: initializationSettingsAndroid);
+  //
+  //   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  // }
 
-    const InitializationSettings initializationSettings =
-    InitializationSettings(android: initializationSettingsAndroid);
-
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-  }
-
-  Future<void> showNotification(RemoteMessage message) async {
-    const AndroidNotificationDetails androidNotificationDetails =
-    AndroidNotificationDetails(
-      'your_channel_id', // Channel ID
-      'Your Channel Name', // Channel Name
-      channelDescription: 'Your channel description',
-      importance: Importance.max,
-      priority: Priority.high,
-    );
-
-    const NotificationDetails notificationDetails =
-    NotificationDetails(android: androidNotificationDetails);
-
-    await flutterLocalNotificationsPlugin.show(
-      0, // Notification ID
-      message.notification?.title, // Title
-      message.notification?.body, // Body
-      notificationDetails,
-    );
-  }
+  // Future<void> showNotification(RemoteMessage message) async {
+  //   const AndroidNotificationDetails androidNotificationDetails =
+  //   AndroidNotificationDetails(
+  //     'your_channel_id', // Channel ID
+  //     'Your Channel Name', // Channel Name
+  //     channelDescription: 'Your channel description',
+  //     importance: Importance.max,
+  //     priority: Priority.high,
+  //   );
+  //
+  //   const NotificationDetails notificationDetails =
+  //   NotificationDetails(android: androidNotificationDetails);
+  //
+  //   // await flutterLocalNotificationsPlugin.show(
+  //   //   0, // Notification ID
+  //   //   message.notification?.title, // Title
+  //   //   message.notification?.body, // Body
+  //   //   notificationDetails,
+  //   // );
+  // }
 
   Future<void> _getFCMToken() async {
     String? token = await _firebaseMessaging.getToken(vapidKey: "BDlFd79VwMbXPTsRBLp693l6O_2uKECth0eoSbzsv0oPnsI7FT2Ms_v2TngFZmVRV_BS4uTe10t4CapdIEf-yRk");
@@ -130,11 +129,11 @@ class _MyAppState extends State<MyApp> {
     // make sure you call `initializeApp` before using other Firebase services.
     await Firebase.initializeApp();
 
-    print("Handling a background message: ${message.messageId}");
+    print("Handling a background message");
 
-    if (message.notification != null) {
-      await showNotification(message);
-    }
+    // if (message.notification != null) {
+    //   await showNotification(message);
+    // }
   }
 
   Future<void> _requestPermission() async {
@@ -170,7 +169,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    setupFlutterNotifications();
+    // setupFlutterNotifications();
     _requestPermission();
     _getFCMToken();
   }

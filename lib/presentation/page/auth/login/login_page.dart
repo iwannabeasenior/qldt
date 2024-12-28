@@ -147,12 +147,12 @@ class _LoginPageState extends State<LoginPage> {
                         ElevatedButton(
                           onPressed: () {
                             // Xử lý sự kiện khi nhấn nút đăng nhập
-                            String email = _emailController.text;
-                            String password = _passwordController.text;
-                            if (!_formKey.currentState!.validate()) {
-                              return;
-                            }
-                            controller.login(email, password, deviceId, UserPreferences.getFCMToken());
+                            // String email = _emailController.text;
+                            // String password = _passwordController.text;
+                            // if (!_formKey.currentState!.validate()) {
+                            //   return;
+                            // }
+                            controller.login("lecturerhust1@hust.edu.vn", "123456", deviceId, UserPreferences.getFCMToken());
                             // In ra thông tin đăng nhập (có thể thay bằng logic đăng nhập thực tế)
                           },
                           style: ElevatedButton.styleFrom(
