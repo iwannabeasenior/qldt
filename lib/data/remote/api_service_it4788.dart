@@ -63,7 +63,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
   Future<Either<Failure, ({User user , String token, List<Class> classes})>> login(LoginRequest request) async {
     try {
       final String endpoint = '/it4788/login';
-
+      Logger().d(request.fcmToken);
       final Uri url = Uri.parse(Constant.BASEURL + endpoint);
 
       var response = await http.post(

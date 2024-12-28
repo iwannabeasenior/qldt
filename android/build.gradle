@@ -1,3 +1,19 @@
+
+
+
+// Correct the 'buildscript' block (it was 'buildScripts' before)
+buildscript {
+    repositories {
+        google()  // Required for Android Gradle Plugin
+        mavenCentral()  // Required for other dependencies
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.4.2'  // Use appropriate version of the plugin
+    }
+}
+plugins {
+    // id("com.google.gms.google-services") version "4.4.2" apply false
+}
 allprojects {
     repositories {
         google()
@@ -6,9 +22,11 @@ allprojects {
 }
 
 rootProject.buildDir = "../build"
+
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
+
 subprojects {
     project.evaluationDependsOn(":app")
 }

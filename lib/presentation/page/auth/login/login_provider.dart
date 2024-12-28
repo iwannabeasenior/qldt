@@ -21,8 +21,8 @@ class LoginProvider extends ChangeNotifier {
   String? token;
   LoginProvider(this.repo);
 
-  Future<void> login(String email, String password, int deviceId) async {
-    var response = await repo.login(LoginRequest(email, password, deviceId));
+  Future<void> login(String email, String password, int deviceId, String? fcmToken) async {
+    var response = await repo.login(LoginRequest(email, password, deviceId, fcmToken));
     response.fold(
         (left) {
           Logger().d(left.message);
@@ -31,7 +31,7 @@ class LoginProvider extends ChangeNotifier {
           user = right.user;
           token = right.token;
           classes = right.classes;
-          UserPreferences.setUserInfo(token ?? "", user?.role ?? "", user?.id ?? "");
+          UserPreferences.setUserInfo(token ?? "", user?.role ?? "", user?.id ?? "", user?.email ?? "");
           setLoginState = true;
         }
     );

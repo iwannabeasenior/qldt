@@ -51,4 +51,16 @@ class Utils {
       throw 'Could not open url';
     }
   }
+  static String convertToDirectLink(String googleDriveLink) {
+    // Extract the file ID from the input link
+    final uri = Uri.parse(googleDriveLink);
+    final segments = uri.pathSegments;
+
+    if (segments.contains('file') && segments.length >= 3) {
+      final fileId = segments[2]; // Extract the file ID
+      return 'https://drive.google.com/uc?export=view&id=$fileId';
+    } else {
+      throw Exception('Invalid Google Drive link format');
+    }
+  }
 }
