@@ -6,6 +6,7 @@ import 'package:qldt/data/model/user.dart';
 import 'package:qldt/data/repo/material_repository.dart';
 import 'package:qldt/helper/utils.dart';
 import 'package:qldt/presentation/page/class/material/material_provider.dart';
+import 'package:qldt/presentation/page/class/material/upload_material.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -68,7 +69,7 @@ class _MaterialsViewState extends State<MaterialsView> {
           ElevatedButton(
             onPressed: () {
               // Handle upload document
-              Navigator.pushNamed(context, '/UploadMaterial', arguments: widget.classID);
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>UploadMaterialPage(classId: widget.classID)));
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Color(0xFFAE2C2C),

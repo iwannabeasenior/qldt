@@ -14,6 +14,8 @@ import 'package:qldt/presentation/pref/user_preferences.dart';
 
 
 class UploadMaterialPage extends StatefulWidget {
+  final String classId;
+  const UploadMaterialPage({super.key, required this.classId});
   @override
   _UploadMaterialPageState createState() => _UploadMaterialPageState();
 }
@@ -29,7 +31,7 @@ class _UploadMaterialPageState extends State<UploadMaterialPage> {
   Widget build(BuildContext context) {
     final controller = context.watch<MaterialProvider>();
 
-    final classId = ModalRoute.of(context)?.settings.arguments as String;
+    final String classId = widget.classId;
 
     return Scaffold(
       appBar: AppBar(
