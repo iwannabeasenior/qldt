@@ -197,7 +197,7 @@ class _UploadMaterialPageState extends State<UploadMaterialPage> {
                     // }
                     uploadMaterial(provider);
                   },
-                  child: Text('Upload'),
+                  child: const Text('Upload'),
                 ),
               ),
             ],

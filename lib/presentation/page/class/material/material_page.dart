@@ -5,6 +5,7 @@ import 'package:qldt/data/model/materials.dart';
 import 'package:qldt/data/model/user.dart';
 import 'package:qldt/data/repo/material_repository.dart';
 import 'package:qldt/helper/utils.dart';
+import 'package:qldt/presentation/page/class/material/edit_material.dart';
 import 'package:qldt/presentation/page/class/material/material_provider.dart';
 import 'package:qldt/presentation/page/class/material/upload_material.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
@@ -109,15 +110,15 @@ class _MaterialsViewState extends State<MaterialsView> {
 class DocumentCard extends StatelessWidget {
   final Materials material;
 
-  DocumentCard({required this.material});
+  const DocumentCard({super.key, required this.material});
 
   @override
   Widget build(BuildContext context) {
     final materialController = context.read<MaterialProvider>();
 
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      padding: EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -137,7 +138,7 @@ class DocumentCard extends StatelessWidget {
               SizedBox(height: 4),
               Text(
                 material.description ?? '',
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.grey,
                     fontSize: 13,
                     fontStyle: FontStyle.italic),
@@ -145,7 +146,7 @@ class DocumentCard extends StatelessWidget {
             ],
           ),
           IconButton(
-            icon: Icon(Icons.more_horiz),
+            icon: const Icon(Icons.more_horiz),
             onPressed: () {
               showDialog(
                 context: context,
@@ -166,8 +167,8 @@ class DocumentCard extends StatelessWidget {
                           children: [
                             ListTile(
                               leading:
-                                  Icon(Icons.folder_open, color: Colors.red),
-                              title: Text("Mở"),
+                                  const Icon(Icons.folder_open, color: Colors.red),
+                              title: const Text("Mở"),
                               onTap: () async {
                                 try {
                                   await Utils.launchUrlString(
@@ -182,12 +183,20 @@ class DocumentCard extends StatelessWidget {
                             ),
                             if (UserPreferences.getRole() == 'LECTURER')
                               ListTile(
-                                leading: Icon(Icons.edit, color: Colors.blue),
-                                title: Text("Chỉnh sửa"),
-                                onTap: () {
+                                leading: const Icon(Icons.edit, color: Colors.blue),
+                                title: const Text("Chỉnh sửa"),
+                                onTap: () async {
                                   Navigator.pop(context);
-                                  Navigator.pushNamed(context, '/EditMaterial',
-                                      arguments: {'material': material});
+                                  // Handle upload document
+                                  final result = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              EditMaterialPage(material: material)));
+                                  if (result == true) {
+                                    await context.read<MaterialProvider>().fetchMaterials(
+                                        UserPreferences.getToken() ?? "", material.classId);
+                                  }
                                 },
                               ),
                             if (UserPreferences.getRole() == 'LECTURER')

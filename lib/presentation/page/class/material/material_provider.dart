@@ -55,6 +55,8 @@ class MaterialProvider with ChangeNotifier {
   }
 
   Future<void> editMaterial(EditMaterialRequest request) async {
+    _isLoading = true;
+    notifyListeners();
     try {
       final newMaterial = await _repo.editMaterial(request);
       // update to ui
@@ -65,6 +67,9 @@ class MaterialProvider with ChangeNotifier {
       }
     } catch(e) {
       Logger().d(e);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
