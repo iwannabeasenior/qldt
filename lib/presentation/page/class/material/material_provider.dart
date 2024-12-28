@@ -40,12 +40,17 @@ class MaterialProvider with ChangeNotifier {
   }
 
   Future<void> uploadMaterial(UploadMaterialRequest request) async {
+    _isLoading = true;
+    notifyListeners();
     try {
       final newMaterial = await _repo.uploadMaterial(request);
       materials.add(newMaterial);
       notifyListeners();
     } catch(e) {
       Logger().d(e);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 

@@ -10,7 +10,6 @@ import 'package:qldt/presentation/page/class/material/upload_material.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 class MaterialsPage extends StatelessWidget {
   final String classID;
 
@@ -30,10 +29,9 @@ class MaterialsPage extends StatelessWidget {
   }
 }
 
-
 class MaterialsView extends StatefulWidget {
-
   final classID;
+
   MaterialsView(this.classID);
 
   @override
@@ -46,30 +44,44 @@ class _MaterialsViewState extends State<MaterialsView> {
     Logger().d("class id is: ${widget.classID}");
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<MaterialProvider>().fetchMaterials(UserPreferences.getToken() ?? "", widget.classID);
+      context
+          .read<MaterialProvider>()
+          .fetchMaterials(UserPreferences.getToken() ?? "", widget.classID);
     });
   }
+
   @override
   Widget build(BuildContext context) {
-    final materialProvider = Provider.of<MaterialProvider>(context, listen: true);
+    final materialProvider =
+        Provider.of<MaterialProvider>(context, listen: true);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
           Expanded(
-            child: materialProvider.isLoading
-                ? Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    itemCount: materialProvider.materials.length, // Số lượng tài liệu
-                    itemBuilder: (context, index) {
-                      return DocumentCard(material: materialProvider.materials[index],);
-                    },
-                  )
-          ),
+              child: materialProvider.isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : ListView.builder(
+                      itemCount: materialProvider.materials.length,
+                      // Số lượng tài liệu
+                      itemBuilder: (context, index) {
+                        return DocumentCard(
+                          material: materialProvider.materials[index],
+                        );
+                      },
+                    )),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               // Handle upload document
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>UploadMaterialPage(classId: widget.classID)));
+              final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          UploadMaterialPage(classId: widget.classID)));
+              if (result == true) {
+                await context.read<MaterialProvider>().fetchMaterials(
+                    UserPreferences.getToken() ?? "", widget.classID);
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Color(0xFFAE2C2C),
@@ -95,7 +107,6 @@ class _MaterialsViewState extends State<MaterialsView> {
 }
 
 class DocumentCard extends StatelessWidget {
-
   final Materials material;
 
   DocumentCard({required this.material});
@@ -119,7 +130,8 @@ class DocumentCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "${material.materialName}.${material.materialType}" ?? "UNKNOWN",
+                "${material.materialName}.${material.materialType}" ??
+                    "UNKNOWN",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
               ),
               SizedBox(height: 4),
@@ -154,13 +166,16 @@ class DocumentCard extends StatelessWidget {
                           children: [
                             ListTile(
                               leading:
-                              Icon(Icons.folder_open, color: Colors.red),
+                                  Icon(Icons.folder_open, color: Colors.red),
                               title: Text("Mở"),
                               onTap: () async {
                                 try {
-                                  await Utils.launchUrlString(material.materialLink ?? "");
-                                } catch(e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Can not open url")));
+                                  await Utils.launchUrlString(
+                                      material.materialLink ?? "");
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text("Can not open url")));
                                 }
                                 Navigator.pop(context);
                               },
@@ -171,7 +186,8 @@ class DocumentCard extends StatelessWidget {
                                 title: Text("Chỉnh sửa"),
                                 onTap: () {
                                   Navigator.pop(context);
-                                  Navigator.pushNamed(context, '/EditMaterial', arguments: { 'material': material});
+                                  Navigator.pushNamed(context, '/EditMaterial',
+                                      arguments: {'material': material});
                                 },
                               ),
                             if (UserPreferences.getRole() == 'LECTURER')
