@@ -15,7 +15,7 @@ Future<Map<String, dynamic>> fetchUsers(String search, int page, int pageSize, S
   );
 
   if (response.statusCode == 200) {
-    final data = jsonDecode(response.body)['data'];
+    final data = jsonDecode(utf8.decode(response.bodyBytes))['data'];
     final pageContent = (data['page_content'] as List).map((json) => UserSearch.fromJson(json)).toList();
     final pageInfo = PageInfoSearch.fromJson(data['page_info']);
     return {'pageContent': pageContent, 'pageInfo': pageInfo};

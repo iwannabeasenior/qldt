@@ -48,7 +48,7 @@ class _ChatDetailViewState extends State<ChatDetailView> implements ChatDetailCa
 
   late Future<List<Message>> _futureMessages;
 
-  late ChatDetailProvider controller;
+  late ChatDetailProvider controller = context.watch<ChatDetailProvider>();
 
   late StompClient stompClient = Provider.of<StompClient>(context, listen: false);
 
@@ -67,6 +67,7 @@ class _ChatDetailViewState extends State<ChatDetailView> implements ChatDetailCa
           var msg = jsonDecode(frame.body!);
           var message = Message(messageId: msg['id'].toString(), messageContent: msg['content'], senderId: msg['sender']['id'], senderName: msg['sender']['name'], createdAt: msg['created_at'], unread: msg['message_status']);
           controller.addMessage(message);
+          scrollDown();
         }
     );
 
@@ -107,9 +108,9 @@ class _ChatDetailViewState extends State<ChatDetailView> implements ChatDetailCa
 
 
   void _scrollDown() {
-    setState(() {
-      scrollController.animateTo(scrollController.position.maxScrollExtent, duration: Duration(milliseconds: 200), curve: Curves.bounceIn);
-    });
+    if (scrollController.hasClients) {
+      scrollController.jumpTo(scrollController.position.maxScrollExtent + 100);
+    }
   }
 
   void _sendMessage(int receiverId, String content) {

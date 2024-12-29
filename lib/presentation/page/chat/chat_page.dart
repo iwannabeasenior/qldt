@@ -50,6 +50,7 @@ class _ChatPageState extends State<ChatPage> {
             child: Column(
               children: [
                 TextField(
+                  canRequestFocus: false,
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => UserSearchPage())).then((_) {
                       setState(() {

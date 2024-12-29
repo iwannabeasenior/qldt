@@ -60,57 +60,60 @@ class _UserSearchPageState extends State<UserSearchPage> {
       appBar: AppBar(
         title: Text('Search Users'),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                labelText: 'Search',
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: _searchUsers,
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  labelText: 'Search',
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.search),
+                    onPressed: _searchUsers,
+                  ),
                 ),
               ),
             ),
-          ),
 
-          if (_isLoading) CircularProgressIndicator(),
+            if (_isLoading) CircularProgressIndicator(),
 
-          Expanded(
-            child: ListView.builder(
-              itemCount: _users.length,
-              itemBuilder: (context, index) {
-                final user = _users[index];
-                return GestureDetector(
-                  child: ListTile(
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => ChatDetail(conversation: Conversation(id: -1, partnerId: int.parse(user.accountId), partnerName: user.firstName + user.lastName, lastMessage: null, lastMessageTime: "", unreadCount: -1))));
-                    },
-                    title: Text('${user.firstName} ${user.lastName}'),
-                    subtitle: Text(user.email),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _users.length,
+                itemBuilder: (context, index) {
+                  final user = _users[index];
+                  return GestureDetector(
+                    child: ListTile(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => ChatDetail(conversation: Conversation(id: -1, partnerId: int.parse(user.accountId), partnerName: user.firstName + user.lastName, lastMessage: null, lastMessageTime: "", unreadCount: -1))));
+                      },
+                      title: Text('${user.firstName} ${user.lastName}'),
+                      subtitle: Text(user.email),
+                    ),
+                  );
+                },
+              ),
+            ),
+            if (_pageInfo != null)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: _pageInfo!.previousPage != null ? _loadPreviousPage : null,
+                    child: Text('Previous'),
                   ),
-                );
-              },
-            ),
-          ),
-          if (_pageInfo != null)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: _pageInfo!.previousPage != null ? _loadPreviousPage : null,
-                  child: Text('Previous'),
-                ),
-                Text('Page ${_pageInfo!.page + 1} of ${_pageInfo!.totalPage}'),
-                TextButton(
-                  onPressed: _pageInfo!.nextPage != null ? _loadNextPage : null,
-                  child: Text('Next'),
-                ),
-              ],
-            ),
-        ],
+                  Text('Page ${_pageInfo!.page + 1} of ${_pageInfo!.totalPage}'),
+                  TextButton(
+                    onPressed: _pageInfo!.nextPage != null ? _loadNextPage : null,
+                    child: Text('Next'),
+                  ),
+                ],
+              ),
+          ],
+        ),
       ),
     );
   }
