@@ -18,7 +18,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   var pages = <Widget>[
-    const NotificationPage(),
+    // const NotificationPage(),
+    NotificationsPage(),
     ClassList(),
     const ChatPage(),
     const SettingsPage(),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qldt/data/repo/auth_repository.dart';
 import 'package:qldt/presentation/page/auth/login/login_provider.dart';
+import 'package:qldt/presentation/pref/user_preferences.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -149,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
                             // if (!_formKey.currentState!.validate()) {
                             //   return;
                             // }
-                            controller.login(email, password, deviceId);
+                            controller.login(email, password, deviceId, UserPreferences.getFCMToken());
                             // In ra thông tin đăng nhập (có thể thay bằng logic đăng nhập thực tế)
                           },
                           style: ElevatedButton.styleFrom(

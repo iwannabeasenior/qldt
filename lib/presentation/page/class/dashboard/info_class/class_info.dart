@@ -1,33 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:qldt/main.dart';
+import 'package:qldt/presentation/page/class/class_list.dart';
+import 'package:qldt/presentation/page/class/dashboard/info_class/class_info_provider.dart';
 import 'package:qldt/presentation/page/class/dashboard/info_class/student_list.dart';
+import 'package:qldt/presentation/pref/user_preferences.dart';
 
+import '../../../../../data/model/class_info.dart';
 import 'edit_class.dart';
 
-// Dữ liệu lớp học (dùng chung)
-Map<String, dynamic> classData = {
-  'type': 'Lý thuyết-LT',
-  'lecturer': 'Nguyễn Tiến Thành',
-  'students': 100,
-  'startDate': '01/11/2024',
-  'endDate': '31/12/2024',
-};
 
+class ClassInfoScreen extends StatefulWidget {
+  final String classId;
 
+  const ClassInfoScreen({super.key, required this.classId});
 
-class ClassInfoScreen extends StatelessWidget {
+  @override
+  State<ClassInfoScreen> createState() => _ClassInfoScreenState();
+}
+
+class _ClassInfoScreenState extends State<ClassInfoScreen> {
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ClassInfoProvider>().getClassInfo(
+          UserPreferences.getToken() ?? "",
+          UserPreferences.getRole() ?? "",
+          UserPreferences.getId() ?? "",
+          widget.classId);
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final classInfoProvider =
+        Provider.of<ClassInfoProvider>(context, listen: true);
+
+    if (classInfoProvider.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFFAE2C2C),
+        backgroundColor: const Color(0xFFAE2C2C),
         toolbarHeight: 115,
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {},
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
-        title: Column(
+        title: const Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
@@ -52,90 +78,113 @@ class ClassInfoScreen extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.black, width: 1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                'Giải tích III - 149732',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                '${classInfoProvider.classInfo?.className} - ${classInfoProvider.classInfo?.classId}',
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 textAlign: TextAlign.center,
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Container(
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.black),
                 borderRadius: BorderRadius.circular(8),
               ),
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   InfoRow(
                     title: 'Loại lớp:',
-                    value: classData['type'],
+                    value: classInfoProvider.classInfo!.classType,
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   InfoRow(
                     title: 'Giảng viên:',
-                    value: classData['lecturer'],
+                    value: classInfoProvider.classInfo!.lecturerName,
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   InfoRow(
                     title: 'Số lượng sinh viên:',
-                    value: classData['students'].toString(),
+                    value: classInfoProvider.classInfo?.studentCount.toString() ?? "0",
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   InfoRow(
                     title: 'Thời gian bắt đầu:',
-                    value: classData['startDate'],
+                    value: classInfoProvider.classInfo!.startDate,
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   InfoRow(
                     title: 'Thời gian kết thúc:',
-                    value: classData['endDate'],
+                    value: classInfoProvider.classInfo!.endDate,
                   ),
                 ],
               ),
             ),
-            Spacer(),
+            const Spacer(),
             ElevatedButton(
-              onPressed: () {
-                Navigator.push(
+              onPressed: () async {
+                // Đợi kết quả từ EditClassScreen
+                final result = await Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => StudentListScreen()),
+                  MaterialPageRoute(builder: (context) => StudentListScreen(classInfo: classInfoProvider.classInfo,)),
                 );
+
+                // Nếu có cập nhật thành công, refresh lại data
+                if (result == true) {
+                  await context.read<ClassInfoProvider>().getClassInfo(
+                      UserPreferences.getToken() ?? "",
+                      UserPreferences.getRole() ?? "",
+                      UserPreferences.getId() ?? "",
+                      widget.classId
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFAE2C2C),
-                padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                backgroundColor: const Color(0xFFAE2C2C),
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
               ),
-              child: Text(
+              child: const Text(
                 'Danh sách sinh viên lớp',
                 style:
-                TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
+                    TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
               ),
             ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                // Chuyển đến trang chỉnh sửa lớp học
-                Navigator.push(
+            const SizedBox(height: 16),
+            UserPreferences.getRole() == "LECTURER"
+                ? ElevatedButton(
+              onPressed: () async {
+                // Đợi kết quả từ EditClassScreen
+                final result = await Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => EditClassScreen()),
+                  MaterialPageRoute(builder: (context) => EditClassScreen(classInfo: classInfoProvider.classInfo,)),
                 );
+
+                // Nếu có cập nhật thành công, refresh lại data
+                if (result == true) {
+                  await context.read<ClassInfoProvider>().getClassInfo(
+                      UserPreferences.getToken() ?? "",
+                      UserPreferences.getRole() ?? "",
+                      UserPreferences.getId() ?? "",
+                      widget.classId
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFAE2C2C),
-                padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                backgroundColor: const Color(0xFFAE2C2C),
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
               ),
-              child: Text(
+              child: const Text(
                 'Chỉnh sửa lớp học',
                 style:
-                TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
+                    TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
               ),
-            ),
+            )
+                : const SizedBox.shrink(),
           ],
         ),
       ),
@@ -143,17 +192,16 @@ class ClassInfoScreen extends StatelessWidget {
   }
 }
 
-///// Trang chỉnh sửa lớp học
 class InfoRow extends StatelessWidget {
   final String title;
   final String value;
 
-  const InfoRow({required this.title, required this.value});
+  const InfoRow({super.key, required this.title, required this.value});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.black),
         borderRadius: BorderRadius.circular(4),
@@ -161,14 +209,12 @@ class InfoRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
           Text(value),
         ],
       ),
     );
   }
 }
-
-
 
 ///// Trang danh sách sinh viên lớp

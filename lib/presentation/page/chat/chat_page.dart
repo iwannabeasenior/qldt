@@ -1,54 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
+import 'package:qldt/helper/constant.dart';
 import 'package:qldt/helper/string_constant.dart';
+import 'package:qldt/helper/utils.dart';
+import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 
-// fake data
-class ChatUser {
-  String id;
-  Partner partner;
-  LastMessage lastMessage;
-  ChatUser({required this.id, required this.partner, required this.lastMessage});
-}
-
-class LastMessage {
-  String message;
-  String created;
-  bool unread;
-  LastMessage({required this.message, required this.created, required this.unread});
-}
-
-class Partner {
-  String id;
-  String username;
-  String avatar;
-  Partner({required this.id, required this.username, required this.avatar});
-}
-
-var users = [
-  ChatUser(
-    id: '123',
-    partner: Partner(id: '1231', username: 'Thanh', avatar: 'assets/images/kaka.jpg'),
-    lastMessage: LastMessage(message: 'Say hello!', created: '10/10', unread: true)
-  ),
-  ChatUser(
-    id: '1',
-    partner: Partner(id: '123', username: 'Nam', avatar: 'assets/images/kaka.jpg'),
-    lastMessage: LastMessage(message: 'Say hello!', created: '10/10', unread: true)
-  ),
-  ChatUser(
-    id: '12',
-    partner: Partner(id: '123', username: 'Dat', avatar: 'assets/images/kaka.jpg'),
-    lastMessage: LastMessage(message: 'Say hello!', created: '10/10', unread: true)
-  ),
-  ChatUser(
-    id: '1234',
-    partner: Partner(id: '1231', username: 'Lan Anh', avatar: 'assets/images/kaka.jpg'),
-    lastMessage: LastMessage(message: 'Say hello!', created: '10/10', unread: true)
-  ),
-];
-
-//
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
 
@@ -57,6 +18,24 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+
+  late Future<List<Conversation>> _futureConversations;
+
+  @override
+  void initState() {
+    super.initState();
+    // Example token, index, and count values
+    try  {
+      _futureConversations = fetchConversations(
+        token: UserPreferences.getToken() ?? "",
+        index: 0,
+        count: 5,
+      );
+    } catch(e) {
+      Logger().d("Fetch converstation error");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -83,17 +62,29 @@ class _ChatPageState extends State<ChatPage> {
                 ),
                 const SizedBox(height: 20),
                 Expanded(
-                  child: Center(
-                    child: ListView(
-                        scrollDirection: Axis.vertical,
-                        children:
-                        List.generate(users.length, (index) {
-                          return ChatUnit(user: users[index]);
-                        })
-
-                    ),
+                  flex: 1,
+                  child: FutureBuilder<List<Conversation>>(
+                    future: _futureConversations,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      } else if (snapshot.hasData) {
+                        final conversations = snapshot.data!;
+                        return ListView.builder(
+                          itemCount: conversations.length,
+                          itemBuilder: (context, index) {
+                            final conversation = conversations[index];
+                            return ChatUnit(conversation: conversation);
+                          },
+                        );
+                      } else {
+                        return Center(child: Text('No data found.'));
+                      }
+                    },
                   ),
-                )
+                ),
               ],
             ),
           )
@@ -104,20 +95,16 @@ class _ChatPageState extends State<ChatPage> {
 }
 
 class ChatUnit extends StatelessWidget {
-  ChatUser user;
-  ChatUnit({super.key, required this.user});
+  Conversation conversation;
+  ChatUnit({super.key, required this.conversation});
 
-  @override 
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context,
             "/ChatDetail",
-            arguments: Partner (
-              username: user.partner.username,
-              id: user.partner.id,
-              avatar: user.partner.avatar
-            )
+            arguments: conversation
         );
       },
       child: Container(
@@ -132,7 +119,13 @@ class ChatUnit extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CircleAvatar(
-                backgroundImage: AssetImage(user.partner.avatar),
+                child: ClipOval(
+                  child: Container(
+                      height: 52,
+                      width: 52,
+                      child: conversation.partnerAvatar != null ? Image.network(conversation.partnerAvatar!) : Image.asset("assets/images/default.jpg")
+                  ),
+                ),
                 radius: 26,
               ),
               Expanded(
@@ -143,18 +136,18 @@ class ChatUnit extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Text(user.partner.username, style: TextStyle(
+                      Text(conversation.partnerName, style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       )),
-                      Text(user.lastMessage.message, overflow: TextOverflow.ellipsis, style: TextStyle(color: QLDTColor.lightBlack, fontSize: 12))
+                      Text(conversation.lastMessage ?? "Tin nhắn đã được thu hồi", overflow: TextOverflow.ellipsis, style: TextStyle(color: conversation.unreadCount == 1 ? QLDTColor.lightBlack : Colors.black, fontSize: 12))
                     ]
                   ),
                 ),
               ),
               Row(
                 children: [
-                  Text(user.lastMessage.created, style: TextStyle(color: QLDTColor.lightBlack, fontSize: 12)),
+                  Text(Utils.formatDateTime(conversation.lastMessageTime), style: TextStyle(color: QLDTColor.lightBlack, fontSize: 12)),
                 ],
               )
             ]),
@@ -162,3 +155,65 @@ class ChatUnit extends StatelessWidget {
     );
   }
 }
+
+
+class Conversation {
+  final int id;
+  final int partnerId;
+  final String partnerName;
+  final String? partnerAvatar;
+  final String? lastMessage;
+  final String lastMessageTime;
+  final int unreadCount;
+
+  Conversation({
+    required this.id,
+    required this.partnerId,
+    required this.partnerName,
+    this.partnerAvatar,
+    required this.lastMessage,
+    required this.lastMessageTime,
+    required this.unreadCount,
+  });
+
+  factory Conversation.fromJson(Map<String, dynamic> json) {
+    return Conversation(
+      id: json['id'],
+      partnerId: json['partner']['id'],
+      partnerName: json['partner']['name'],
+      partnerAvatar: json['partner']['avatar'],
+      lastMessage: json['last_message']['message'],
+      lastMessageTime: json['last_message']['created_at'],
+      unreadCount: json['last_message']['unread'],
+    );
+  }
+}
+
+Future<List<Conversation>> fetchConversations({
+  required String token,
+  required int index,
+  required int count,
+}) async {
+  const String apiUrl = "${Constant.BASEURL}/it5023e/get_list_conversation";
+
+  final response = await http.post(
+    Uri.parse(apiUrl),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      'token': token,
+      'index': index.toString(),
+      'count': count.toString(),
+    }),
+  );
+
+  final Map<String, dynamic> responseBody = jsonDecode(response.body);
+
+  if (response.statusCode == 200 && responseBody['meta']['code'] == '1000') {
+    final List<dynamic> conversationsJson = responseBody['data']['conversations'];
+    return conversationsJson.map((json) => Conversation.fromJson(json)).toList();
+  } else {
+    final errorMessage = responseBody['meta']['message'];
+    throw Exception('Failed to fetch conversations: $errorMessage');
+  }
+}
+
