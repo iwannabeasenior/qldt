@@ -209,14 +209,16 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     request.fields['materialType'] = materialRequest.materialType ?? "";
     request.fields['token'] = materialRequest.token;
 
-    request.files.add(
+    if (materialRequest.file?.fileData != null) {
+      request.files.add(
         http.MultipartFile.fromBytes(
-            'file',
-            materialRequest.file?.fileData as List<int>,
-            filename: materialRequest.file?.file?.name,
-            contentType: MediaType.parse("multipart/form-data")
-        )
-    );
+          'file',
+          materialRequest.file!.fileData as List<int>, // ! vì đã kiểm tra null ở trên
+          filename: materialRequest.file?.file?.name,
+          contentType: MediaType.parse("multipart/form-data"),
+        ),
+      );
+    }
 
     request.files.add;
 

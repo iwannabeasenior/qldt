@@ -85,8 +85,8 @@ class _MaterialsViewState extends State<MaterialsView> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFFAE2C2C),
-              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+              backgroundColor: const Color(0xFFAE2C2C),
+              padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -186,7 +186,6 @@ class DocumentCard extends StatelessWidget {
                                 leading: const Icon(Icons.edit, color: Colors.blue),
                                 title: const Text("Chỉnh sửa"),
                                 onTap: () async {
-                                  Navigator.pop(context);
                                   // Handle upload document
                                   final result = await Navigator.push(
                                       context,
@@ -197,6 +196,7 @@ class DocumentCard extends StatelessWidget {
                                     await context.read<MaterialProvider>().fetchMaterials(
                                         UserPreferences.getToken() ?? "", material.classId);
                                   }
+                                  Navigator.pop(context);
                                 },
                               ),
                             if (UserPreferences.getRole() == 'LECTURER')

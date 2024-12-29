@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:qldt/data/model/materials.dart';
 import 'package:qldt/data/request/material_request.dart';
@@ -42,9 +43,21 @@ class _EditMaterialPageState extends State<EditMaterialPage> {
   }
 
   void editMaterial(MaterialProvider provider) {
-    if (!_formKey.currentState!.validate()) return;
+    if (_formKey.currentState!.validate()) {
+      if (file == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please upload at least one file!'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+    }
     final String title = _titleController.text;
-    final String description = _descriptionController.text;
+    final String description = _descriptionController.text.isNotEmpty
+        ? _descriptionController.text
+        : (widget.material.description ?? "");
     final fileType = file?.file?.extension ?? "";
 
     final editMaterialRequest = EditMaterialRequest(
@@ -65,7 +78,7 @@ class _EditMaterialPageState extends State<EditMaterialPage> {
     }).catchError((e) {
       // Show error message if there's an issue
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to edit')),
+        SnackBar(content: Text('Failed to edit: $e')),
       );
     });
   }
@@ -75,13 +88,6 @@ class _EditMaterialPageState extends State<EditMaterialPage> {
     super.initState();
     _titleController.text = widget.material.materialName??"";
     _descriptionController.text = widget.material.description??"";
-  }
-
-  @override
-  void dispose() {
-    _titleController.dispose;
-    _descriptionController.dispose;
-    super.dispose();
   }
 
   @override
