@@ -92,8 +92,6 @@ class Routes {
         return MaterialPageRoute(builder: (context) {
           return EditMaterialPage(material: material,);
         });
-      case 'UploadMaterial':
-        return MaterialPageRoute(builder: (context) => UploadMaterialPage());
       case 'RegisterForClass':
         return MaterialPageRoute(builder: (context) => RegisterForClass());
 

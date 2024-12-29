@@ -5,10 +5,11 @@ import 'package:qldt/data/model/materials.dart';
 import 'package:qldt/data/model/user.dart';
 import 'package:qldt/data/repo/material_repository.dart';
 import 'package:qldt/helper/utils.dart';
+import 'package:qldt/presentation/page/class/material/edit_material.dart';
 import 'package:qldt/presentation/page/class/material/material_provider.dart';
+import 'package:qldt/presentation/page/class/material/upload_material.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 
 class MaterialsPage extends StatelessWidget {
   final String classID;
@@ -29,10 +30,9 @@ class MaterialsPage extends StatelessWidget {
   }
 }
 
-
 class MaterialsView extends StatefulWidget {
-
   final classID;
+
   MaterialsView(this.classID);
 
   @override
@@ -45,34 +45,48 @@ class _MaterialsViewState extends State<MaterialsView> {
     Logger().d("class id is: ${widget.classID}");
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<MaterialProvider>().fetchMaterials(UserPreferences.getToken() ?? "", widget.classID);
+      context
+          .read<MaterialProvider>()
+          .fetchMaterials(UserPreferences.getToken() ?? "", widget.classID);
     });
   }
+
   @override
   Widget build(BuildContext context) {
-    final materialProvider = Provider.of<MaterialProvider>(context, listen: true);
+    final materialProvider =
+        Provider.of<MaterialProvider>(context, listen: true);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
           Expanded(
-            child: materialProvider.isLoading
-                ? Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    itemCount: materialProvider.materials.length, // Số lượng tài liệu
-                    itemBuilder: (context, index) {
-                      return DocumentCard(material: materialProvider.materials[index],);
-                    },
-                  )
-          ),
+              child: materialProvider.isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : ListView.builder(
+                      itemCount: materialProvider.materials.length,
+                      // Số lượng tài liệu
+                      itemBuilder: (context, index) {
+                        return DocumentCard(
+                          material: materialProvider.materials[index],
+                        );
+                      },
+                    )),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               // Handle upload document
-              Navigator.pushNamed(context, '/UploadMaterial', arguments: widget.classID);
+              final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          UploadMaterialPage(classId: widget.classID)));
+              if (result == true) {
+                await context.read<MaterialProvider>().fetchMaterials(
+                    UserPreferences.getToken() ?? "", widget.classID);
+              }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFFAE2C2C),
-              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+              backgroundColor: const Color(0xFFAE2C2C),
+              padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -94,18 +108,17 @@ class _MaterialsViewState extends State<MaterialsView> {
 }
 
 class DocumentCard extends StatelessWidget {
-
   final Materials material;
 
-  DocumentCard({required this.material});
+  const DocumentCard({super.key, required this.material});
 
   @override
   Widget build(BuildContext context) {
     final materialController = context.read<MaterialProvider>();
 
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      padding: EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -118,13 +131,14 @@ class DocumentCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "${material.materialName}.${material.materialType}" ?? "UNKNOWN",
+                "${material.materialName}.${material.materialType}" ??
+                    "UNKNOWN",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
               ),
               SizedBox(height: 4),
               Text(
                 material.description ?? '',
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.grey,
                     fontSize: 13,
                     fontStyle: FontStyle.italic),
@@ -132,7 +146,7 @@ class DocumentCard extends StatelessWidget {
             ],
           ),
           IconButton(
-            icon: Icon(Icons.more_horiz),
+            icon: const Icon(Icons.more_horiz),
             onPressed: () {
               showDialog(
                 context: context,
@@ -153,24 +167,36 @@ class DocumentCard extends StatelessWidget {
                           children: [
                             ListTile(
                               leading:
-                              Icon(Icons.folder_open, color: Colors.red),
-                              title: Text("Mở"),
+                                  const Icon(Icons.folder_open, color: Colors.red),
+                              title: const Text("Mở"),
                               onTap: () async {
                                 try {
-                                  await Utils.launchUrlString(material.materialLink ?? "");
-                                } catch(e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Can not open url")));
+                                  await Utils.launchUrlString(
+                                      material.materialLink ?? "");
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text("Can not open url")));
                                 }
                                 Navigator.pop(context);
                               },
                             ),
                             if (UserPreferences.getRole() == 'LECTURER')
                               ListTile(
-                                leading: Icon(Icons.edit, color: Colors.blue),
-                                title: Text("Chỉnh sửa"),
-                                onTap: () {
+                                leading: const Icon(Icons.edit, color: Colors.blue),
+                                title: const Text("Chỉnh sửa"),
+                                onTap: () async {
+                                  // Handle upload document
+                                  final result = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              EditMaterialPage(material: material)));
+                                  if (result == true) {
+                                    await context.read<MaterialProvider>().fetchMaterials(
+                                        UserPreferences.getToken() ?? "", material.classId);
+                                  }
                                   Navigator.pop(context);
-                                  Navigator.pushNamed(context, '/EditMaterial', arguments: { 'material': material});
                                 },
                               ),
                             if (UserPreferences.getRole() == 'LECTURER')

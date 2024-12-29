@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qldt/presentation/page/class/dashboard/info_class/class_info.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 List<String> icons_lecturer = [
   "assets/detail_class_icon/class_info.png",
@@ -27,9 +28,10 @@ List<String> titles_student = [
   "Lịch sử vắng mặt",
 ];
 
+
 class DashboardPage extends StatefulWidget {
-  final classId;
-  const DashboardPage({super.key, this.classId});
+  final String classId;
+  const DashboardPage({super.key, required this.classId});
   @override
   State<DashboardPage> createState() => _DashboardPageState();
 }
@@ -37,6 +39,12 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
+    List<Widget> screens = [
+      ClassInfoScreen(classId: widget.classId),
+      const ClassInfoScreen(classId: '',),// sửa lại sang màn hình xin nghỉ
+      const ClassInfoScreen(classId: '',),// sửa lại sang màn hình xin nghỉ
+      const ClassInfoScreen(classId: '',),// sửa lại sang màn hình điểm danh
+    ];
     return Container(
       margin: const EdgeInsets.all(15),
       decoration: BoxDecoration(
@@ -55,7 +63,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 itemClick: () {
                   switch(i) {
                     case 0:
-                      Navigator.pushNamed(context, '/AbsencePage', arguments: widget.classId);
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>screens[i]));
                     case 1:
                       Navigator.pushNamed(context, '/AbsencePageStudent', arguments: widget.classId);
                     case 2:
@@ -76,7 +84,7 @@ class _DashboardPageState extends State<DashboardPage> {
               itemClick: () {
                 switch(i) {
                   case 0:
-
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>screens[i]));
                   case 1:
                     Navigator.pushNamed(context, '/AttendancePageLecturer', arguments: widget.classId);
                   case 2:
@@ -117,7 +125,7 @@ class _Item extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20
                 ),
