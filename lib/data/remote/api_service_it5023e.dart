@@ -16,6 +16,7 @@ import 'package:qldt/helper/constant.dart';
 import 'package:qldt/helper/failure.dart';
 import 'package:http/http.dart' as http;
 import '../model/absence_lecturer.dart';
+import '../model/absence_response.dart';
 import '../model/attendance_student_detail.dart';
 import '../model/class_info.dart';
 import '../model/open_class_response.dart';
@@ -40,7 +41,7 @@ abstract class ApiServiceIT5023E {
   Future<Materials> getMaterialInfo(String token, String materialId);
   //absence
   Future<Map<String, dynamic>> requestAbsence(AbsenceRequest absenceRequest);
-  Future<List<AbsenceStudent>> getStudentAbsenceRequests(GetStudentAbsence getStudentAbsence);
+  Future<AbsenceResponse> getStudentAbsenceRequests(GetStudentAbsence getStudentAbsence);
   Future<List<AbsenceLecturer>> getAllAbsenceRequests(GetStudentAbsence getStudentAbsence);
   Future<Map<String, dynamic>> reviewAbsenceRequest(String token, String requestId, String status);
   //attendance
@@ -309,7 +310,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
   }
 
   @override
-  Future<List<AbsenceStudent>> getStudentAbsenceRequests(GetStudentAbsence getStudentAbsence) async {
+  Future<AbsenceResponse> getStudentAbsenceRequests(GetStudentAbsence getStudentAbsence) async {
     const String url = '${Constant.BASEURL}/it5023e/get_student_absence_requests';
 
     final response = await http.post(
@@ -322,9 +323,8 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
       final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
       if (jsonResponse['meta']['code'] == "1000") {
-        // Chuyển đổi danh sách JSON thành danh sách AbsenceStudent
-        final List<dynamic> pageContent = jsonResponse['data']['page_content'];
-        return pageContent.map((json) => AbsenceStudent.fromJson(json)).toList();
+        // Return the AbsenceResponse with page content and pagination info
+        return AbsenceResponse.fromJson(jsonResponse);
       } else {
         throw Exception("Error: ${jsonResponse['meta']['message']}");
       }
@@ -332,6 +332,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
       throw Exception("Failed to fetch student absence requests. Status code: ${response.statusCode}");
     }
   }
+
 
   @override
   Future<List<AbsenceLecturer>> getAllAbsenceRequests(GetStudentAbsence getStudentAbsence) async {
