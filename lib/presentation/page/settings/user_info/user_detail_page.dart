@@ -139,7 +139,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                                   fit: BoxFit.cover,
                                 )
                               : Image.network(
-                                  userProvider.user.avatar ?? "",
+                                  userProvider.user.avatar!.split('?')[0],
                                   width: 160,
                                   height: 160,
                                   fit: BoxFit.cover,
@@ -245,21 +245,32 @@ class _UserDetailPageState extends State<UserDetailPage> {
                   ],
                 ),
                 const SizedBox(height: 10),
+                _avatar != null ? ElevatedButton(
+                    onPressed: () async {
+                      try {
+                        await userProvider.changeInfoAfterSignup(
+                            UserPreferences.getToken() ?? "",
+                            _avatar!
+                        );
+                        setState(() {
+                          //Cập nhật laị api mới ở đây
+                          _avatar = null;
+                        });
+                      } catch (e) {
+                        Logger().e(e);
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.green
+                    ),
+                    child: const Text('Lưu'),
+                ) : const SizedBox.shrink()
               ],
             ),
           ),
         ),
       ),
     );
-  }
-
-  String convertGoogleDriveUrl(String url) {
-    final fileIdRegExp = RegExp(r'd/([a-zA-Z0-9_-]+)');
-    final match = fileIdRegExp.firstMatch(url);
-    if (match != null) {
-      final fileId = match.group(1);
-      return 'https://drive.google.com/uc?export=view&id=$fileId';
-    }
-    return url;
   }
 }

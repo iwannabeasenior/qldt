@@ -2,10 +2,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dartz/dartz.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:logger/logger.dart';
 import 'package:qldt/data/model/class.dart';
 import 'package:qldt/data/model/user.dart';
 import 'package:qldt/data/remote/api_service_it4788.dart';
+import 'package:qldt/data/request/files_request.dart';
 import 'package:qldt/data/request/login_request.dart';
 import 'package:qldt/data/request/signup_request.dart';
 import 'package:qldt/helper/constant.dart';
@@ -21,7 +23,7 @@ abstract class ApiServiceIT4788 {
   Future<Either<Failure, String>> getVerifyCode(String email, String password);
   Future<Either<Failure, String>> checkVerifyCode(String email, String verifyCode);
   Future<Either<Failure, void>> changePassword(String token, String oldPassword, String newPassword);
-  Future<Either<Failure, void>> changeInfoAfterSignUp();
+  Future<User> changeInfoAfterSignUp(String token, FileRequest request);
   Future<User> getUserInfo(String token, String userId);
 }
 
@@ -103,9 +105,36 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
   }
 
   @override
-  Future<Either<Failure, void>> changeInfoAfterSignUp() {
-    // TODO: implement changeInfoAfterSignUp
-    throw UnimplementedError();
+  Future<User> changeInfoAfterSignUp(String token, FileRequest fileRequest) async {
+    const url = '${Constant.BASEURL}/it4788/change_info_after_signup';
+
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+
+    request.fields['token'] = token;
+
+    request.files.add(
+      http.MultipartFile.fromBytes(
+          'file',
+          fileRequest.fileData as List<int>,
+          filename: fileRequest.file?.name,
+          contentType: MediaType.parse("multipart/form-data")
+      )
+    );
+    request.files.add;
+
+    var response = await request.send();
+
+    if(response.statusCode == 200) {
+      final responseBody = await response.stream.bytesToString();
+      final jsonResponse = jsonDecode(responseBody);
+      if (jsonResponse['code'] == "1000") {
+        return User.fromJson(jsonResponse['data']);
+      } else {
+        throw Exception(jsonResponse['data']);
+      }
+    } else {
+      throw Exception("Failed to change avatar");
+    }
   }
 
   @override
