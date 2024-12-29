@@ -17,6 +17,7 @@ import 'package:qldt/helper/failure.dart';
 import 'package:http/http.dart' as http;
 import '../model/absence_lecturer.dart';
 import '../model/absence_response.dart';
+import '../model/absence_response2.dart';
 import '../model/attendance_student_detail.dart';
 import '../model/class_info.dart';
 import '../model/open_class_response.dart';
@@ -43,7 +44,7 @@ abstract class ApiServiceIT5023E {
   //absence
   Future<Map<String, dynamic>> requestAbsence(AbsenceRequest absenceRequest);
   Future<AbsenceResponse> getStudentAbsenceRequests(GetStudentAbsence getStudentAbsence);
-  Future<List<AbsenceLecturer>> getAllAbsenceRequests(GetStudentAbsence getStudentAbsence);
+  Future<AbsenceResponse2> getAllAbsenceRequests(GetStudentAbsence getStudentAbsence);
   Future<Map<String, dynamic>> reviewAbsenceRequest(String token, String requestId, String status);
   //attendance
   Future<List<String>> getAttendanceDates(String token, String classId);
@@ -408,7 +409,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
 
 
   @override
-  Future<List<AbsenceLecturer>> getAllAbsenceRequests(GetStudentAbsence getStudentAbsence) async {
+  Future<AbsenceResponse2> getAllAbsenceRequests(GetStudentAbsence getStudentAbsence) async {
     const String url = '${Constant.BASEURL}/it5023e/get_absence_requests';
 
     final response = await http.post(
@@ -421,10 +422,8 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
       final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
       if (jsonResponse['meta']['code'] == "1000") {
-        Logger().d('testtt ${jsonResponse['data']}');
         // Chuyển đổi danh sách JSON thành danh sách AbsenceStudent
-        final List<dynamic> pageContent = jsonResponse['data']['page_content'];
-        return pageContent.map((json) => AbsenceLecturer.fromJson(json)).toList();
+        return AbsenceResponse2.fromJson(jsonResponse);
       } else {
         throw Exception("Error: ${jsonResponse['meta']['message']}");
       }
