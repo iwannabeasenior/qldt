@@ -15,6 +15,7 @@ import 'package:qldt/presentation/page/manage_class/register_for_class.dart';
 import 'package:qldt/presentation/page/settings/settings_page.dart';
 import 'package:qldt/presentation/page/splash_page.dart';
 
+import '../presentation/page/chat/chat_search/ui.dart';
 import '../presentation/page/class/dashboard/dashboard/absence/absence_page.dart';
 import '../presentation/page/class/dashboard/dashboard/absence/view_absence_page_student.dart';
 import '../presentation/page/class/dashboard/dashboard/attendance/attendance_page_lecturer.dart';
@@ -28,7 +29,8 @@ class Routes {
       'HomePage': (context) => const HomePage(),
       'OpenClassList': (context) => const OpenClassList(),
       'CreateClass': (context) => const CreateClass(),
-      'RegisterForClass': (context) => RegisterForClass()
+      'RegisterForClass': (context) => RegisterForClass(),
+      'UserSearchPage': (context) => UserSearchPage()
     };
   }
   static Route? onGenerateRoute(RouteSettings settings) {
@@ -120,7 +122,6 @@ class Routes {
       case 'AbsencePageStudent':
         final classId = (settings.arguments as String);
         return MaterialPageRoute(builder: (context) => AbsencePageStudent(classId: classId,));
-
 
       default:
         return onUnknownRoute(const RouteSettings(name: '/Feature'));

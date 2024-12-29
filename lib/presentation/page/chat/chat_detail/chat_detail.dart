@@ -43,15 +43,23 @@ class ChatDetailView extends StatefulWidget {
 class _ChatDetailViewState extends State<ChatDetailView> implements ChatDetailCallBack {
   // late CameraController controller;
   late TextEditingController textController;
+
   late ScrollController scrollController;
+
   late Future<List<Message>> _futureMessages;
-  late ChatDetailProvider controller;
-  late StompClient stompClient;
+
+  late ChatDetailProvider controller = context.watch<ChatDetailProvider>();
+
+  late StompClient stompClient = Provider.of<StompClient>(context, listen: false);
+
   String? selectedMessageId;
+
   bool isSelectionMode = false;
 
-  void onConnect(StompFrame frmae) {
-    Logger().d("connected");
+
+  @override
+  void initState() {
+
     stompClient.subscribe(
         destination: '/user/${UserPreferences.getId()}/inbox',
         callback: (frame) {
@@ -59,27 +67,9 @@ class _ChatDetailViewState extends State<ChatDetailView> implements ChatDetailCa
           var msg = jsonDecode(frame.body!);
           var message = Message(messageId: msg['id'].toString(), messageContent: msg['content'], senderId: msg['sender']['id'], senderName: msg['sender']['name'], createdAt: msg['created_at'], unread: msg['message_status']);
           controller.addMessage(message);
+          scrollDown();
         }
     );
-  }
-
-  @override
-  void initState() {
-
-    stompClient = StompClient(
-      config: StompConfig.sockJS(
-        url: 'http://157.66.24.126:8080/ws',
-        onConnect: onConnect,
-        beforeConnect: () async => print('connectting'),
-        stompConnectHeaders: {'Authorization': 'Bearer ${UserPreferences.getToken()}'},
-        webSocketConnectHeaders: {'Authorization': 'Bearer ${UserPreferences.getToken()}'},
-        onWebSocketError: (e) => print('error' + e.toString()),
-        onStompError: (d) => print('error stomp'),
-        onDisconnect: (f) => print('disconnected'),
-        onWebSocketDone: () => print("done")
-      ),
-    );
-    stompClient.activate();
 
     textController = TextEditingController();
 
@@ -89,20 +79,22 @@ class _ChatDetailViewState extends State<ChatDetailView> implements ChatDetailCa
 
     scrollController = ScrollController();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await context.read<ChatDetailProvider>().fetchConversation(
-        token: UserPreferences.getToken() ?? "",
-        index: 0,
-        count: 10,
-        partnerId: widget.conversation.partnerId,
-        conversationId: widget.conversation.id,
-        markAsRead: true,
-      );
-      await Future.delayed(Duration(seconds: 1));
-      setState(() {
-        _scrollDown();
+    if (widget.conversation.id != -1){
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await context.read<ChatDetailProvider>().fetchConversation(
+              token: UserPreferences.getToken() ?? "",
+              index: 0,
+              count: 1000,
+              partnerId: widget.conversation.partnerId,
+              conversationId: widget.conversation.id,
+              markAsRead: true,
+            );
+        await Future.delayed(Duration(seconds: 1));
+        setState(() {
+          _scrollDown();
+        });
       });
-    });
+    }
     super.initState();
   }
 
@@ -111,19 +103,17 @@ class _ChatDetailViewState extends State<ChatDetailView> implements ChatDetailCa
   void dispose() {
     controller.dispose();
     textController.dispose();
-    stompClient.deactivate();
     super.dispose();
   }
 
 
   void _scrollDown() {
-    setState(() {
-      scrollController.animateTo(scrollController.position.maxScrollExtent, duration: Duration(milliseconds: 200), curve: Curves.bounceIn);
-    });
+    if (scrollController.hasClients) {
+      scrollController.jumpTo(scrollController.position.maxScrollExtent + 100);
+    }
   }
 
   void _sendMessage(int receiverId, String content) {
-    Logger().d("send");
     final message = {
       'receiver': { 'id': receiverId.toString() },
       'content': content,
@@ -166,7 +156,7 @@ class _ChatDetailViewState extends State<ChatDetailView> implements ChatDetailCa
                   flex: 1,
                   child: Padding(
                     padding: EdgeInsets.only(top: 35, left: 10, right: 10),
-                      child: controller.isLoading
+                      child: controller.isLoading && widget.conversation.id != -1
                           ? Center(child: CircularProgressIndicator())
                           : ListView.separated(
                               controller: scrollController,
@@ -191,7 +181,6 @@ class _ChatDetailViewState extends State<ChatDetailView> implements ChatDetailCa
                             )
                   )
                 ),
-
                 Footer(textController: textController, callBack: () { setState(() {_scrollDown.call();}); }, sendMessage: _sendMessage, receiverId: widget.conversation.partnerId),
               ],
             )

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../helper/utils.dart';
 import '../../../../theme/color_style.dart';
 import '../../chat_page.dart';
 
@@ -29,8 +30,7 @@ class Header extends StatelessWidget {
                     fit: BoxFit.cover,
                     height: 52,
                     width: 52,
-                    // convertToDirectLink(conversation.partnerAvatar!),
-                    "https://th.bing.com/th/id/R.78a13c9eb31108addb76f77ada4589ff?rik=b%2fIodCIvyGbxCA&riu=http%3a%2f%2ffiles.all-free-download.com%2fdownloadfiles%2fwallpapers%2f1920_1080%2fpeaceful_lake_wallpaper_landscape_nature_1208.jpg&ehk=6EYMLnN48Cs4mGNjCqvvjwaPz6MF2KRLIUOhJG57Z8g%3d&risl=&pid=ImgRaw&r=0",
+                    Utils.convertToDirectLink(conversation.partnerAvatar!),
                     loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
                       if (loadingProgress == null) {
                         return child;

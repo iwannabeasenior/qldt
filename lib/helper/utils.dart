@@ -8,11 +8,13 @@ class Utils {
     String formattedDate = DateFormat('yyyy-MM-dd').format(datetime);
     return formattedDate;
   }
+
   static DateTime stringToDateTime(String date) {
     List<String> splitDate ;
     splitDate = date.split('-');
     return DateTime(int.parse(splitDate[0]), int.parse(splitDate[1]), int.parse(splitDate[2]));
   }
+
   static void showErrorDialog({required BuildContext context, required String message}) {
     showDialog(
         context: context,
@@ -51,6 +53,7 @@ class Utils {
       throw 'Could not open url';
     }
   }
+
   static String convertToDirectLink(String googleDriveLink) {
     // Extract the file ID from the input link
     final uri = Uri.parse(googleDriveLink);
@@ -63,4 +66,17 @@ class Utils {
       throw Exception('Invalid Google Drive link format');
     }
   }
+
+  static String convertToDirectDownloadLink(String driveLink) {
+    final regex = RegExp(r'file/d/([a-zA-Z0-9_-]+)');
+    final match = regex.firstMatch(driveLink);
+
+    if (match != null && match.groupCount > 0) {
+      final fileId = match.group(1);
+      return 'https://drive.google.com/uc?export=view&id=$fileId';
+    } else {
+      throw ArgumentError('Invalid Google Drive link format');
+    }
+  }
+
 }

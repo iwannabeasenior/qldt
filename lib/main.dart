@@ -25,6 +25,7 @@ import 'package:qldt/presentation/page/manage_class/manage_class_provider.dart';
 import 'package:qldt/presentation/page/class/homework/lecturer/lecturer_assignments_provider.dart';
 import 'package:qldt/presentation/pref/get_shared_preferences.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
+import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 void main() async {
 
@@ -49,7 +50,7 @@ void main() async {
   } else {
     initialRoute = 'HomePage';
   }
-  // initialRoute = 'RegisterForClassPage';
+  // initialRoute = 'UserSearchPage';
   runApp(
       MyApp(intialRoute: initialRoute)
   );
@@ -83,6 +84,8 @@ class _MyAppState extends State<MyApp> {
   late final AttendanceRepo attendanceRepo = AttendanceRepoImpl(api: api2);
   late final ManageClassRepo manageClassRepo = ManageClassRepoImpl(api: api2);
   late final AssignmentRepo assignmentRepo = AssignmentRepoImpl(api: api2);
+  late StompClient stompClient;
+  late Future<void> _stompClientFuture;
 
   // fcm
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
@@ -172,50 +175,77 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  Future<void> _initStompClient() async {
+    stompClient = StompClient(
+      config: StompConfig.sockJS(
+          url: 'http://157.66.24.126:8080/ws',
+          onConnect: (frame) {},
+          beforeConnect: () async => print('before connect to socket'),
+          stompConnectHeaders: {'Authorization': 'Bearer ${UserPreferences.getToken()}'},
+          webSocketConnectHeaders: {'Authorization': 'Bearer ${UserPreferences.getToken()}'},
+          onWebSocketError: (e) => print('error' + e.toString()),
+          onStompError: (d) => print('error stomp'),
+          onDisconnect: (f) => print('disconnected socket'),
+          onWebSocketDone: () => print("socket established")
+      ),
+    );
+    stompClient.activate();
+  }
 
   @override
   void initState() {
     super.initState();
     // setupFlutterNotifications();
     _requestPermission();
+
     _getFCMToken();
+    // how do i know that initstomp finish before it used in provider.value
+
+    _stompClientFuture = _initStompClient();
   }
 
   @override
+  void dispose() {
+    super.dispose();
+
+    stompClient.deactivate();
+  }
+  @override
   Widget build(BuildContext context) {
-    return  MultiProvider(
-        providers: [
-          Provider.value(value: authRepo),
-          Provider.value(value: classRepo),
-          Provider.value(value: materialRepo),
-          ChangeNotifierProvider(
-            create: (_) => UserProvider(authRepo),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => SettingsProvider(authRepo),
-          ),
-          ChangeNotifierProvider(create: (context) => MaterialProvider(materialRepo)),
-          Provider.value(value: absenceRepo),
-          Provider.value(value: attendanceRepo),
-          Provider.value(value: manageClassRepo),
+    return FutureBuilder(
+      future: _stompClientFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text("Error initializing StompClient: ${snapshot.error}"));
+        }
+        return _buildApp();
+      },
+    );
+  }
 
-
-          ChangeNotifierProvider(
-            create: (context) => AbsenceProvider(absenceRepo),
-          ),
-          ChangeNotifierProvider(
-            create: (context) => AttendanceProvider(attendanceRepo),
-          ),
-          ChangeNotifierProvider(
-            create: (context) => ManageClassProvider(manageClassRepo),
-          ),
-          Provider.value(value: assignmentRepo),
-          ChangeNotifierProvider(create: (_) => LecturerAssignmentProvider(assignmentRepo)),
-          ChangeNotifierProvider(
-            create: (context) => ClassInfoProvider(classRepo),
-          ),
-        ],
-      child:  MaterialApp(
+  Widget _buildApp() {
+    return MultiProvider(
+      providers: [
+        Provider.value(value: stompClient),
+        Provider.value(value: authRepo),
+        Provider.value(value: classRepo),
+        Provider.value(value: materialRepo),
+        Provider.value(value: absenceRepo),
+        Provider.value(value: attendanceRepo),
+        Provider.value(value: manageClassRepo),
+        Provider.value(value: assignmentRepo),
+        ChangeNotifierProvider(create: (_) => UserProvider(authRepo)),
+        ChangeNotifierProvider(create: (_) => SettingsProvider(authRepo)),
+        ChangeNotifierProvider(create: (_) => MaterialProvider(materialRepo)),
+        ChangeNotifierProvider(create: (_) => AbsenceProvider(absenceRepo)),
+        ChangeNotifierProvider(create: (_) => AttendanceProvider(attendanceRepo)),
+        ChangeNotifierProvider(create: (_) => ManageClassProvider(manageClassRepo)),
+        ChangeNotifierProvider(create: (_) => LecturerAssignmentProvider(assignmentRepo)),
+        ChangeNotifierProvider(create: (_) => ClassInfoProvider(classRepo)),
+      ],
+      child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -226,6 +256,7 @@ class _MyAppState extends State<MyApp> {
         onGenerateRoute: (settings) => Routes.onGenerateRoute(settings),
         onUnknownRoute: (settings) => Routes.onUnknownRoute(settings),
         initialRoute: widget.intialRoute,
-      ));
+      ),
+    );
   }
 }

@@ -3,10 +3,10 @@ import 'package:logger/logger.dart';
 import 'package:qldt/helper/constant.dart';
 import 'package:qldt/helper/string_constant.dart';
 import 'package:qldt/helper/utils.dart';
+import 'package:qldt/presentation/page/chat/chat_search/ui.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 
@@ -24,12 +24,16 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
+    loadData();
     // Example token, index, and count values
-    try  {
+  }
+
+  void loadData() {
+    try {
       _futureConversations = fetchConversations(
         token: UserPreferences.getToken() ?? "",
         index: 0,
-        count: 5,
+        count: 10,
       );
     } catch(e) {
       Logger().d("Fetch converstation error");
@@ -46,6 +50,14 @@ class _ChatPageState extends State<ChatPage> {
             child: Column(
               children: [
                 TextField(
+                  canRequestFocus: false,
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserSearchPage())).then((_) {
+                      setState(() {
+                        loadData();
+                      });
+                    });
+                  },
                   decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
@@ -119,14 +131,34 @@ class ChatUnit extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CircleAvatar(
+                radius: 26,
                 child: ClipOval(
                   child: Container(
                       height: 52,
                       width: 52,
-                      child: conversation.partnerAvatar != null ? Image.network(conversation.partnerAvatar!) : Image.asset("assets/images/default.jpg")
+                      child: conversation.partnerAvatar != null ? Image.network(
+                        Utils.convertToDirectDownloadLink(conversation.partnerAvatar!),
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) {
+                            // isImageLoading = false;
+                            return child;
+                          } else {
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes != null
+                                    ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
+                                    : null,
+                              ),
+                            );
+                          }
+                        },
+                        errorBuilder: (context, error, stackTrace) => Text(
+                          'Error loading image',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ) : Image.asset("assets/images/default.jpg")
                   ),
                 ),
-                radius: 26,
               ),
               Expanded(
                 flex: 1,
@@ -206,7 +238,7 @@ Future<List<Conversation>> fetchConversations({
     }),
   );
 
-  final Map<String, dynamic> responseBody = jsonDecode(response.body);
+  final Map<String, dynamic> responseBody = jsonDecode(utf8.decode(response.bodyBytes));
 
   if (response.statusCode == 200 && responseBody['meta']['code'] == '1000') {
     final List<dynamic> conversationsJson = responseBody['data']['conversations'];

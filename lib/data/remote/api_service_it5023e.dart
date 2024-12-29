@@ -74,7 +74,7 @@ abstract class ApiServiceIT5023E {
   Future<Map<String, dynamic>> submitSurvey(SubmitSurveyRequest submitSurveyRequest);
   Future<GetSurveyResponse> getSubmission (String token, String assignmentId);
   Future<String> deleteSurvey(String token, String surveyId);
-  }
+}
 
 class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
   @override
@@ -89,7 +89,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(request.toJson())
       );
-      var body = jsonDecode(response.body);
+      var body = jsonDecode(utf8.decode(response.bodyBytes));
 
       if (response.statusCode == 200) {
 
@@ -133,7 +133,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     );
 
     if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
+      final jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
       // Kiểm tra mã code từ response
       if (jsonResponse['meta']['code'] == "1000") {
         // Trả về dữ liệu thành công
@@ -142,7 +142,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
         throw Exception(jsonResponse['meta']['message']);
       }
     } else {
-      final jsonResponse = jsonDecode(response.body);
+      final jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
       throw Exception("Failed to request absence + ${jsonResponse['meta']['message']}");
     }
   }
@@ -166,7 +166,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
         body: jsonEncode(requestBody),
       );
 
-      final jsonResponse = jsonDecode(response.body);
+      final jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
 
       // Kiểm tra code từ response meta
       if (jsonResponse['meta']['code'] != "1000") {
@@ -196,7 +196,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      final data = jsonDecode(utf8.decode(response.bodyBytes));
       if (data['code'] == '1000') {
         return (data['data'] as List).map((e) => Materials.fromJson(e)).toList();
       } else {
@@ -221,7 +221,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      final data = jsonDecode(utf8.decode(response.bodyBytes));
       if (data['code'] == '1000') {
         return;
       } else {
@@ -324,7 +324,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      final data = jsonDecode(utf8.decode(response.bodyBytes));
       if (data['code'] == '1000') {
         return Materials.fromJson(data['data']);
       } else {
@@ -394,7 +394,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
 
       if (jsonResponse['meta']['code'] == "1000") {
         // Return the AbsenceResponse with page content and pagination info
@@ -419,7 +419,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
 
       if (jsonResponse['meta']['code'] == "1000") {
         // Chuyển đổi danh sách JSON thành danh sách AbsenceStudent
@@ -448,7 +448,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
 
 
       // Kiểm tra mã code từ response
@@ -477,7 +477,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
 
       // Check if the response code is "1000", indicating success
       if (jsonResponse['meta']['code'] == "1000") {
@@ -507,7 +507,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
 
       // Check if the response code is "1000", indicating success
       if (jsonResponse['meta']['code'] == "1000") {
@@ -547,7 +547,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
 
       // Check if the response code is "1000", indicating success
       if (jsonResponse['meta']['code'] == '1000') {
@@ -588,7 +588,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
 
       if (response.statusCode == 200) {
         // Đọc dữ liệu phản hồi từ API
-        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
 
         // Kiểm tra mã code từ phản hồi
         if (jsonResponse['meta']['code'] == '1000') {
@@ -600,7 +600,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
         }
       } else {
         // Lỗi từ server
-        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
         throw Exception("Failed to take attendance: ${jsonResponse['meta']['message']}");
       }
     } catch (e) {
@@ -621,7 +621,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
         body: jsonEncode(request.toJson()),
       );
 
-      var body = jsonDecode(response.body);
+      var body = jsonDecode(utf8.decode(response.bodyBytes));
 
       if (response.statusCode == 200) {
         if (body['meta']['code'] == '1000') {
@@ -658,7 +658,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
 
         // Check if the response code is "1000", indicating success
         if (jsonResponse['meta']['code'] == '1000') {
@@ -670,7 +670,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
         }
       } else {
         // Handle server errors
-        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
         throw Exception("Failed to set attendance status: ${jsonResponse['meta']['message']}");
       }
     } catch (e) {
@@ -693,7 +693,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
 
         if (jsonResponse['meta']['code'] == '1000') {
           return jsonResponse['data'];
@@ -701,7 +701,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
           throw Exception("${jsonResponse['meta']['message']}");
         }
       } else {
-        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
         throw Exception("Failed to create class: ${jsonResponse['meta']['message']}");
       }
     } catch (e) {
@@ -736,7 +736,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
         // Parse dữ liệu và trả về OpenClassResponse
         return OpenClassResponse.fromJson(jsonResponse);
       } else {
-        throw Exception("Failed to load open classes: ${response.body}");
+        throw Exception("Failed to load open classes: ${utf8.decode(response.bodyBytes)}");
       }
     } catch (e) {
       throw Exception("Error: $e");
@@ -759,7 +759,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
 
         Logger().d('anxaxnnx: ${jsonResponse['data']}');
         return {
@@ -794,7 +794,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      final data = jsonDecode(utf8.decode(response.bodyBytes));
       if (data['meta']['code'] == '1000') {
         return (data['data'] as List)
             .map((e) => Assignment.fromJson(e))
@@ -821,7 +821,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      final data = jsonDecode(utf8.decode(response.bodyBytes));
       if (data['meta']['code'] == '1000') {
         return (data['data'] as List)
             .map((e) => Survey.fromJson(e))
@@ -857,7 +857,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      final data = jsonDecode(utf8.decode(response.bodyBytes));
       if (data['meta']['code'] == '1000') {
         return (data['data'] as List)
             .map((e) => GetSurveyResponse.fromJson(e))
@@ -1020,7 +1020,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
         body: jsonEncode(requestBody),
       );
 
-      final jsonResponse = jsonDecode(response.body);
+      final jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
 
       // Kiểm tra code từ response meta
       if (jsonResponse['meta']['code'] == "1000") {
@@ -1051,7 +1051,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
         body: jsonEncode(requestBody),
       );
 
-      final jsonResponse = jsonDecode(response.body);
+      final jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
 
       // Kiểm tra code từ response meta
       if (jsonResponse['meta']['code'] != "1000") {

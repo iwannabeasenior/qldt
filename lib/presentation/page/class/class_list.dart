@@ -14,9 +14,6 @@ class ClassList extends StatefulWidget {
 }
 
 class _ClassListState extends State<ClassList> {
-  String selectedTerm = '2024.1';
-  List<String> terms = ['2024.1', '2023.3', '2023.2'];
-
   late ScrollController scrollController;
   @override
   void initState() {
@@ -61,29 +58,6 @@ class _ClassListState extends State<ClassList> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // DropdownButton để chọn kỳ học
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      const Text("Kỳ: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                      DropdownButton<String>(
-                        value: selectedTerm,
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedTerm = newValue!;
-                          });
-                        },
-                        items: terms.map<DropdownMenuItem<String>>((String term) {
-                          return DropdownMenuItem<String>(
-                            value: term,
-                            child: Text(term),
-                          );
-                        }).toList(),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
                   // Danh sách lớp học
                   Expanded(
                     child: ListView.builder(
