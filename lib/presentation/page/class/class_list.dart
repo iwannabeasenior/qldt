@@ -16,85 +16,128 @@ class ClassList extends StatefulWidget {
 class _ClassListState extends State<ClassList> {
   String selectedTerm = '2024.1';
   List<String> terms = ['2024.1', '2023.3', '2023.2'];
-  List<Class> classList = [
-  ];
+
+  late ScrollController scrollController;
+  @override
+  void initState() {
+    super.initState();
+    scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     var repo = context.read<ClassRepo>();
+    var classListProvider = ClassListProvider(repo: repo);
 
-    return FutureProvider<List<Class>?>(
-      create: (_) => ClassListProvider(repo: repo).getClassList(),
-      initialData: null,
-      catchError: (_, error) {
-        Logger().d(error);
-        return null;
-      },
-      builder: (context, _) {
-        var data = context.watch<List<Class>?>();
-        return Scaffold(
-          appBar: AppBar(
-            title: const Column(
-              children: [
-                Text("HUST", style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold, color: Colors.white)),
-                Text("Danh sách lớp", style: TextStyle(fontSize: 25, color: Colors.white)),
-              ],
+    return ChangeNotifierProvider<ClassListProvider>(
+      create: (_) => classListProvider..getClassList(),
+      child: Consumer<ClassListProvider>(
+        builder: (context, provider, _) {
+          var data = provider.classes;
+
+          return Scaffold(
+            appBar: AppBar(
+              title: const Column(
+                children: [
+                  Text("HUST", style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold, color: Colors.white)),
+                  Text("Danh sách lớp", style: TextStyle(fontSize: 25, color: Colors.white)),
+                ],
+              ),
+              toolbarHeight: 115,
+              centerTitle: true,
+              backgroundColor: const Color(0xFFAE2C2C),
+              automaticallyImplyLeading: false,
             ),
-            toolbarHeight: 115,
-            centerTitle: true,
-            backgroundColor: Color(0xFFAE2C2C),
-            automaticallyImplyLeading: false,
-          ),
-          body: (data == null || data.isEmpty) ? const Center(child: CircularProgressIndicator()) : Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // DropdownButton để chọn kỳ học
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text("Kỳ: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                    DropdownButton<String>(
-                      value: selectedTerm,
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedTerm = newValue!;
-                        });
-                      },
-                      items: terms.map<DropdownMenuItem<String>>((String term) {
-                        return DropdownMenuItem<String>(
-                          value: term,
-                          child: Text(term),
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                // Danh sách lớp học
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: data!.length,
-                    itemBuilder: (context, index) {
-                      final classSchedule = data[index];
-                      return GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, '/ClassDetail', arguments: classSchedule.id);
-                          },
-                          child: ClassScheduleCard(classSchedule: classSchedule)
-                      );
-                    },
+            body: data == null
+                ? const Center(child: CircularProgressIndicator())
+                : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // DropdownButton để chọn kỳ học
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      const Text("Kỳ: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      DropdownButton<String>(
+                        value: selectedTerm,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedTerm = newValue!;
+                          });
+                        },
+                        items: terms.map<DropdownMenuItem<String>>((String term) {
+                          return DropdownMenuItem<String>(
+                            value: term,
+                            child: Text(term),
+                          );
+                        }).toList(),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+
+                  // Danh sách lớp học
+                  Expanded(
+                    child: ListView.builder(
+                      controller: scrollController, //cuộn
+                      itemCount: data.length,
+                      itemBuilder: (context, index) {
+                        final classSchedule = data[index];
+                        return GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/ClassDetail', arguments: classSchedule.id);
+                            },
+                            child: ClassScheduleCard(classSchedule: classSchedule));
+                      },
+                    ),
+                  ),
+
+                  // Thanh phân trang
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        onPressed: provider.currentPage > 0
+                            ? () {
+                          provider.getClassList(page: provider.currentPage - 1);
+                          scrollController.jumpTo(0); // scroll on top
+                        }
+                            : null,
+                        icon: const Icon(Icons.arrow_back),
+                      ),
+                      Text(
+                        'Page ${provider.currentPage + 1}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      IconButton(
+                        onPressed: provider.hasNextPage
+                            ? () {
+                          provider.getClassList(page: provider.currentPage + 1);
+                          scrollController.jumpTo(0); // Cuộn về đầu danh sách
+                        }
+                            : null, // Vô hiệu hóa nút nếu không có trang tiếp theo
+                        icon: const Icon(Icons.arrow_forward),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      }
+          );
+        },
+      ),
     );
   }
 }
+
 
 // Widget hiển thị thông tin lớp học
 class ClassScheduleCard extends StatelessWidget {
