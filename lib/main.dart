@@ -10,6 +10,7 @@ import 'package:qldt/data/repo/class_repository.dart';
 import 'package:qldt/data/repo/manage_class_repository.dart';
 import 'package:qldt/data/repo/material_repository.dart';
 import 'package:qldt/helper/routes.dart';
+import 'package:qldt/presentation/page/class/dashboard/info_class/class_info_provider.dart';
 import 'package:qldt/presentation/page/settings/settings_provider.dart';
 import 'package:qldt/presentation/page/settings/user_info/user_provider.dart';
 import 'package:qldt/presentation/page/class/dashboard/dashboard/absence/absence_provider.dart';
@@ -91,6 +92,9 @@ class MyApp extends StatelessWidget {
           ),
           Provider.value(value: assignmentRepo),
           ChangeNotifierProvider(create: (_) => LecturerAssignmentProvider(assignmentRepo)),
+          ChangeNotifierProvider(
+            create: (context) => ClassInfoProvider(classRepo),
+          ),
         ],
       child:  MaterialApp(
         title: 'Flutter Demo',

@@ -26,15 +26,15 @@ class Student {
 
 class ClassInfo {
   final String classId;
-  final String className;
+  late final String className;
   final String? attachedCode;
   final String classType;
   final String lecturerName;
   final String lecturerAccountId;
   final int studentCount;
-  final String startDate;
-  final String endDate;
-  final String status;
+  late final String startDate;
+  late final String endDate;
+  late final String status;
   final List<Student> studentAccounts;
 
   ClassInfo({

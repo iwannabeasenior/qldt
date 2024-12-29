@@ -4,11 +4,11 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:logger/logger.dart';
-import 'package:path/path.dart';
 import 'package:qldt/data/model/absence_student.dart';
 import 'package:qldt/data/model/class.dart';
 import 'package:qldt/data/model/materials.dart';
 import 'package:qldt/data/request/class_create_request.dart';
+import 'package:qldt/data/request/edit_class_request.dart';
 import 'package:qldt/data/request/get_class_list_request.dart';
 import 'package:qldt/data/request/get_student_absence.dart';
 import 'package:qldt/data/request/material_request.dart';
@@ -31,7 +31,8 @@ abstract class ApiServiceIT5023E {
   // class
   Future<Either<Failure, List<Class>>> getAllClass(GetClassListRequest request);
   Future<ClassInfo> getClassInfo(String token, String role, String accountId,String classId);
-
+  Future<Map<String, dynamic>> editClass(EditClassRequest editClassRequest);
+  Future<void> addStudent(String token, String classId, String accountId);
   // material
   Future<List<Materials>> getAllMaterials(String token, String classID);
   Future<void> deleteMaterial(String token, String materialID);
@@ -106,6 +107,76 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
       return Left(Failure(code: "0", message: e.toString()));
     }
 
+  }
+
+  @override
+  Future<Map<String, dynamic>> editClass(EditClassRequest editClassRequest) async {
+    const url = '${Constant.BASEURL}/it5023e/edit_class'; // URL của API
+
+    final Map<String, dynamic> requestBody = {
+      'token': editClassRequest.token,
+      'class_id': editClassRequest.classId,
+      'class_name': editClassRequest.className,
+      'status': editClassRequest.status,
+      'start_date': editClassRequest.startDate,
+      'end_date': editClassRequest.endDate,
+    };
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(requestBody),
+    );
+
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      // Kiểm tra mã code từ response
+      if (jsonResponse['meta']['code'] == "1000") {
+        // Trả về dữ liệu thành công
+        return jsonResponse['data'];
+      } else {
+        throw Exception(jsonResponse['meta']['message']);
+      }
+    } else {
+      final jsonResponse = jsonDecode(response.body);
+      throw Exception("Failed to request absence + ${jsonResponse['meta']['message']}");
+    }
+  }
+
+  @override
+  Future<void> addStudent(String token, String classId, String accountId) async {
+    const url = '${Constant.BASEURL}/it5023e/add_student';
+
+    try {
+      final Map<String, dynamic> requestBody = {
+        'token': token,
+        'class_id': classId,
+        'account_id': accountId
+      };
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      final jsonResponse = jsonDecode(response.body);
+
+      // Kiểm tra code từ response meta
+      if (jsonResponse['meta']['code'] != "1000") {
+        throw Exception(jsonResponse['meta']['message']);
+      }
+
+      return jsonResponse['data'];
+
+    } catch (e) {
+      print('Error adding student: $e'); // Log lỗi
+      throw e; // Throw lỗi để UI xử lý
+    }
   }
 
   @override
@@ -349,7 +420,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
       final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
       if (jsonResponse['meta']['code'] == "1000") {
-        Logger().d('testtt ${jsonResponse}');
+        Logger().d('testtt ${jsonResponse['data']}');
         // Chuyển đổi danh sách JSON thành danh sách AbsenceStudent
         final List<dynamic> pageContent = jsonResponse['data']['page_content'];
         return pageContent.map((json) => AbsenceLecturer.fromJson(json)).toList();
@@ -460,7 +531,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
 
   @override
   Future<ClassInfo> getClassInfo(String token, String role, String accountId, String classId,) async {
-    const url = '${Constant.BASEURL}/it5023e/get_class_info';  // Replace with the correct endpoint
+    const url = '${Constant.BASEURL}/it5023e/get_class_info';
 
     final response = await http.post(
       Uri.parse(url),
@@ -638,45 +709,6 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     }
   }
 
-  // @override
-  // Future<List<ClassModel1>> getOpenClass(String token, String page, String pageSize) async {
-  //   const url = '${Constant.BASEURL}/it5023e/get_open_classes';
-  //
-  //   // Create request parameters
-  //   final requestPayload = {
-  //     "token": token,
-  //     "pageable_request": {
-  //       "page": page,
-  //       "page_size": pageSize,
-  //     }
-  //   };
-  //
-  //   try {
-  //     final response = await http.post(
-  //       Uri.parse(url),
-  //       headers: {'Content-Type': 'application/json'},
-  //       body: jsonEncode(requestPayload),
-  //     );
-  //
-  //     if (response.statusCode == 200) {
-  //       // final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-  //       final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
-  //
-  //
-  //       List<dynamic> classesJson = jsonResponse['data']["page_content"];
-  //
-  //       List<ClassModel1> classList = classesJson.map((classJson) {
-  //         return ClassModel1.fromJson(classJson);
-  //       }).toList();
-  //
-  //       return classList;
-  //     } else {
-  //       throw Exception("Failed to load open classes: ${response.body}");
-  //     }
-  //   } catch (e) {
-  //     throw Exception("Error: $e");
-  //   }
-  // }
 
   @override
   Future<OpenClassResponse> getOpenClass(String token, String page, String pageSize) async {
