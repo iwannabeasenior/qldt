@@ -71,7 +71,7 @@ abstract class ApiServiceIT5023E {
   Future<List<Assignment>> getStudentAssignments (String token, String type, String classId);
   Future<List<Survey>> getAllSurveys (String token, String classId);
   Future<List<GetSurveyResponse>> getSurveyResponse (String token, String surveyId, String? score, String? submissionId);
-  Future<Map<String, dynamic>> createSurvey(SurveyRequest surveyRequest);
+  Future<int> createSurvey(SurveyRequest surveyRequest);
   Future<Map<String, dynamic>> editSurvey(SurveyRequest surveyRequest);
   Future<Map<String, dynamic>> submitSurvey(SubmitSurveyRequest submitSurveyRequest);
   Future<GetSurveyResponse> getSubmission (String token, String assignmentId);
@@ -873,7 +873,7 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
   }
 
   @override
-  Future<Map<String, dynamic>> createSurvey(SurveyRequest surveyRequest) async {
+  Future<int> createSurvey(SurveyRequest surveyRequest) async {
     const url = '${Constant.BASEURL}/it5023e/create_survey';
     var request = http.MultipartRequest('POST', Uri.parse(url));
 

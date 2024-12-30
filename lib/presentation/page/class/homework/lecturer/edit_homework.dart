@@ -184,6 +184,9 @@ class _EditAssignmentScreenState extends State<EditAssignmentScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<LecturerAssignmentProvider>(context);
+    if (provider.isLoading || provider.isLoadingDelete){
+      return const Center(child: CircularProgressIndicator(backgroundColor: Colors.white,),);
+    }
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -308,9 +311,7 @@ class _EditAssignmentScreenState extends State<EditAssignmentScreen> {
                     backgroundColor: QLDTColor.red,
                     padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                   ),
-                  child: provider.isLoading
-                    ? const CircularProgressIndicator()
-                    : const Text(
+                  child: const Text(
                     "Submit",
                     style: TextStyle(color: Colors.white),
                   ),
@@ -327,9 +328,7 @@ class _EditAssignmentScreenState extends State<EditAssignmentScreen> {
                     backgroundColor: QLDTColor.red,
                     padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                   ),
-                  child: provider.isLoadingDelete
-                      ? const CircularProgressIndicator()
-                      : const Text(
+                  child: const Text(
                     "Delete",
                     style: TextStyle(color: Colors.white),
                   ),

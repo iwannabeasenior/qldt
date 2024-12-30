@@ -145,7 +145,7 @@ class _SubmissionInfoViewState extends State<SubmissionInfoView> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    provider.submission!.textResponse,
+                    provider.submission!.textResponse ?? "",
                     style: const TextStyle(fontSize: 18),
                   ),
                 ],

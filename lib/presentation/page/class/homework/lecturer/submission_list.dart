@@ -136,7 +136,7 @@ class _SubmissionListViewState extends State<SubmissionListView> {
                 children: List.generate(submissionProvider.surveyResponses.length, (index) {
                   return SubmissionCard(
                     submission: submissionProvider.surveyResponses[index],
-                    index: index + 1, title: widget.title, classId: widget.classId,
+                    index: index, title: widget.title, classId: widget.classId,
                   );
                 }),
               )
@@ -180,7 +180,7 @@ class SubmissionCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '$index. ${submission.studentAccount
+                        '${index+1}. ${submission.studentAccount
                             .firstName} ${submission.studentAccount
                             .lastName} - ${submission.studentAccount.studentId}',
                         style: const TextStyle(
