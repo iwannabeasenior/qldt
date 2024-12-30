@@ -79,7 +79,7 @@ class LecturerAssignmentProvider with ChangeNotifier {
       _isLoading = true;
       res = await _repo.createSurvey(surveyRequest);
     } catch(e) {
-      print(e);
+      throw(e);
     } finally {
       _isLoading = false;
       notifyListeners();

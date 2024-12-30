@@ -85,6 +85,14 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
   void submitHomework(LecturerAssignmentProvider provider) {
     if (!_formKey.currentState!.validate()) return;
 
+    if (_selectedDate == null || _selectedDate!.isBefore(DateTime.now())) {
+      // Hiển thị SnackBar nếu selectedDate không hợp lệ
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Hạn nộp bài không hợp lệ'), backgroundColor: Colors.red,),
+      );
+      return;
+    }
+
     final title = _titleController.text;
     final description = _descriptionController.text;
 
@@ -102,11 +110,19 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Absence request submitted successfully')),
       );
-      Navigator.push(context, MaterialPageRoute(builder: (context)=> ClassDetail(classID: widget.classId, initialIndex: 1,)));
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ClassDetail(
+            classID: widget.classId,
+            initialIndex: 1,
+          ),
+        ),
+      );
     }).catchError((e) {
       // Show error message if there's an issue
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to submit absence request')),
+        SnackBar(content: Text('Failed to submit absence request $e')),
       );
     });
   }
