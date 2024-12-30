@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:qldt/data/model/class.dart';
 import 'package:qldt/data/model/user.dart';
 import 'package:qldt/data/remote/api_service_it4788.dart';
+import 'package:qldt/data/request/files_request.dart';
 import 'package:qldt/data/request/login_request.dart';
 import 'package:qldt/data/request/signup_request.dart';
 import 'package:qldt/helper/failure.dart';
@@ -12,7 +13,7 @@ abstract class AuthRepository {
   Future<Either<Failure, String>> getVerifyCode(String email, String password);
   Future<Either<Failure, String>> checkVerifyCode(String email, String verifyCode);
   Future<Either<Failure, void>> changePassword(String token, String oldPassword, String newPassword);
-  Future<Either<Failure, void>> changeInfoAfterSignUp();
+  Future<User> changeInfoAfterSignUp(String token, FileRequest fileRequest);
   Future<User> getUserInfo(String token, String userId);
 }
 
@@ -33,8 +34,8 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   @override
-  Future<Either<Failure, void>> changeInfoAfterSignUp() {
-    return api.changeInfoAfterSignUp();
+  Future<User> changeInfoAfterSignUp(String token, FileRequest fileRequest) {
+    return api.changeInfoAfterSignUp(token, fileRequest);
   }
 
   @override
