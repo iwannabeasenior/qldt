@@ -76,107 +76,104 @@ class _AttendanceDetailState extends State<AttendanceDetail> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Table(
-                border: TableBorder.all(color: Colors.grey),
-                columnWidths: const {
-                  0: FlexColumnWidth(1),
-                  1: FlexColumnWidth(2),
-                  2: FlexColumnWidth(2),
-                  3: FlexColumnWidth(3),
-                },
-                children: [
-                  const TableRow(
-                    decoration: BoxDecoration(color: Colors.grey),
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'STT',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.white),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Table(
+                  border: TableBorder.all(color: Colors.grey),
+                  columnWidths: const {
+                    0: FlexColumnWidth(1),
+                    1: FlexColumnWidth(2),
+                    2: FlexColumnWidth(2),
+                    3: FlexColumnWidth(3),
+                  },
+                  children: [
+                    const TableRow(
+                      decoration: BoxDecoration(color: Colors.grey),
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            'STT',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, color: Colors.white),
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'MSSV',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.white),
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            'MSSV',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, color: Colors.white),
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'Tên',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.white),
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            'Tên',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, color: Colors.white),
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'Status',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.white),
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            'Status',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, color: Colors.white),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  // Render student data from the provider's list
-                  for (int i = 0; i < attendanceStudentDetail.length; i++)
-                    TableRow(children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text((i + 1).toString()),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(attendanceStudentDetail[i].studentId),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(attendanceStudentDetail[i].name ?? 'No Name'), // Fallback value
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: DropdownButton<String>(
-                          value: attendanceStudentDetail[i].status.isEmpty
-                              ? null
-                              : attendanceStudentDetail[i].status,
-                          isExpanded: true,
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              // attendanceStudentDetail[i].status = newValue!;
-                              // If the status has changed, update it
-                              // if (previousStatuses[attendanceStudentDetail[i].attendanceId] != newValue) {
-                              //   Logger().d('reigh');
-                              //   attendanceStudentDetail[i].status = newValue!;                                Logger().d('new ${previousStatuses[attendanceStudentDetail[i].attendanceId]} và ${attendanceStudentDetail[i].attendanceId} ');
-                              // }
-                              attendanceStudentDetail[i].status = newValue!;
-                            });
-                          },
-                          items: statuses
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                          hint: const Text("Select"),
+                      ],
+                    ),
+                    // Render student data from the provider's list
+                    for (int i = 0; i < attendanceStudentDetail.length; i++)
+                      TableRow(children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text((i + 1).toString()),
                         ),
-                      ),
-                    ]),
-                ],
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(attendanceStudentDetail[i].studentId),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(attendanceStudentDetail[i].name ?? 'No Name'), // Fallback value
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: DropdownButton<String>(
+                            value: attendanceStudentDetail[i].status.isEmpty
+                                ? null
+                                : attendanceStudentDetail[i].status,
+                            isExpanded: true,
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                // attendanceStudentDetail[i].status = newValue!;
+                                // If the status has changed, update it
+                                // if (previousStatuses[attendanceStudentDetail[i].attendanceId] != newValue) {
+                                //   Logger().d('reigh');
+                                //   attendanceStudentDetail[i].status = newValue!;                                Logger().d('new ${previousStatuses[attendanceStudentDetail[i].attendanceId]} và ${attendanceStudentDetail[i].attendanceId} ');
+                                // }
+                                attendanceStudentDetail[i].status = newValue!;
+                              });
+                            },
+                            items: statuses
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            hint: const Text("Select"),
+                          ),
+                        ),
+                      ]),
+                  ],
+                ) ,
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(
-              "PRESENT, EXCUSED_ABSENCE, UNEXCUSED_ABSENCE",
-              style: TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-          ),
+
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
