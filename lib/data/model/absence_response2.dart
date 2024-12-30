@@ -23,7 +23,7 @@ class AbsenceRequest2 {
   final String absenceDate;
   final String title;
   final String reason;
-  late final String status;
+  String? status;
   final String? fileUrl;
 
   AbsenceRequest2({
@@ -32,7 +32,7 @@ class AbsenceRequest2 {
     required this.absenceDate,
     required this.title,
     required this.reason,
-    required this.status,
+    this.status = "PENDING",
     this.fileUrl,
   });
 
@@ -43,7 +43,7 @@ class AbsenceRequest2 {
       absenceDate: json['absence_date'],
       title: json['title'],
       reason: json['reason'],
-      status: json['status'],
+      status: json['status'] ?? "PENDING",
       fileUrl: json['file_url'],
     );
   }
