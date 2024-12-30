@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:qldt/data/model/materials.dart';
-import 'package:qldt/data/model/user.dart';
-import 'package:qldt/data/repo/material_repository.dart';
 import 'package:qldt/helper/utils.dart';
 import 'package:qldt/presentation/page/class/material/edit_material.dart';
 import 'package:qldt/presentation/page/class/material/material_provider.dart';
 import 'package:qldt/presentation/page/class/material/upload_material.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class MaterialsPage extends StatelessWidget {
   final String classID;
@@ -31,9 +28,9 @@ class MaterialsPage extends StatelessWidget {
 }
 
 class MaterialsView extends StatefulWidget {
-  final classID;
+  final String classID;
 
-  MaterialsView(this.classID);
+  const MaterialsView(this.classID, {super.key});
 
   @override
   State<MaterialsView> createState() => _MaterialsViewState();
@@ -61,7 +58,7 @@ class _MaterialsViewState extends State<MaterialsView> {
         children: [
           Expanded(
               child: materialProvider.isLoading
-                  ? Center(child: CircularProgressIndicator())
+                  ? const Center(child: CircularProgressIndicator())
                   : ListView.builder(
                       itemCount: materialProvider.materials.length,
                       // Số lượng tài liệu
@@ -71,36 +68,39 @@ class _MaterialsViewState extends State<MaterialsView> {
                         );
                       },
                     )),
-          ElevatedButton(
-            onPressed: () async {
-              // Handle upload document
-              final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          UploadMaterialPage(classId: widget.classID)));
-              if (result == true) {
-                await context.read<MaterialProvider>().fetchMaterials(
-                    UserPreferences.getToken() ?? "", widget.classID);
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFAE2C2C),
-              padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: const Text(
-              "Tải tài liệu lên",
-              style: TextStyle(
-                color: Colors.white,
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-          ),
+          UserPreferences.getRole() == "LECTURER"
+              ? ElevatedButton(
+                  onPressed: () async {
+                    // Handle upload document
+                    final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                UploadMaterialPage(classId: widget.classID)));
+                    if (result == true) {
+                      await context.read<MaterialProvider>().fetchMaterials(
+                          UserPreferences.getToken() ?? "", widget.classID);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFAE2C2C),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 50, vertical: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    "Tải tài liệu lên",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                )
+              : const SizedBox.shrink(),
         ],
       ),
     );
@@ -127,23 +127,26 @@ class DocumentCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "${material.materialName}.${material.materialType}" ??
-                    "UNKNOWN",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-              ),
-              SizedBox(height: 4),
-              Text(
-                material.description ?? '',
-                style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 13,
-                    fontStyle: FontStyle.italic),
-              ),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "${material.materialName}.${material.materialType}",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  material.description ?? '',
+                  style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 13,
+                      fontStyle: FontStyle.italic),
+                ),
+              ],
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.more_horiz),
@@ -156,7 +159,7 @@ class DocumentCard extends StatelessWidget {
                       color: Colors.transparent,
                       child: Container(
                         width: 300,
-                        padding: EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(12),
@@ -166,8 +169,8 @@ class DocumentCard extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             ListTile(
-                              leading:
-                                  const Icon(Icons.folder_open, color: Colors.red),
+                              leading: const Icon(Icons.folder_open,
+                                  color: Colors.red),
                               title: const Text("Mở"),
                               onTap: () async {
                                 try {
@@ -183,7 +186,8 @@ class DocumentCard extends StatelessWidget {
                             ),
                             if (UserPreferences.getRole() == 'LECTURER')
                               ListTile(
-                                leading: const Icon(Icons.edit, color: Colors.blue),
+                                leading:
+                                    const Icon(Icons.edit, color: Colors.blue),
                                 title: const Text("Chỉnh sửa"),
                                 onTap: () async {
                                   // Handle upload document
@@ -191,19 +195,23 @@ class DocumentCard extends StatelessWidget {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              EditMaterialPage(material: material)));
+                                              EditMaterialPage(
+                                                  material: material)));
                                   if (result == true) {
-                                    await context.read<MaterialProvider>().fetchMaterials(
-                                        UserPreferences.getToken() ?? "", material.classId);
+                                    await context
+                                        .read<MaterialProvider>()
+                                        .fetchMaterials(
+                                            UserPreferences.getToken() ?? "",
+                                            material.classId);
                                   }
                                   Navigator.pop(context);
                                 },
                               ),
                             if (UserPreferences.getRole() == 'LECTURER')
                               ListTile(
-                                leading:
-                                    Icon(Icons.delete, color: Colors.black),
-                                title: Text("Xóa"),
+                                leading: const Icon(Icons.delete,
+                                    color: Colors.black),
+                                title: const Text("Xóa"),
                                 onTap: () {
                                   materialController.deleteMaterial(
                                       UserPreferences.getToken() ?? "",
