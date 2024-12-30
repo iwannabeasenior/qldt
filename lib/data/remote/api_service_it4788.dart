@@ -216,7 +216,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      final data = jsonDecode(utf8.decode(response.bodyBytes));
       if (data['code'] == '1000') {
         return User.fromJson(data['data']);
       } else {
