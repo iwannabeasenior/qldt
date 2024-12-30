@@ -12,21 +12,22 @@ import 'package:qldt/presentation/theme/color_style.dart';
 
 class CreateHomeWork extends StatelessWidget {
   final String classId;
+
   const CreateHomeWork({super.key, required this.classId});
 
   @override
   Widget build(BuildContext context) {
     final repo = context.read<AssignmentRepo>();
     return ChangeNotifierProvider(
-        create: (context) => LecturerAssignmentProvider(repo),
-        child: CreateAssignmentScreen(classId: classId),
+      create: (context) => LecturerAssignmentProvider(repo),
+      child: CreateAssignmentScreen(classId: classId),
     );
   }
 }
 
-
 class CreateAssignmentScreen extends StatefulWidget {
   final String classId;
+
   const CreateAssignmentScreen({super.key, required this.classId});
 
   @override
@@ -47,10 +48,13 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
     final result = await FilePicker.platform.pickFiles(allowMultiple: true);
     if (result != null) {
       setState(() {
-        files = result.files.map((file) => FileRequest(file: file, fileData: file.bytes)).toList();
+        files = result.files
+            .map((file) => FileRequest(file: file, fileData: file.bytes))
+            .toList();
       });
     }
   }
+
   //pick date
   Future<void> setDeadline() async {
     final pickedDate = await showDatePicker(
@@ -80,7 +84,6 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
     }
   }
 
-
   //submit create homework
   void submitHomework(LecturerAssignmentProvider provider) {
     if (!_formKey.currentState!.validate()) return;
@@ -88,7 +91,10 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
     if (_selectedDate == null || _selectedDate!.isBefore(DateTime.now())) {
       // Hiển thị SnackBar nếu selectedDate không hợp lệ
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Hạn nộp bài không hợp lệ'), backgroundColor: Colors.red,),
+        const SnackBar(
+          content: Text('Hạn nộp bài không hợp lệ'),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
@@ -102,13 +108,12 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
         title: title,
         deadline: _selectedDate!.toIso8601String(),
         description: description,
-        files: files
-    );
+        files: files);
 
     provider.createSurvey(createSurveyRequest).then((_) {
       // Show success message after the request
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Absence request submitted successfully')),
+        const SnackBar(content: Text('Create homework successfully')),
       );
       Navigator.push(
         context,
@@ -122,7 +127,7 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
     }).catchError((e) {
       // Show error message if there's an issue
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to submit absence request $e')),
+        SnackBar(content: Text('Failed to create homework $e')),
       );
     });
   }
@@ -130,6 +135,9 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<LecturerAssignmentProvider>(context);
+    if (provider.isLoading) {
+      return const Center(child: CircularProgressIndicator(backgroundColor: Colors.white,),);
+    }
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -172,7 +180,7 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) =>
-                value == null || value.isEmpty ? 'Title is required' : null,
+                    value == null || value.isEmpty ? 'Title is required' : null,
               ),
               const SizedBox(height: 16),
               // Mô tả
@@ -185,7 +193,8 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
                 maxLines: 4,
               ),
               const SizedBox(height: 16),
-              const Center(child: Text("Hoặc", style: TextStyle(color: Colors.grey))),
+              const Center(
+                  child: Text("Hoặc", style: TextStyle(color: Colors.grey))),
               const SizedBox(height: 8),
               // Nút tải tài liệu
               Center(
@@ -198,7 +207,8 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: QLDTColor.red,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
                   ),
                 ),
               ),
@@ -224,7 +234,8 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
                   ),
                   child: Text(
                     _selectedDate != null
-                        ? DateFormat('HH:mm - dd/MM/yyyy').format(_selectedDate!)
+                        ? DateFormat('HH:mm - dd/MM/yyyy')
+                            .format(_selectedDate!)
                         : 'Hạn nộp bài',
                     style: const TextStyle(fontSize: 16.0),
                   ),
@@ -245,11 +256,10 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: QLDTColor.red,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 12),
                   ),
-                  child: provider.isLoading
-                    ? const CircularProgressIndicator()
-                    : const Text(
+                  child: const Text(
                     "Submit",
                     style: TextStyle(color: Colors.white),
                   ),

@@ -40,7 +40,7 @@ class GetSurveyResponse {
   final String submissionTime;
   double? grade;
   final String? fileUrl;
-  final String textResponse;
+  final String? textResponse;
   final StudentAccount studentAccount;
 
   GetSurveyResponse({
@@ -49,7 +49,7 @@ class GetSurveyResponse {
     required this.submissionTime,
     this.grade,
     this.fileUrl,
-    required this.textResponse,
+    this.textResponse,
     required this.studentAccount,
   });
 

@@ -49,7 +49,7 @@ class LecturerAssignmentProvider with ChangeNotifier {
       surveyResponses =
           await _repo.getSurveyResponse(token, surveyId, null, null);
     } catch (e) {
-      print(e);
+      rethrow;
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -77,7 +77,7 @@ class LecturerAssignmentProvider with ChangeNotifier {
     notifyListeners();
     try {
       _isLoading = true;
-      res = await _repo.createSurvey(surveyRequest);
+      await _repo.createSurvey(surveyRequest);
     } catch(e) {
       throw(e);
     } finally {
