@@ -95,7 +95,7 @@ class AbsenceProvider with ChangeNotifier {
       if (replace) {
         absenceRequest2 = absenceResponse2.absenceRequests;
       } else {
-        absenceRequest2.addAll(absenceResponse2.absenceRequests) ;
+        absenceRequest2.addAll(absenceResponse2.absenceRequests);
       }
 
       pageInfo2 = absenceResponse2.pageInfo;
