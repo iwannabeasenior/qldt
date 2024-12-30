@@ -34,6 +34,18 @@ class _LoginPageState extends State<LoginPage> {
                   }
                 );
               }
+              if (controller.errorMessage != null) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(controller.errorMessage!),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                  controller.clearError(); // Reset trạng thái lỗi
+                });
+              }
+
               return Scaffold(
                 backgroundColor: const Color(0xFFAE2C2C), // Màu nền nhẹ nhàng
 
@@ -170,24 +182,24 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         const SizedBox(height: 24), // Khoảng cách trước nút đăng nhập
 
-                        Align(
-                          alignment: Alignment.center,
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.pushNamed(context, '/ForgotPassword');
-                            },
-                            child: const Text(
-                              'Quên mật khẩu?',
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.white, // Màu chữ trắng cho liên kết
-                                decoration:
-                                    TextDecoration.underline, // Thêm gạch chân cho liên kết
-                                decorationColor: Colors.white, // Màu gạch chân trắng
-                              ),
-                            ),
-                          ),
-                        ),
+                        // Align(
+                        //   alignment: Alignment.center,
+                        //   child: InkWell(
+                        //     onTap: () {
+                        //       Navigator.pushNamed(context, '/ForgotPassword');
+                        //     },
+                        //     child: const Text(
+                        //       'Quên mật khẩu?',
+                        //       style: TextStyle(
+                        //         fontSize: 18,
+                        //         color: Colors.white, // Màu chữ trắng cho liên kết
+                        //         decoration:
+                        //             TextDecoration.underline, // Thêm gạch chân cho liên kết
+                        //         decorationColor: Colors.white, // Màu gạch chân trắng
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
 
                         const SizedBox(height: 24), // Khoảng cách trước nút đăng nhập
 

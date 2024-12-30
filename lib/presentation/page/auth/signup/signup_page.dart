@@ -395,9 +395,25 @@ class _SignUpPageState extends State<SignUpPage> {
                           String uuid = "12345";
                           String role = _selectedRole!;
 
-                          signupProvider.requestSignUp(firstName, lastName, email, password, uuid, role);
+                          signupProvider.requestSignUp(firstName, lastName, email, password, uuid, role).then((success) {
+                            if (success) {
+                              // If signup was successful, pop the page (go back)
+                              Navigator.pop(context);
+                            } else {
 
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("Đăng ký thất bại"),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                              // Handle any signup failure (optional)
+                              // You might want to show an error message here
+                            }
+                          });
                         },
+
+
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 80, vertical: 16),

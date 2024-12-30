@@ -127,7 +127,6 @@ class _AttendancePageLecturerState extends State<AttendancePageLecturer> {
 
 
 
-
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AttendanceProvider>(); // Watching the provider
@@ -157,41 +156,44 @@ class _AttendancePageLecturerState extends State<AttendancePageLecturer> {
             Expanded(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  columnSpacing: 20.0,
-                  columns: const [
-                    DataColumn(
-                        label:
-                        Text('STT', style: TextStyle(fontWeight: FontWeight.bold))),
-                    DataColumn(
-                        label:
-                        Text('MSSV', style: TextStyle(fontWeight: FontWeight.bold))),
-                    DataColumn(
-                        label:
-                        Text('Họ tên', style: TextStyle(fontWeight: FontWeight.bold))),
-                    DataColumn(
-                        label:
-                        Text('Có mặt', style: TextStyle(fontWeight: FontWeight.bold))),
-                  ],
-                  rows: List<DataRow>.generate(
-                    students.length,
-                        (index) {
-                      final student = students[index];
-                      return DataRow(cells: [
-                        DataCell(Text('${index + 1}')), // STT
-                        DataCell(Text(student.studentId)), // MSSV
-                        DataCell(Text(
-                            student.firstName + " " + student.lastName)), // Họ tên
-                        DataCell(
-                          Checkbox(
-                            value: attendanceRecords[student.studentId] ?? false,
-                            onChanged: (bool? value) {
-                              toggleAttendance(student.studentId);
-                            },
-                          ),
-                        ), // Có mặt
-                      ]);
-                    },
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: DataTable(
+                    columnSpacing: 20.0,
+                    columns: const [
+                      DataColumn(
+                          label:
+                          Text('STT', style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(
+                          label:
+                          Text('MSSV', style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(
+                          label:
+                          Text('Họ tên', style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(
+                          label:
+                          Text('Có mặt', style: TextStyle(fontWeight: FontWeight.bold))),
+                    ],
+                    rows: List<DataRow>.generate(
+                      students.length,
+                          (index) {
+                        final student = students[index];
+                        return DataRow(cells: [
+                          DataCell(Text('${index + 1}')), // STT
+                          DataCell(Text(student.studentId)), // MSSV
+                          DataCell(Text(
+                              student.firstName + " " + student.lastName)), // Họ tên
+                          DataCell(
+                            Checkbox(
+                              value: attendanceRecords[student.studentId] ?? false,
+                              onChanged: (bool? value) {
+                                toggleAttendance(student.studentId);
+                              },
+                            ),
+                          ), // Có mặt
+                        ]);
+                      },
+                    ),
                   ),
                 ),
               ),

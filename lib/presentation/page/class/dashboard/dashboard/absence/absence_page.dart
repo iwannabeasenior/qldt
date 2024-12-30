@@ -368,90 +368,94 @@ class _AbsencePageState extends State<AbsencePage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (isClassExpired)
-              // Display the expiration message if the class is expired
-                Center(
-                  child: Text(
-                    'Lớp học đã quá hạn',
-                    style: TextStyle(fontSize: 18, color: Colors.red, fontWeight: FontWeight.bold),
-                  ),
-                )
-              else
-              // Display the rest of the form if the class is not expired
-                Column(
-                  children: [
-                    const SizedBox(height: 10),
-                    GestureDetector(
-                      onTap: pickDate,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Text(
-                          _selectedDate != null
-                              ? _selectedDate!.toIso8601String().split("T")[0]
-                              : 'Select Date',
-                          style: const TextStyle(fontSize: 16.0),
-                        ),
+          child: Form(
+            key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (isClassExpired)
+                  // Display the expiration message if the class is expired
+                    Center(
+                      child: Text(
+                        'Lớp học đã quá hạn',
+                        style: TextStyle(fontSize: 18, color: Colors.red, fontWeight: FontWeight.bold),
                       ),
-                    ),
-                    if (_selectedDate == null)
-                      const Padding(
-                        padding: EdgeInsets.only(top: 5.0),
-                        child: Text(
-                          'Date is required',
-                          style: TextStyle(color: Colors.red, fontSize: 12),
-                        ),
-                      ),
-                    const SizedBox(height: 10),
-                    TextFormField(
-                      controller: _titleController,
-                      decoration: const InputDecoration(labelText: 'Title'),
-                      validator: (value) =>
-                      value == null || value.isEmpty ? 'Title is required' : null,
-                    ),
-                    const SizedBox(height: 10),
-                    TextFormField(
-                      controller: _reasonController,
-                      decoration: const InputDecoration(labelText: 'Reason'),
-                      validator: (value) =>
-                      value == null || value.isEmpty ? 'Reason is required' : null,
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: pickFile,
-                      child: Text(files.isEmpty ? 'Tải minh chứng' : 'Change File'),
-                    ),
-                    if (files.isNotEmpty) Column(
+                    )
+                  else
+                  // Display the rest of the form if the class is not expired
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        for (var i = 0; i < files.length; i++)
-                          Text('File: ${files[i].file?.name?.split('/').last}'),
+                        const SizedBox(height: 10),
+                        GestureDetector(
+                          onTap: pickDate,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: Text(
+                              _selectedDate != null
+                                  ? _selectedDate!.toIso8601String().split("T")[0]
+                                  : 'Select Date',
+                              style: const TextStyle(fontSize: 16.0),
+                            ),
+                          ),
+                        ),
+                        if (_selectedDate == null)
+                          const Padding(
+                            padding: EdgeInsets.only(top: 5.0),
+                            child: Text(
+                              'Date is required',
+                              style: TextStyle(color: Colors.red, fontSize: 12),
+                            ),
+                          ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _titleController,
+                          decoration: const InputDecoration(labelText: 'Title'),
+                          validator: (value) =>
+                          value == null || value.isEmpty ? 'Title is required' : null,
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _reasonController,
+                          decoration: const InputDecoration(labelText: 'Reason'),
+                          validator: (value) =>
+                          value == null || value.isEmpty ? 'Reason is required' : null,
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: pickFile,
+                          child: Text(files.isEmpty ? 'Tải minh chứng' : 'Change File'),
+                        ),
+                        if (files.isNotEmpty) Column(
+                          children: [
+                            for (var i = 0; i < files.length; i++)
+                              Text('File: ${files[i].file?.name?.split('/').last}'),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_selectedDate == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Please select a date')),
+                              );
+                              return;
+                            }
+                            submitAbsenceRequest(provider);
+                          },
+                          child: provider.isLoading
+                              ? const CircularProgressIndicator()
+                              : const Text('Gửi'),
+                        ),
+                        const SizedBox(height: 20),
                       ],
                     ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_selectedDate == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Please select a date')),
-                          );
-                          return;
-                        }
-                        submitAbsenceRequest(provider);
-                      },
-                      child: provider.isLoading
-                          ? const CircularProgressIndicator()
-                          : const Text('Gửi'),
-                    ),
-                    const SizedBox(height: 20),
-                  ],
-                ),
-            ],
+                ],
+              )
           ),
         ),
       ),
