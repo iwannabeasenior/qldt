@@ -132,7 +132,14 @@ class _AbsencePageStudentState extends State<AbsencePageStudent> {
               child: Column(
                 children: [
                   Expanded(
-                    child: ListView.builder(
+                    child: _absenceRequests.isEmpty
+                        ? Center(
+                      child: Text(
+                        'Trống',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    )
+                        :ListView.builder(
                       physics: const AlwaysScrollableScrollPhysics(),
                       itemCount: _absenceRequests.length,
                       itemBuilder: (context, index) {

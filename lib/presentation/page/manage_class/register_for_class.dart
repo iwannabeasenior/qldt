@@ -177,6 +177,9 @@ class _RegisterForClassState extends State<RegisterForClass> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: QLDTColor.red,
                         minimumSize: const Size(double.infinity, 56),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),  // Decreased corner radius (adjust as needed)
+                        ),
                       ),
                       child: const Text(
                         'Đăng Ký',
@@ -276,6 +279,9 @@ class _RegisterForClassState extends State<RegisterForClass> {
                         onPressed: _submitRegistration,  // Submit all selected classes
                         style: ElevatedButton.styleFrom(
                           backgroundColor: QLDTColor.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),  // Decreased corner radius (adjust as needed)
+                          ),
                         ),
                         child: const Text(
                           'Gửi Đăng Ký',
@@ -290,6 +296,9 @@ class _RegisterForClassState extends State<RegisterForClass> {
                       onPressed: _deleteSelectedClasses,  // Delete selected classes
                       style: ElevatedButton.styleFrom(
                         backgroundColor: QLDTColor.red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),  // Decreased corner radius (adjust as needed)
+                        ),
                       ),
                       child: const Text(
                         'Xóa các lớp đã chọn',
