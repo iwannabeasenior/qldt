@@ -16,9 +16,7 @@ abstract class ManageClassRepo {
   Future<Map<String, dynamic>> createClass(ClassCreateRequest classCreateRequest);
   Future<OpenClassResponse> getOpenClass(String token, String page, String pageSize);
   Future<Map<String, dynamic>> registerClass(String token, List<String> classIds);
-
-
-
+  Future<OpenClassResponse> getOpenClassByFilter(String token, String page, String pageSize, String? classId, String? status, String? className, String? classType);
 }
 
 class ManageClassRepoImpl extends ManageClassRepo {
@@ -39,6 +37,11 @@ class ManageClassRepoImpl extends ManageClassRepo {
   @override
   Future<Map<String, dynamic>> registerClass(String token, List<String> classIds) {
     return api.registerClass(token, classIds );
+  }
+
+  @override
+  Future<OpenClassResponse> getOpenClassByFilter(String token, String page, String pageSize, String? classId, String? status, String? className, String? classType) {
+    return api.getOpenClassByFilter(token, page, pageSize, classId, status, className, classType);
   }
 
 

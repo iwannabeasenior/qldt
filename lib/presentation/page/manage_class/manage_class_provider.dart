@@ -57,56 +57,14 @@ PageInfo1 pageInfo1 = PageInfo1(
     }
   }
 
-  // Future<void> getOpenClassList(String token, String page, String pageSize) async {
-  //   _isLoading = true;
-  //   notifyListeners();
-  //
-  //   try {
-  //     final classes = await _repo.getOpenClass(token, page, pageSize);
-  //
-  //     openClassList = classes.classes;
-  //     pageInfo1 = classes.pageInfo;
-  //
-  //     Logger().d("Fetched open class list: ${openClassList.length} classes");
-  //
-  //   } catch (e) {
-  //     Logger().e("Error fetching open class list: $e");
-  //   } finally {
-  //     _isLoading = false;
-  //     notifyListeners();
-  //   }
-  // }
-
-  // Future<void> getOpenClassList(String token, String page, String pageSize) async {
-  //   if (_isLoading) return; // Prevent multiple requests at the same time
-  //
-  //   _isLoading = true;
-  //   notifyListeners();
-  //
-  //   try {
-  //     final classes = await _repo.getOpenClass(token, page, pageSize);
-  //
-  //     openClassList.addAll(classes.classes); // Append to the existing list
-  //     pageInfo1 = classes.pageInfo;
-  //
-  //     Logger().d("Fetched open class list: ${openClassList.length} classes");
-  //
-  //   } catch (e) {
-  //     Logger().e("Error fetching open class list: $e");
-  //   } finally {
-  //     _isLoading = false;
-  //     notifyListeners();
-  //   }
-  // }
-
-  Future<void> getOpenClassList(String token, String page, String pageSize, {bool replace = false}) async {
+  Future<void> getOpenClassList(String token, String page, String pageSize, String? classId, String? status, String? className, String? classType, {bool replace = false}) async {
     if (_isLoading) return; // Prevent multiple requests at the same time
 
     _isLoading = true;
     notifyListeners();
 
     try {
-      final classes = await _repo.getOpenClass(token, page, pageSize);
+      final classes = await _repo.getOpenClassByFilter(token, page, pageSize, classId, status, className, classType);
 
       if (replace) {
         openClassList = classes.classes; // Replace the list entirely
@@ -114,12 +72,12 @@ PageInfo1 pageInfo1 = PageInfo1(
         openClassList.addAll(classes.classes); // Append the new data
       }
 
-      if (listPageCache.indexWhere((value) => value == int.parse(page)) == -1) {
-        Logger().d("logger: $page");
-        listPageCache.add(int.parse(page));
-        openClassListCache.addAll(classes.classes);
-        Logger().d("so luong trong: ${openClassListCache.length}");
-      }
+      // if (listPageCache.indexWhere((value) => value == int.parse(page)) == -1) {
+      //   Logger().d("logger: $page");
+      //   listPageCache.add(int.parse(page));
+      //   openClassListCache.addAll(classes.classes);
+      //   Logger().d("so luong trong: ${openClassListCache.length}");
+      // }
 
       pageInfo1 = classes.pageInfo;
 
@@ -132,7 +90,15 @@ PageInfo1 pageInfo1 = PageInfo1(
     }
   }
 
+  Future<void> getAllOpenClasses(String? token) async {
+    try {
+      final classResponse = await _repo.getOpenClass(token ?? "", "0", "1000");
+      openClassListCache = classResponse.classes;
 
+    } catch(e) {
+      Logger().d("Failed to fetch all open class");
+    }
+  }
 
   Future<void> registerClass(String token, List<String> classIds) async {
     _isLoading = true;
@@ -147,6 +113,7 @@ PageInfo1 pageInfo1 = PageInfo1(
       notifyListeners();
     }
   }
+
 
 
 }

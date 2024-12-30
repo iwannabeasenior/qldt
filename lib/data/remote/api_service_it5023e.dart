@@ -15,6 +15,7 @@ import 'package:qldt/data/request/material_request.dart';
 import 'package:qldt/helper/constant.dart';
 import 'package:qldt/helper/failure.dart';
 import 'package:http/http.dart' as http;
+import 'package:qldt/presentation/pref/user_preferences.dart';
 import '../model/absence_lecturer.dart';
 import '../model/attendance_student_detail.dart';
 import '../model/class_info.dart';
@@ -63,6 +64,7 @@ abstract class ApiServiceIT5023E {
   Future<Map<String, dynamic>> createClass(ClassCreateRequest classCreateRequest);
   Future<OpenClassResponse> getOpenClass(String token, String page, String pageSize);
   Future<Map<String, dynamic>> registerClass(String token, List<String> classIds);
+  Future<OpenClassResponse> getOpenClassByFilter(String token, String page, String pageSize, String? classId, String? status, String? className, String? classType);
   // assignments
   Future<List<Assignment>> getStudentAssignments (String token, String type, String classId);
   Future<List<Survey>> getAllSurveys (String token, String classId);
@@ -1063,6 +1065,44 @@ class ApiServiceIT5023EImpl extends ApiServiceIT5023E {
     } catch (e) {
       Logger().e('Error delete survey: $e'); // Log lỗi
       rethrow; // Throw lỗi để UI xử lý
+    }
+  }
+
+  @override
+  Future<OpenClassResponse> getOpenClassByFilter(String token, String page, String pageSize, String? classId, String? status, String? className, String? classType) async {
+
+    const String apiEndpoint = '${Constant.BASEURL}/it5023e/get_classes_by_filter';
+
+    // Define the payload
+    final Map<String, dynamic> payload = {
+      "token": token,
+      "class_id": classId,
+      "status": status, // ACTIVE, COMPLETED, UPCOMING
+      "class_name": className,
+      "class_type": classType, // LT, BT, LT_BT
+      "pageable_request": {
+        "page": page,
+        "page_size": pageSize,
+      },
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiEndpoint),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(payload),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
+
+        // Parse dữ liệu và trả về OpenClassResponse
+        return OpenClassResponse.fromJson(jsonResponse);
+      } else {
+        throw Exception("Failed to load open classes: ${utf8.decode(response.bodyBytes)}");
+      }
+    } catch (e) {
+      throw Exception("Error: $e");
     }
   }
 }

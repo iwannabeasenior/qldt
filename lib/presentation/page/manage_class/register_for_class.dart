@@ -50,13 +50,16 @@ class _RegisterForClassState extends State<RegisterForClass> {
 
   Future<void> _fetchOpenClassList() async {
     final provider = Provider.of<ManageClassProvider>(context, listen: false);
-    await provider.getOpenClassList(UserPreferences.getToken() ?? "", "0", "10");
+    await provider.getOpenClassList(UserPreferences.getToken() ?? "", "0", "10", null, null, null, null);
   }
 
   @override
   void initState() {
     super.initState();
-    _fetchOpenClassList();  // Fetch class data when the widget is initialized
+    _fetchOpenClassList();// Fetch class data when the widget is initialized
+
+    final provider = Provider.of<ManageClassProvider>(context, listen: false);
+    provider.getAllOpenClasses(UserPreferences.getToken());
   }
 
   // Search function to filter classes based on input
