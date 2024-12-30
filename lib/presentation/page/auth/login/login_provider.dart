@@ -10,9 +10,19 @@ import 'package:qldt/presentation/pref/user_preferences.dart';
 class LoginProvider extends ChangeNotifier {
 
   bool _isLoginSuccess = false;
+  String? _errorMessage;
+
+
   get isLoginSuccess => _isLoginSuccess;
+  String? get errorMessage => _errorMessage;
+
   set setLoginState(bool state) {
     _isLoginSuccess = state;
+    notifyListeners();
+  }
+
+  void clearError() {
+    _errorMessage = null;
     notifyListeners();
   }
   AuthRepository repo;
@@ -25,13 +35,18 @@ class LoginProvider extends ChangeNotifier {
     var response = await repo.login(LoginRequest(email, password, deviceId, fcmToken));
     response.fold(
         (left) {
+          _errorMessage = left.message; // Capture the error message
           Logger().d(left.message);
-          },
+          notifyListeners();
+
+        },
         (right) {
           user = right.user;
           token = right.token;
           classes = right.classes;
           UserPreferences.setUserInfo(token ?? "", user?.role ?? "", user?.id ?? "", user?.email ?? "");
+          _errorMessage = null; // Clear any previous error
+
           setLoginState = true;
         }
     );
