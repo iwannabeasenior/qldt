@@ -38,71 +38,76 @@ class _ClassListState extends State<ClassList> {
         builder: (context, provider, _) {
           var data = provider.classes;
 
-          return Scaffold(
-            appBar: AppBar(
-              title: const Column(
-                children: [
-                  Text("HUST", style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold, color: Colors.white)),
-                  Text("Danh sách lớp", style: TextStyle(fontSize: 25, color: Colors.white)),
-                ],
+          return RefreshIndicator(
+            onRefresh: () async {
+              provider.getClassList(onRefresh: true);
+            },
+            child: Scaffold(
+              appBar: AppBar(
+                title: const Column(
+                  children: [
+                    Text("HUST", style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold, color: Colors.white)),
+                    Text("Danh sách lớp", style: TextStyle(fontSize: 25, color: Colors.white)),
+                  ],
+                ),
+                toolbarHeight: 115,
+                centerTitle: true,
+                backgroundColor: const Color(0xFFAE2C2C),
+                automaticallyImplyLeading: false,
               ),
-              toolbarHeight: 115,
-              centerTitle: true,
-              backgroundColor: const Color(0xFFAE2C2C),
-              automaticallyImplyLeading: false,
-            ),
-            body: data == null
-                ? const Center(child: CircularProgressIndicator())
-                : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Danh sách lớp học
-                  Expanded(
-                    child: ListView.builder(
-                      controller: scrollController, //cuộn
-                      itemCount: data.length,
-                      itemBuilder: (context, index) {
-                        final classSchedule = data[index];
-                        return GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(context, '/ClassDetail', arguments: classSchedule.id);
-                            },
-                            child: ClassScheduleCard(classSchedule: classSchedule));
-                      },
+              body: data == null
+                  ? const Center(child: CircularProgressIndicator())
+                  : Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Danh sách lớp học
+                    Expanded(
+                      child: ListView.builder(
+                        controller: scrollController, //cuộn
+                        itemCount: data.length,
+                        itemBuilder: (context, index) {
+                          final classSchedule = data[index];
+                          return GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/ClassDetail', arguments: classSchedule.id);
+                              },
+                              child: ClassScheduleCard(classSchedule: classSchedule));
+                        },
+                      ),
                     ),
-                  ),
 
-                  // Thanh phân trang
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        onPressed: provider.currentPage > 0
-                            ? () {
-                          provider.getClassList(page: provider.currentPage - 1);
-                          scrollController.jumpTo(0); // scroll on top
-                        }
-                            : null,
-                        icon: const Icon(Icons.arrow_back),
-                      ),
-                      Text(
-                        'Page ${provider.currentPage + 1}',
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      IconButton(
-                        onPressed: provider.hasNextPage
-                            ? () {
-                          provider.getClassList(page: provider.currentPage + 1);
-                          scrollController.jumpTo(0); // Cuộn về đầu danh sách
-                        }
-                            : null, // Vô hiệu hóa nút nếu không có trang tiếp theo
-                        icon: const Icon(Icons.arrow_forward),
-                      ),
-                    ],
-                  ),
-                ],
+                    // Thanh phân trang
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: provider.currentPage > 0
+                              ? () {
+                            provider.getClassList(page: provider.currentPage - 1);
+                            scrollController.jumpTo(0); // scroll on top
+                          }
+                              : null,
+                          icon: const Icon(Icons.arrow_back),
+                        ),
+                        Text(
+                          'Page ${provider.currentPage + 1}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        IconButton(
+                          onPressed: provider.hasNextPage
+                              ? () {
+                            provider.getClassList(page: provider.currentPage + 1);
+                            scrollController.jumpTo(0); // Cuộn về đầu danh sách
+                          }
+                              : null, // Vô hiệu hóa nút nếu không có trang tiếp theo
+                          icon: const Icon(Icons.arrow_forward),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           );
