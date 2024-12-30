@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:qldt/data/request/survey_request.dart';
 import 'package:qldt/presentation/page/class/class_detail.dart';
-import 'package:qldt/presentation/page/class/homework/homework_page.dart';
-import 'package:qldt/presentation/page/class/homework/student/student_assignments_page.dart';
 import 'package:qldt/presentation/page/class/homework/student/student_assignments_provider.dart';
-import 'package:qldt/presentation/page/home_page.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 import 'package:file_picker/file_picker.dart';
@@ -177,8 +172,8 @@ class SubmitAssignment extends StatelessWidget {
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
-                      ...files.map((filePath) => Text(
-                        '- $filePath',
+                      ...files.map((file) => Text(
+                        'File: ${file.file?.name.split('/').last}',
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                             fontSize: 14, color: Colors.black),

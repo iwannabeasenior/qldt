@@ -130,7 +130,7 @@ class _GradingAssignmentState extends State<GradingAssignment> {
                           const SizedBox(height: 16,),
                           const Text('Mô tả:', style: TextStyle(fontWeight: FontWeight.bold),),
                           const SizedBox(height: 8,),
-                          Text(widget.submission.textResponse),
+                          Text(widget.submission.textResponse ?? ""),
                         ],
                       )
                   ),

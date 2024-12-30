@@ -1,10 +1,12 @@
-import 'dart:io';
-
-import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
-import 'package:qldt/data/repo/auth_repository.dart';
+import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
+import 'package:qldt/data/request/files_request.dart';
+import 'package:qldt/helper/utils.dart';
 import 'package:qldt/presentation/page/settings/user_info/user_provider.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
@@ -17,28 +19,47 @@ class UserDetailPage extends StatefulWidget {
 }
 
 class _UserDetailPageState extends State<UserDetailPage> {
-  // Chọn ảnh đại diện
-  Future<void> pickAvatar() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      allowMultiple: false,
-      type: FileType.custom,
-      allowedExtensions: ['jpg', 'png'],
-    );
-    if (result != null) {
-      setState(() {
-      });
-    } else {
-      // User canceled the picker
+  FileRequest? _avatar;
+  Uint8List? _imageBytes;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage() async {
+    try {
+      final XFile? pickedFile =
+          await _picker.pickImage(source: ImageSource.gallery);
+
+      if (pickedFile != null) {
+        // Đọc dữ liệu dưới dạng bytes
+        final Uint8List fileData = await pickedFile.readAsBytes();
+
+        // Tạo PlatformFile
+        PlatformFile platformFile = PlatformFile(
+          name: pickedFile.name,
+          size: fileData.length,
+          bytes: fileData,
+        );
+
+        setState(() {
+          _imageBytes = fileData;
+          _avatar = FileRequest(fileData: fileData, file: platformFile);
+        });
+      } else {
+        Logger().d('Người dùng không chọn ảnh.');
+      }
+    } catch (e) {
+      Logger().e('Lỗi khi đọc file: $e');
     }
   }
+
   @override
   void initState() {
-    Logger().d("user id is ${UserPreferences.getToken()} and token: ${UserPreferences.getId()}");
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<UserProvider>().getUserInfo(UserPreferences.getToken() ?? "", UserPreferences.getId() ?? "");
+      context.read<UserProvider>().getUserInfo(
+          UserPreferences.getToken() ?? "", UserPreferences.getId() ?? "");
     });
   }
+
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context, listen: true);
@@ -72,20 +93,20 @@ class _UserDetailPageState extends State<UserDetailPage> {
                   ),
                 ),
                 userProvider.user.role == "STUDENT"
-                  ? const Text(
-                  'Thông tin sinh viên',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 25,
-                  ),
-                )
-                  : const Text(
-                  'Thông tin giảng viên',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 25,
-                  ),
-                ),
+                    ? const Text(
+                        'Thông tin sinh viên',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 25,
+                        ),
+                      )
+                    : const Text(
+                        'Thông tin giảng viên',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 25,
+                        ),
+                      ),
               ],
             ),
             const Spacer(),
@@ -111,27 +132,36 @@ class _UserDetailPageState extends State<UserDetailPage> {
                         radius: 80,
                         backgroundColor: Colors.grey[200],
                         child: ClipOval(
-                          child: Image.network(
-                            convertGoogleDriveUrl(userProvider.user.avatar ?? ""),
-                            width: 160,
-                            height: 160,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              Logger().d(userProvider.user.avatar);
-                              // Hiển thị ảnh mặc định nếu ảnh từ URL không tải được
-                              return Image.asset(
-                                'assets/images/default.jpg',
-                                // Đường dẫn tới ảnh mặc định
-                                width: 160,
-                                height: 160,
-                                fit: BoxFit.cover,
-                              );
-                            },
-                          ),
+                          child: _imageBytes != null
+                              ? Image.memory(
+                                  _imageBytes!,
+                                  width: 160,
+                                  height: 160,
+                                  fit: BoxFit.cover,
+                                )
+                              : userProvider.user.avatar != null ? Image.network(
+                                  Utils.convertToDirectDownloadLink(userProvider.user.avatar!),
+                                  width: 160,
+                                  height: 160,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Image.asset(
+                                      'assets/images/default.jpg',
+                                      width: 160,
+                                      height: 160,
+                                      fit: BoxFit.cover,
+                                    );
+                                  },
+                                ) : Image.asset(
+                                      'assets/images/default.jpg',
+                                      width: 160,
+                                      height: 160,
+                                      fit: BoxFit.cover,
+                                    ),
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: pickAvatar,
+                        onPressed: _pickImage,
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 18,
@@ -221,21 +251,32 @@ class _UserDetailPageState extends State<UserDetailPage> {
                   ],
                 ),
                 const SizedBox(height: 10),
+                _avatar != null ? ElevatedButton(
+                    onPressed: () async {
+                      try {
+                        await userProvider.changeInfoAfterSignup(
+                            UserPreferences.getToken() ?? "",
+                            _avatar!
+                        );
+                        setState(() {
+                          //Cập nhật laị api mới ở đây
+                          _avatar = null;
+                        });
+                      } catch (e) {
+                        Logger().e(e);
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.green
+                    ),
+                    child: const Text('Lưu'),
+                ) : const SizedBox.shrink()
               ],
             ),
           ),
         ),
       ),
     );
-  }
-
-  String convertGoogleDriveUrl(String url) {
-    final fileIdRegExp = RegExp(r'd/([a-zA-Z0-9_-]+)');
-    final match = fileIdRegExp.firstMatch(url);
-    if (match != null) {
-      final fileId = match.group(1);
-      return 'https://drive.google.com/uc?export=view&id=$fileId';
-    }
-    return url;
   }
 }

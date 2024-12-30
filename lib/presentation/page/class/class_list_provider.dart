@@ -15,12 +15,14 @@ class ClassListProvider extends ChangeNotifier {
 
   ClassListProvider({required this.repo});
 
-  Future<List<Class>?> getClassList({int? page}) async {
+  Future<List<Class>?> getClassList({int? page, bool onRefresh = false}) async {
     Logger().d("getClassList started");
 
     // Nếu page được cung cấp, kiểm tra trước khi thay đổi
+    if (onRefresh) {
+      currentPage = 0;
+    }
     int newPage = page ?? currentPage;
-
     final result = await repo.getAllClass(GetClassListRequest(
       token: UserPreferences.getToken(),
       role: UserPreferences.getRole(),
@@ -48,7 +50,7 @@ class ClassListProvider extends ChangeNotifier {
         notifyListeners();
       },
     );
-
+    notifyListeners();
     return classes;
   }
 }
