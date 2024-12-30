@@ -109,7 +109,12 @@ class _ChatDetailViewState extends State<ChatDetailView> implements ChatDetailCa
 
   void _scrollDown() {
     if (scrollController.hasClients) {
-      scrollController.jumpTo(scrollController.position.maxScrollExtent + 85);
+      // scrollController.jumpTo(scrollController.position.maxScrollExtent + 85);
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent + 100, // Scroll to the bottom
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     }
   }
 

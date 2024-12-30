@@ -41,49 +41,49 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAzz0LfPJI7Tgc-YB9dBc0eoRxJmOJCevY',
-    appId: '1:985122543779:web:6e6fb8c1d7a93ee1874716',
-    messagingSenderId: '985122543779',
-    projectId: 'qldt-73c00',
-    authDomain: 'qldt-73c00.firebaseapp.com',
-    storageBucket: 'qldt-73c00.firebasestorage.app',
-    measurementId: 'G-0V3L7BKNEK',
+    apiKey: 'AIzaSyCjM-qeTfzLgbTzUnBq9rHMGVyyMVmkMBc',
+    appId: '1:792382887500:web:c8cab43abe5da25ca906e9',
+    messagingSenderId: '792382887500',
+    projectId: 'qldt-new',
+    authDomain: 'qldt-new.firebaseapp.com',
+    storageBucket: 'qldt-new.firebasestorage.app',
+    measurementId: 'G-52FDBVS1VM',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBukccU55x6uWEw_ezoqQTgE9rK4m1HY6Y',
-    appId: '1:985122543779:android:7abf27032f123177874716',
-    messagingSenderId: '985122543779',
-    projectId: 'qldt-73c00',
-    storageBucket: 'qldt-73c00.firebasestorage.app',
+    apiKey: 'AIzaSyAJdf61uWVA7r50pkJsmKUEKFZpeJltsNI',
+    appId: '1:792382887500:android:a67365949a7a1ad8a906e9',
+    messagingSenderId: '792382887500',
+    projectId: 'qldt-new',
+    storageBucket: 'qldt-new.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBDDu9hkVUBMwhdTvrcu-hG0Rx3aYNMDWs',
-    appId: '1:985122543779:ios:dff10e469415098c874716',
-    messagingSenderId: '985122543779',
-    projectId: 'qldt-73c00',
-    storageBucket: 'qldt-73c00.firebasestorage.app',
+    apiKey: 'AIzaSyBXNiCJa0Gca_rDX-JuBYJZTZ23p0QBgw0',
+    appId: '1:792382887500:ios:434e1ee3e495055fa906e9',
+    messagingSenderId: '792382887500',
+    projectId: 'qldt-new',
+    storageBucket: 'qldt-new.firebasestorage.app',
     iosBundleId: 'com.example.qldt',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBDDu9hkVUBMwhdTvrcu-hG0Rx3aYNMDWs',
-    appId: '1:985122543779:ios:dff10e469415098c874716',
-    messagingSenderId: '985122543779',
-    projectId: 'qldt-73c00',
-    storageBucket: 'qldt-73c00.firebasestorage.app',
+    apiKey: 'AIzaSyBXNiCJa0Gca_rDX-JuBYJZTZ23p0QBgw0',
+    appId: '1:792382887500:ios:434e1ee3e495055fa906e9',
+    messagingSenderId: '792382887500',
+    projectId: 'qldt-new',
+    storageBucket: 'qldt-new.firebasestorage.app',
     iosBundleId: 'com.example.qldt',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyAzz0LfPJI7Tgc-YB9dBc0eoRxJmOJCevY',
-    appId: '1:985122543779:web:1abb33d32b478c93874716',
-    messagingSenderId: '985122543779',
-    projectId: 'qldt-73c00',
-    authDomain: 'qldt-73c00.firebaseapp.com',
-    storageBucket: 'qldt-73c00.firebasestorage.app',
-    measurementId: 'G-6B9XQGCPNZ',
+    apiKey: 'AIzaSyCjM-qeTfzLgbTzUnBq9rHMGVyyMVmkMBc',
+    appId: '1:792382887500:web:1c0fb29d9b7ce9e6a906e9',
+    messagingSenderId: '792382887500',
+    projectId: 'qldt-new',
+    authDomain: 'qldt-new.firebaseapp.com',
+    storageBucket: 'qldt-new.firebasestorage.app',
+    measurementId: 'G-VMMQL2JKXQ',
   );
 
 }

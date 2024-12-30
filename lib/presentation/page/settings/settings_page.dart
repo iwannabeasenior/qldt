@@ -46,7 +46,7 @@ class _SettingsPageState extends State<SettingsPage> {
           children: [
             //SHARED
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -231,7 +231,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
             //ABOUT
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -293,7 +293,7 @@ class _SettingsPageState extends State<SettingsPage> {
             //Logout
             Padding(
               padding: const EdgeInsets.only(
-                  top: 20, left: 10, right: 10, bottom: 10),
+                  top: 20, left: 20, right: 20, bottom: 10),
               child: GestureDetector(
                 onTap: _showLogoutConfirmDialog,
                 child: const Row(
@@ -345,7 +345,12 @@ class _SettingsPageState extends State<SettingsPage> {
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-                  Navigator.pushNamed(context, "/LoginPage");
+                  context.read<SettingsProvider>().logout(UserPreferences.getToken() ?? "");
+                  UserPreferences.deleteUserInfo();
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/LoginPage', (Route<dynamic> route) => false,
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,

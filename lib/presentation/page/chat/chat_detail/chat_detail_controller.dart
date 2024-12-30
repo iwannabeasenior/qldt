@@ -49,7 +49,7 @@ class ChatDetailProvider extends ChangeNotifier {
       }),
     );
 
-    final Map<String, dynamic> responseBody = jsonDecode(response.body);
+    final Map<String, dynamic> responseBody = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200 && responseBody['meta']['code'] == '1000') {
 

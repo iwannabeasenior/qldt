@@ -1,13 +1,14 @@
+
 {
   "project_info": {
-    "project_number": "985122543779",
-    "project_id": "qldt-73c00",
-    "storage_bucket": "qldt-73c00.firebasestorage.app"
+    "project_number": "844626516109",
+    "project_id": "crossplatform-it4788-f38e0",
+    "storage_bucket": "crossplatform-it4788-f38e0.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:985122543779:android:7abf27032f123177874716",
+        "mobilesdk_app_id": "1:844626516109:android:1c122a7d1d7acc8ffd2ac4",
         "android_client_info": {
           "package_name": "com.example.qldt"
         }
@@ -15,7 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBukccU55x6uWEw_ezoqQTgE9rK4m1HY6Y"
+          "current_key": "AIzaSyD_ZD2aFvMCId2fWQ--byva2YQrpt2C1gU"
         }
       ],
       "services": {

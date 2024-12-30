@@ -33,7 +33,7 @@ class _ChatPageState extends State<ChatPage> {
       _futureConversations = fetchConversations(
         token: UserPreferences.getToken() ?? "",
         index: 0,
-        count: 10,
+        count: 1000,
       );
     } catch(e) {
       Logger().d("Fetch converstation error");
@@ -170,7 +170,7 @@ class ChatUnit extends StatelessWidget {
                     children: [
                       Text(conversation.partnerName, style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                        fontSize: 13,
                       )),
                       Text(conversation.lastMessage ?? "Tin nhắn đã được thu hồi", overflow: TextOverflow.ellipsis, style: TextStyle(color: conversation.unreadCount == 1 ? QLDTColor.lightBlack : Colors.black, fontSize: 12))
                     ]

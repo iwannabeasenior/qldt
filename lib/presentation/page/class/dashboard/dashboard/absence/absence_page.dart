@@ -229,6 +229,7 @@ import 'package:qldt/data/repo/absence_repository.dart';
 import 'package:qldt/data/request/absence_request.dart'; // Import AbsenceRequest
 
 import '../../../../../pref/user_preferences.dart';
+import '../../../../notification/notification_provider.dart';
 import '../../../class_list_provider.dart';
 import 'absence_provider.dart';  // Your AbsenceProvider
 
@@ -297,6 +298,7 @@ class _AbsencePageState extends State<AbsencePage> {
 
     provider.requestAbsence(absenceRequest).then((_) {
       // Show success message after the request
+      Provider.of<NotificationProvider>(context, listen: false).sendNotification(UserPreferences.getToken() ?? "", "user ${UserPreferences.getId()} gửi đơn xin nghỉ", "", "ABSENCE");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Absence request submitted successfully')),
       );
