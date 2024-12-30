@@ -26,7 +26,7 @@ class _AttendanceDetailState extends State<AttendanceDetail> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = context.read<AttendanceProvider>();
-      provider.getAttendanceStudentDetail(GetAttendanceListRequest(token: UserPreferences.getToken() ?? "", classId: widget.classId, date: widget.date, pageableRequest: PageableRequest(page: "0", pageSize: "10")));
+      provider.getAttendanceStudentDetail(GetAttendanceListRequest(token: UserPreferences.getToken() ?? "", classId: widget.classId, date: widget.date, pageableRequest: PageableRequest(page: "0", pageSize: "50")));
       provider.fetchStudentAccounts(UserPreferences.getToken() ?? "", "LECTURER", UserPreferences.getId() ?? "", widget.classId);
 
     });
