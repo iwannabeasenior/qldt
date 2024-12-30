@@ -97,6 +97,7 @@ class _OpenClassListState extends State<OpenClassList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text(
           "Danh sách các lớp mở",
@@ -171,7 +172,7 @@ class _OpenClassListState extends State<OpenClassList> {
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  SizedBox(height: 32),
+                  SizedBox(height: 16),
 
                   // Filter Button
                   ElevatedButton(

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:qldt/data/model/class.dart';
 import 'package:qldt/data/repo/class_repository.dart';
 import 'package:qldt/presentation/page/class/class_list_provider.dart';
+import 'package:qldt/presentation/pref/user_preferences.dart';
 
 
 
@@ -71,6 +72,7 @@ class _ClassListState extends State<ClassList> {
                           final classSchedule = data[index];
                           return GestureDetector(
                               onTap: () {
+                                UserPreferences;
                                 Navigator.pushNamed(context, '/ClassDetail', arguments: classSchedule.id);
                               },
                               child: ClassScheduleCard(classSchedule: classSchedule));

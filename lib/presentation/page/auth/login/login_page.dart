@@ -29,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
             builder: (context, controller, _) {
               if (controller.isLoginSuccess) {
                 WidgetsBinding.instance.addPostFrameCallback( (_) {
-                    Navigator.pushNamed(context, '/HomePage');
+                    Navigator.pushNamedAndRemoveUntil(context, '/HomePage', (Route<dynamic> route) => false);
                     controller.setLoginState = false;
                   }
                 );

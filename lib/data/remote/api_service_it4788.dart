@@ -40,7 +40,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(request.toJson())
         );
-        var body = jsonDecode(response.body);
+        var body = jsonDecode(utf8.decode(response.bodyBytes));
 
         if (response.statusCode == 200) {
 
@@ -75,7 +75,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
       );
       var body;
       try {
-        body = jsonDecode(response.body);
+        body = jsonDecode(utf8.decode(response.bodyBytes));
       } catch(e) {
         return Left(Failure(code: "0", message: response.body));
       }
@@ -153,7 +153,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
           body: jsonEncode(data)
       );
 
-      final body = jsonDecode(response.body);
+      final body = jsonDecode(utf8.decode(response.bodyBytes));
 
       if (response.statusCode == 200) {
         return Right(null);
@@ -185,7 +185,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(data)
       );
-      final body = jsonDecode(response.body);
+      final body = jsonDecode(utf8.decode(response.bodyBytes));
 
       if (response.statusCode == 200) {
         return Right(body['userId']);
@@ -216,7 +216,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      final data = jsonDecode(utf8.decode(response.bodyBytes));
       if (data['code'] == '1000') {
         return User.fromJson(data['data']);
       } else {
@@ -242,7 +242,7 @@ class ApiServiceIT4788Impl extends ApiServiceIT4788 {
           body: jsonEncode(data)
       );
 
-      final body = jsonDecode(response.body);
+      final body = jsonDecode(utf8.decode(response.bodyBytes));
 
       if (response.statusCode == 200) {
         return Right(body['data']);

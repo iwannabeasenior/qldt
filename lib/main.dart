@@ -3,7 +3,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
-import 'package:qldt/data/model/user.dart';
 import 'package:qldt/data/remote/api_service_it4788.dart';
 import 'package:qldt/data/remote/api_service_it5023e.dart';
 import 'package:qldt/data/repo/absence_repository.dart';
@@ -17,6 +16,7 @@ import 'package:qldt/firebase_options.dart';
 import 'package:qldt/helper/routes.dart';
 import 'package:qldt/presentation/page/class/class_list_provider.dart';
 import 'package:qldt/presentation/page/class/dashboard/info_class/class_info_provider.dart';
+import 'package:qldt/presentation/page/notification/notification_provider.dart';
 import 'package:qldt/presentation/page/settings/settings_provider.dart';
 import 'package:qldt/presentation/page/settings/user_info/user_provider.dart';
 import 'package:qldt/presentation/page/class/dashboard/dashboard/absence/absence_provider.dart';
@@ -32,7 +32,7 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp();
 
   await FirebaseMessaging.instance.requestPermission();
 
@@ -139,13 +139,8 @@ class _MyAppState extends State<MyApp> {
   Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     // If you're going to use other Firebase services in the background, such as Firestore,
     // make sure you call `initializeApp` before using other Firebase services.
-    await Firebase.initializeApp();
 
     print("Handling a background message");
-
-    // if (message.notification != null) {
-    //   await showNotification(message);
-    // }
   }
 
   Future<void> _requestPermission() async {
@@ -165,7 +160,7 @@ class _MyAppState extends State<MyApp> {
       print('User granted permission');
       FirebaseMessaging.onMessage.listen((message) {
         // handle income message
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Bạn có 1 thông báo mới")));
+        Logger().d("Message from foreground");
       });
 
       FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -247,7 +242,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => LecturerAssignmentProvider(assignmentRepo)),
         ChangeNotifierProvider(create: (_) => ClassInfoProvider(classRepo)),
         ChangeNotifierProvider(create: (_) => ClassListProvider(repo: classRepo)),
-
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
 
       ],
       child: MaterialApp(

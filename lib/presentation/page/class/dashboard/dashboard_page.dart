@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qldt/data/model/class.dart';
 import 'package:qldt/presentation/page/class/dashboard/info_class/class_info.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 List<String> icons_lecturer = [

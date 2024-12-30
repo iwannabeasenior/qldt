@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 import 'package:qldt/helper/constant.dart';
 import 'package:qldt/helper/utils.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
-
-
 
 enum NotiType {
   ABSENCE,
@@ -35,6 +32,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
   List<Map<String, dynamic>> notifications = [];
   int unreadCount = 0;
   bool isLoading = true;
+  bool isLoadingMore = false;  // To track loading of more data
+  int currentPage = 0;  // Track the current page of notifications
+  int pageSize = 1000;     // Number of notifications per page
 
   @override
   void initState() {
@@ -43,12 +43,23 @@ class _NotificationsPageState extends State<NotificationsPage> {
     fetchUnreadNotificationCount();
   }
 
-  Future<void> fetchNotifications() async {
+  // Fetch notifications with pagination support
+  Future<void> fetchNotifications({bool isLoadMore = false}) async {
+    if (isLoadMore) {
+      setState(() {
+        isLoadingMore = true;
+      });
+    } else {
+      setState(() {
+        isLoading = true;
+      });
+    }
+
     final url = Uri.parse("${Constant.BASEURL}/it5023e/get_notifications"); // Replace with your URL
     final payload = {
       "token": UserPreferences.getToken(),
-      "index": 0,
-      "count": 4,
+      "index": currentPage * pageSize,  // Use the current page and page size
+      "count": pageSize,
     };
 
     try {
@@ -62,7 +73,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
         final jsonResponse = json.decode(response.body);
         if (jsonResponse['meta']['code'] == "1000") {
           setState(() {
-            notifications = List<Map<String, dynamic>>.from(jsonResponse['data']);
+            if (isLoadMore) {
+              notifications.addAll(List<Map<String, dynamic>>.from(jsonResponse['data']));
+              currentPage++;
+            } else {
+              notifications = List<Map<String, dynamic>>.from(jsonResponse['data']);
+            }
           });
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -81,11 +97,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
     } finally {
       setState(() {
         isLoading = false;
+        isLoadingMore = false;
       });
     }
   }
 
-
+  // Fetch unread notification count
   Future<void> fetchUnreadNotificationCount() async {
     final url = Uri.parse("${Constant.BASEURL}/it5023e/get_unread_notification_count"); // Replace with your API URL
     final payload = {
@@ -111,6 +128,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
       Logger().d("HelloNhiDay: $e");
     }
   }
+
+  // Mark notification as read
   Future<void> markAsRead(int notificationId) async {
     final url = Uri.parse("${Constant.BASEURL}/it5023e/mark_notification_as_read"); // Replace with your API URL
     final payload = {
@@ -143,10 +162,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
     }
   }
 
-  void forwardNotification() {
-
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -175,84 +190,118 @@ class _NotificationsPageState extends State<NotificationsPage> {
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : notifications.isEmpty
-          ? Center(child: Text("No notifications found"))
-          : ListView.separated(
-        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16), // More balanced padding
-        separatorBuilder: (context, index) {
-          return Divider(color: Colors.grey.shade300, thickness: 1); // Adds a subtle divider
+      body: RefreshIndicator(
+        onRefresh: () async {
+          currentPage = 0;  // Reset page on refresh
+          await fetchNotifications();
         },
-        itemCount: notifications.length,
-        itemBuilder: (context, index) {
-          final notification = notifications[index];
-          final isUnread = notification['status'] == "UNREAD";
-          final notificationTime = notification['sent_time'] ?? "";
-          final type = NotiType.fromStringType(notification['type']);
-
-          return Container(
-            margin: EdgeInsets.only(bottom: 12), // Add some spacing between items
-            decoration: BoxDecoration(
-              color: Colors.white, // Clean white background for list items
-              borderRadius: BorderRadius.circular(12), // Rounded corners for each item
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                  offset: Offset(0, 2),
-                ),
-              ], // Shadow effect to lift the card
-            ),
-            child: ListTile(
-              onTap: () {
-                if (isUnread) {
-                  markAsRead(notification['id']);
-                  switch(type) {
-                    case NotiType.ABSENCE:
-                      //navigate
-                    case NotiType.ACCEPT_ABSENCE_REQUEST:
-                      //navigate
-                    case NotiType.REJECT_ABSENCE_REQUEST:
-                      //navigate
-                    case NotiType.ASSIGNMENT_GRADE:
-                      //navigate
-                  }
-                }
-              },
-              contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16), // Consistent padding inside the tile
-              leading: Icon(
-                Icons.notifications,
-                color: isUnread ? Colors.redAccent : Colors.grey, // Highlight unread notifications
-              ),
-              title: Text(
-                notification['title_push_notification'] ?? "No Title",
-                style: TextStyle(
-                  fontWeight: isUnread ? FontWeight.bold : FontWeight.normal,
-                  fontSize: 16,
-                  color: Colors.black87,
-                ),
-              ),
-              subtitle: Text(
-                notification['message'] ?? "No Message",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
-                  height: 1.5, // Better line spacing for readability
-                ),
-              ),
-              trailing: Text(
-                Utils.formatDateTime(notificationTime),
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade600, // Subtle date/time color
-                ),
-              ),
-            ),
-          );
-        },
+        child: isLoading
+            ? Center(child: CircularProgressIndicator())
+            : notifications.isEmpty
+            ? Center(child: Text("No notifications found"))
+            : NotificationList(
+          notifications: notifications,
+          isLoadingMore: isLoadingMore,
+          onLoadMore: fetchNotifications,
+          markAsRead: markAsRead,
+        ),
       ),
+    );
+  }
+}
+
+class NotificationList extends StatelessWidget {
+  final List<Map<String, dynamic>> notifications;
+  final bool isLoadingMore;
+  final Future<void> Function({bool isLoadMore}) onLoadMore;
+  Function markAsRead;
+  NotificationList({
+    Key? key,
+    required this.notifications,
+    required this.isLoadingMore,
+    required this.onLoadMore,
+    required this.markAsRead
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+      separatorBuilder: (context, index) {
+        return Divider(color: Colors.grey.shade300, thickness: 1);
+      },
+      itemCount: notifications.length + (isLoadingMore ? 1 : 0), // Add loading indicator at the end
+      itemBuilder: (context, index) {
+        if (index == notifications.length) {
+          // Show loading indicator
+          return Center(child: CircularProgressIndicator());
+        }
+        final notification = notifications[index];
+        final isUnread = notification['status'] == "UNREAD";
+        final notificationTime = notification['sent_time'] ?? "";
+        final type = NotiType.fromStringType(notification['type']);
+
+        return Container(
+          margin: EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 8,
+                spreadRadius: 1,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: ListTile(
+            onTap: () {
+              if (isUnread) {
+                markAsRead(notification['id']);
+                switch (type) {
+                  case NotiType.ABSENCE:
+                  // navigate
+                  case NotiType.ACCEPT_ABSENCE_REQUEST:
+                  // navigate
+                  case NotiType.REJECT_ABSENCE_REQUEST:
+                  // navigate
+                  case NotiType.ASSIGNMENT_GRADE:
+                  // navigate
+                }
+              }
+            },
+            contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            leading: Icon(
+              Icons.notifications,
+              color: isUnread ? Colors.redAccent : Colors.grey,
+            ),
+            title: Text(
+              notification['title_push_notification'] ?? "No Title",
+              style: TextStyle(
+                fontWeight: isUnread ? FontWeight.bold : FontWeight.normal,
+                fontSize: 16,
+                color: Colors.black87,
+              ),
+            ),
+            subtitle: Text(
+              notification['message'] ?? "No Message",
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black54,
+                height: 1.5,
+              ),
+            ),
+            trailing: Text(
+              Utils.formatDateTime(notificationTime),
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey.shade600,
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
