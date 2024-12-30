@@ -15,6 +15,7 @@ import 'package:qldt/data/repo/manage_class_repository.dart';
 import 'package:qldt/data/repo/material_repository.dart';
 import 'package:qldt/firebase_options.dart';
 import 'package:qldt/helper/routes.dart';
+import 'package:qldt/presentation/page/class/class_list_provider.dart';
 import 'package:qldt/presentation/page/class/dashboard/info_class/class_info_provider.dart';
 import 'package:qldt/presentation/page/settings/settings_provider.dart';
 import 'package:qldt/presentation/page/settings/user_info/user_provider.dart';
@@ -84,6 +85,7 @@ class _MyAppState extends State<MyApp> {
   late final AttendanceRepo attendanceRepo = AttendanceRepoImpl(api: api2);
   late final ManageClassRepo manageClassRepo = ManageClassRepoImpl(api: api2);
   late final AssignmentRepo assignmentRepo = AssignmentRepoImpl(api: api2);
+
   late StompClient stompClient;
   late Future<void> _stompClientFuture;
 
@@ -244,6 +246,9 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => ManageClassProvider(manageClassRepo)),
         ChangeNotifierProvider(create: (_) => LecturerAssignmentProvider(assignmentRepo)),
         ChangeNotifierProvider(create: (_) => ClassInfoProvider(classRepo)),
+        ChangeNotifierProvider(create: (_) => ClassListProvider(repo: classRepo)),
+
+
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

@@ -44,17 +44,18 @@ class _AttendanceHistoryLecturerState
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Text(
-              'Table 1',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey.shade400,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            // Text(
+            //   'Table 1',
+            //   style: TextStyle(
+            //     fontSize: 16,
+            //     color: Colors.grey.shade400,
+            //     fontWeight: FontWeight.bold,
+            //   ),
+            // ),
             const SizedBox(height: 8),
             if (absenceDates.isEmpty) // If no attendance dates, show loading or empty state
-              Center(child: CircularProgressIndicator()),
+              // Center(child: CircularProgressIndicator()),
+              Text("Chưa có lịch sử điểm danh cho lớp học này."),
             if (absenceDates.isNotEmpty) // Show the list of attendance dates
               Table(
                 border: TableBorder.all(color: Colors.grey),
