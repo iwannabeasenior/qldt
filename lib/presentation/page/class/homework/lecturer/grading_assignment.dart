@@ -7,6 +7,7 @@ import 'package:qldt/presentation/pref/user_preferences.dart';
 import 'package:qldt/presentation/theme/color_style.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../notification/notification_provider.dart';
 import 'lecturer_assignments_provider.dart';
 
 class GradingAssignment extends StatefulWidget {
@@ -199,6 +200,8 @@ class _GradingAssignmentState extends State<GradingAssignment> {
                         score,
                         widget.submission.id.toString(),
                       );
+                      context.read<NotificationProvider>().sendNotification(UserPreferences.getToken() ?? "", "Giảng viên đã chấm điểm", widget.submission.studentAccount.accountId, "ASSIGNMENT_GRADE");
+                      //sendNotification(String token, String message, String toUser, String type)
                       setState(() {
                         widget.submission.grade = double.parse(score);
                       });

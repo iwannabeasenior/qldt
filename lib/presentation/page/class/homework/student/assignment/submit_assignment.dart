@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:qldt/data/request/survey_request.dart';
 import 'package:qldt/presentation/page/class/class_detail.dart';
@@ -72,6 +73,7 @@ class SubmitAssignment extends StatelessWidget {
         Navigator.push(context, MaterialPageRoute(builder: (context)=> ClassDetail(classID: widget.classId, initialIndex: 1,)));
       }).catchError((e) {
         // Show error message if there's an issue
+        Logger().d("Error submit: $e");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to submit $e')),
         );
@@ -81,7 +83,7 @@ class SubmitAssignment extends StatelessWidget {
     @override
     Widget build(BuildContext context) {
       final provider = Provider.of<StudentAssignmentProvider>(context);
-      return Scaffold(
+      return provider.isLoading ? Center(child: CircularProgressIndicator()) : Scaffold(
         appBar: AppBar(
           title: Row(
             children: [
@@ -218,9 +220,7 @@ class SubmitAssignment extends StatelessWidget {
                           backgroundColor: QLDTColor.red,
                           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                         ),
-                        child: provider.isLoading
-                            ? const CircularProgressIndicator()
-                            : const Text(
+                        child:  const Text(
                           "Submit",
                           style: TextStyle(color: Colors.white),
                         ),

@@ -178,12 +178,18 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 color: Colors.white,
               ),
             ),
-            Text(
-              'Thông báo',
-              style: TextStyle(
-                fontSize: 25,
-                color: Colors.white,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Thông báo',
+                  style: TextStyle(
+                    fontSize: 25,
+                    color: Colors.white,
+                  ),
+                ),
+                NotificationBell(notificationCount: unreadCount)
+              ],
             ),
           ],
         ),
@@ -305,4 +311,43 @@ class NotificationList extends StatelessWidget {
     );
   }
 
+
+}
+class NotificationBell extends StatelessWidget {
+  final int notificationCount;
+
+  const NotificationBell({Key? key, required this.notificationCount})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Icon(
+          Icons.notifications,
+          size: 40,
+          color: Colors.blue,
+        ),
+        if (notificationCount > 0)
+          Positioned(
+            right: 0,
+            child: Container(
+              padding: EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              child: Text(
+                '$notificationCount',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
 }

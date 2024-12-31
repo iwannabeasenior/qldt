@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qldt/data/model/class_info.dart';
+import 'package:qldt/presentation/page/chat/chat_search/ui.dart';
 import 'package:qldt/presentation/page/class/dashboard/info_class/class_info_provider.dart';
 import 'package:qldt/presentation/pref/user_preferences.dart';
 
@@ -191,7 +192,7 @@ class _StudentListScreenState extends State<StudentListScreen> {
             ),
             const SizedBox(height: 16,),
             // Thêm nút "Thêm sinh viên" ở đây
-            ElevatedButton.icon(
+            UserPreferences.getRole() == 'LECTURER' ? ElevatedButton.icon(
               onPressed: () => _showAddStudentDialog(context, provider),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFAE2C2C),
@@ -205,7 +206,7 @@ class _StudentListScreenState extends State<StudentListScreen> {
                   fontStyle: FontStyle.italic,
                 ),
               ),
-            ),
+            ) : SizedBox(),
           ],
         ),
       ),
